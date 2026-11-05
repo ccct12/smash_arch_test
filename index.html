@@ -549,6 +549,48 @@ body.ui-mob #credit{left:calc(112px + env(safe-area-inset-left))!important;top:a
 body.ui-mob #ult{right:calc(10px + env(safe-area-inset-right))!important;bottom:calc(10px + env(safe-area-inset-bottom))!important}
 body.ui-mob #btnDet{bottom:calc(14px + env(safe-area-inset-bottom))!important;left:55%!important}
 body.ui-pc #toolbar{touch-action:auto}
+body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:none!important;max-width:calc(50vw - 230px)!important}
+
+/* ===== 회사 고르기 · 환영 창: 한 화면에 정리 ===== */
+.card.fcard{width:min(820px,100%)!important}
+.fgrid{display:grid;grid-template-columns:minmax(250px,310px) 1fr;gap:14px;flex:1 1 auto;min-height:0}
+.fleft,.fright{min-height:0;overflow:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.fleft .fhead{border-bottom:0;padding-bottom:0;margin-bottom:6px}
+.fleft #fCats{flex-wrap:wrap;overflow:visible}
+.fleft #fCats button{padding:4px 9px;font-size:12px}
+.fleft #gmSeg{margin:0 0 6px}.fleft #gmSeg button{padding:6px;font-size:13px}
+.fleft .req-row{flex-direction:column;gap:4px}.fleft .req-row .req-link{flex-direction:row;justify-content:center;gap:6px;padding:7px 6px;margin:0}
+.fleft details.fold.cast{margin:0 0 6px}
+.fnote{margin-top:8px;line-height:1.5}
+#dailyCard{margin:0 0 8px!important;padding:8px 10px!important;border-radius:9px!important;background:linear-gradient(135deg,#fff3c4,#ffe08a)!important;border:2px solid #d9a400!important;color:#3a2a00!important}
+#dailyCard .dc-r{display:flex;align-items:center;gap:8px}
+#dailyCard .dc-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+#dailyCard .dc-m b{font-size:12px;color:#7a5c00}
+#dailyCard .dc-n{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+#dailyCard .dc-t{font-size:11px;color:#6b5a2a;margin:0}
+#dailyCard .dc-err{font-size:11px;color:#9a3a00;white-space:normal}
+#dailyCard .btn-p,#dailyCard .btn-s{width:auto;margin:0;padding:8px 14px;white-space:nowrap;background:#b8860b;color:#fff;border-color:#8a6508}
+#mWelcome .card.welcome{width:min(380px,100%)}
+#mWelcome .card.welcome h2{font-size:24px;margin:0}
+#mWelcome .card.welcome p{margin:0;font-size:13.5px}
+#mWelcome .w-new{margin:2px 0!important}
+.w-row{display:flex;gap:8px}.w-row .btn-s{flex:1}
+.card.patch .row:has(#patchDaily){position:sticky;bottom:-12px;z-index:2;background:var(--panel);padding:8px 0 2px;margin-top:6px!important}
+#mPatch .card.patch{width:min(520px,100%)}
+@media (max-width:640px){.fgrid{display:block;overflow:auto}.fleft,.fright{overflow:visible}.card.fcard{overflow:auto}}
+@media (pointer:coarse) and (max-height:500px){
+  .card.fcard{width:min(860px,100%)!important;padding:8px 10px!important}
+  .fgrid{grid-template-columns:minmax(230px,290px) 1fr;gap:10px}
+  .fleft .fhead h2{font-size:16px;margin:0 0 4px}
+  .fleft .fhead .close{font-size:18px}
+  #customQ{padding:6px 8px;font-size:13px}
+  .fleft #gmSeg button{padding:4px;font-size:12px}
+  #mWelcome .card.welcome{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;width:min(560px,100%);text-align:left;align-items:center}
+  #mWelcome .card.welcome h2,#mWelcome .card.welcome p,#mWelcome .w-new{grid-column:1}
+  #mWelcome #wMission{grid-column:2;grid-row:1/3}
+  #mWelcome .w-row{grid-column:2;grid-row:3/5}
+  #mWelcome .w-row{flex-direction:column}
+}
 </style>
 </head>
 <body>
@@ -660,13 +702,11 @@ body.ui-pc #toolbar{touch-action:auto}
   <div id="gBody"></div>
 </div></div>
 <div class="modal" id="mWelcome"><div class="card welcome">
-  <h2>💥 SMASH ARCH에 오신 걸 환영해요</h2>
-  <p>실제 지도로 만든 우리 회사 동네를 부수는 게임이에요.<br>처음이라면 <b>따라하기</b>로 1분만 배워 보세요. 하나씩 알려드려요.</p>
-  <p class="w-new">🏆 <b>NEW 오늘의 사옥</b> — 매일 하나, 모두 같은 사옥에서 3분 대결! 1위는 다음 날 하늘 현수막에 이름이 걸려요. (재난 모드는 참여 불가)</p>
+  <h2>💥 SMASH ARCH</h2>
+  <p>실제 지도로 만든 우리 회사 동네를 부수는 게임이에요.</p>
+  <p class="w-new">🏆 <b>오늘의 사옥</b> — 매일 하나, 모두 같은 사옥에서 3분 대결 <small>(건축 모드)</small></p>
   <button class="btn-p" id="wMission">🎯 따라하기로 배우기 <small>(추천 · 1분)</small></button>
-  <button class="btn-s" id="wGuide">📘 사진으로 된 가이드 먼저 보기</button>
-  <button class="btn-s" id="wSkip">바로 시작할게요</button>
-  <div class="small">가이드는 언제든 왼쪽 위 <b>?</b> 버튼으로 다시 볼 수 있어요.</div>
+  <div class="w-row"><button class="btn-s" id="wGuide">📘 가이드 보기</button><button class="btn-s" id="wSkip">바로 시작</button></div>
 </div></div>
 <div class="modal" id="mReport"><div class="card report">
   <button class="close" data-close>×</button>
@@ -724,28 +764,33 @@ body.ui-pc #toolbar{touch-action:auto}
 <div id="boot"><div><b>SMASH <span>ARCH</span></b><br><span id="bootMsg">건축사사무소 목록을 불러오는 중…</span></div></div>
 
 <div class="modal" id="mFirm"><div class="card fcard">
-  <div class="fhead">
-  <button class="close" data-close>×</button>
-  <h2>어디를 부술까요?</h2>
-  <div id="gmSeg" class="seg gm"><button data-gm="build" class="on">🏗 건축 모드</button><button data-gm="earth">🌍 재난 모드 <small>NEW</small></button></div>
-  <div class="row" style="margin:0 0 6px"><input id="customQ" placeholder="검색 — 회사·학교 이름, 주소, 좌표" autocomplete="off"></div>
-  <div id="fCats"><button data-k="all" class="on">전체</button><button data-k="">📐 건축사사무소</button><button data-k="c">🏗 건설사</button><button data-k="u">🎓 대학교</button><button data-k="g">🏢 일반 회사</button></div>
+  <div class="fgrid">
+  <div class="fleft">
+    <div class="fhead">
+      <button class="close" data-close>×</button>
+      <h2>어디를 부술까요?</h2>
+      <div id="gmSeg" class="seg gm"><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난 <small>NEW</small></button></div>
+      <div class="row" style="margin:0 0 6px"><input id="customQ" placeholder="검색 — 회사·학교 이름, 주소, 좌표" autocomplete="off"></div>
+      <div id="fCats"><button data-k="all" class="on">전체</button><button data-k="">📐 건축사사무소</button><button data-k="c">🏗 건설사</button><button data-k="u">🎓 대학교</button><button data-k="g">🏢 일반 회사</button></div>
+    </div>
+    <div id="dailyCard" style="display:none"></div>
+    <div class="fmini">
+      <details class="fold cast"><summary id="castSum">🎭 사장님·발주처 이름 정하기</summary>
+      <div class="client-in"><label><small>선택 · 이 브라우저에만 저장돼요</small></label>
+        <div class="cn-row"><span>👔 사장님</span><input id="bossName" class="cn-input" maxlength="12" placeholder="예: 왕소장 — 비우면 '사장님'" autocomplete="off"></div>
+        <div class="cn-row"><span>😤 발주처</span><input id="clientNames" class="cn-input" maxlength="80" placeholder="쉼표로 최대 5개 — 비우면 가상 이름" autocomplete="off"></div></div>
+      </details>
+      <div class="req-row"><button class="req-link top" data-req="회사 추가">📮 찾는 곳이 없나요?<b>바로 추가</b></button><button class="req-link top" data-req="사옥 모양">🏢 사옥 모양이 달라요?<b>사진 보내기</b></button></div>
+    </div>
   </div>
-  <div class="fbody">
-  <div id="dailyCard" style="display:none"></div>
-  <details class="fold cast"><summary id="castSum">🎭 사장님·발주처 이름 정하기</summary>
-  <div class="client-in"><label><small>선택 · 이 브라우저에만 저장, 서버·랭킹·공유에는 안 나가요</small></label>
-    <div class="cn-row"><span>👔 사장님</span><input id="bossName" class="cn-input" maxlength="12" placeholder="예: 왕소장, 김대표 — 비우면 '사장님'" autocomplete="off"></div>
-    <div class="cn-row"><span>😤 발주처</span><input id="clientNames" class="cn-input" maxlength="80" placeholder="쉼표로 최대 5개 — 비우면 가상 이름" autocomplete="off"></div></div>
-  </details>
-  <div id="searchRes" style="display:none"></div>
-  <div class="req-row"><button class="req-link top" data-req="회사 추가">📮 찾는 곳이 없나요?<b>바로 추가</b></button><button class="req-link top" data-req="사옥 모양">🏢 사옥 모양이 달라요?<b>사진 보내기</b></button></div>
-  <div class="small hot-h" id="hotHead" style="display:none">🔥 최근 7일 가장 많이 무너진 사옥 <small>(무너뜨린 사람 수 · 하루 1인 1회)</small></div>
-  <div id="hotList"></div>
-  <div id="bigFirms"><div class="small" style="margin:10px 0 6px;color:#ccc">대형 설계사무소</div><div id="firmList"></div></div>
-  <div class="small" style="margin:8px 0 4px"><b id="firmCount">0</b><br>출처: 공공데이터포털 전국건축사사무소표준데이터 · 한국교육개발원 2026 고등교육통계</div>
-  <div class="small">"좌표 확정"인 곳은 저장된 좌표로 바로 이동해요. ⚠ 표시는 근사 좌표라 어긋날 수 있어요. 도착해서 [📍 우리 건물 직접 고르기]를 눌러 알려주세요.</div>
-  <button class="req-link" data-req="문의·버그">📮 문의·버그 제보하기</button>
+  <div class="fright">
+    <div id="searchRes" style="display:none"></div>
+    <div class="small hot-h" id="hotHead" style="display:none">🔥 최근 7일 가장 많이 무너진 사옥 <small>(무너뜨린 사람 수)</small></div>
+    <div id="hotList"></div>
+    <div id="bigFirms"><div class="small" style="margin:8px 0 6px;color:#ccc">대형 설계사무소</div><div id="firmList"></div></div>
+    <div class="small fnote"><b id="firmCount">0</b> · ⚠ 표시는 근사 좌표예요. 도착해서 [📍 우리 건물 직접 고르기]로 알려주세요.<br>출처: 공공데이터포털 · 한국교육개발원 2026 고등교육통계</div>
+    <button class="req-link" data-req="문의·버그">📮 문의·버그 제보하기</button>
+  </div>
   </div>
 </div></div>
 
@@ -855,16 +900,13 @@ body.ui-pc #toolbar{touch-action:auto}
 })();
 </script>
 <div class="modal" id="mPatch"><div class="card patch">
-  <div class="small" style="margin:0 0 4px">업데이트 · 2026.11.07</div>
+  <div class="small" style="margin:0 0 2px">업데이트 · 2026.11.07</div>
   <h2>🌍 재난 도구 전면 개편</h2>
   <ul>
-    <li><b>이제 재난 도구는 전부 범위 공격!</b> 🐜 흰개미 떼 · 🐘 동물 대군 · 🐦 새 떼 운석 · ⚡ 벼락 · 🌧️ 산성비 · 🌀 태풍 · 🌊 쓰나미 · 🫨 지진 · 🌋 화산 · 🛰️ 인공위성 (숫자키 1~0). 쇠똥구리·두더지 굴·비둘기·토네이도는 없어졌어요.</li>
-    <li><b>동물 대군</b>은 여러 동물이 폭 90m로 훨씬 빠르게 몰려가고, 부딪힌 건물에서 이웃으로 도미노처럼 무너져요. <b>새 떼 운석</b>은 새들이 돌을 떨어뜨려요.</li>
-    <li><b>태풍</b>은 일대를 빨아올렸다가 사방으로 날려요. <b>쓰나미</b>는 더 빠르고 더 커졌고, <b>지진</b>은 땅이 갈라져 꺼지고, <b>화산</b>은 일대 땅이 솟고 용암이 흘러요.</li>
-    <li><b>🏆 오늘의 사옥은 건축 모드에서만</b> 참여할 수 있어요. 재난 모드에서 도전하면 건축 모드로 바뀌어요. 불러오지 못하면 이유와 [다시 불러오기] 버튼이 떠요.</li>
-    <li><b>🛰️ 인공위성 낙하</b> — 붉은 경고 고리가 뜬 뒤 불타는 위성이 떨어져 거대한 구덩이와 충격파를 만들어요.</li>
-    <li><b>🖥 PC / 📱 모바일 화면 분리</b> — PC는 아래 도구막대, 휴대폰은 왼쪽 도구 레일 + ☰ 메뉴로 따로 설계했어요. 🏆 오늘의 사옥 버튼은 항상 위쪽에 있어요.</li>
-    <li><b>📱 모바일 성능</b> — 효과가 너무 많으면 자동으로 줄여서 끊김을 막아요.</li>
+    <li><b>재난 도구 10종</b>(숫자 1~0) — 🐜 흰개미 · 🐘 동물 대군 · 🐦 새 떼 운석 · ⚡ 하늘 레이저 · 🔥 산성 화재 · 🌀 태풍 · 🌊 쓰나미 · 🫨 지진 · 🌋 화산 · 🛰️ 인공위성</li>
+    <li><b>선 긋기 도구</b> — 동물 대군 · 태풍 · 쓰나미는 탭 두 번(시작→끝)</li>
+    <li><b>🏆 오늘의 사옥</b>은 건축 모드에서만 · 위쪽 🏆 버튼으로 바로 도전</li>
+    <li><b>📱 화면 분리</b> — 휴대폰은 왼쪽 도구 레일 + ☰ 메뉴 · 👔 사장님이 옮겨 다닐 때마다 옷·헤어 변신</li>
   </ul>
   <details class="fold"><summary>11.06 업데이트 보기 <small>(🏆 오늘의 사옥)</small></summary>
   <ul>
@@ -928,7 +970,7 @@ body.ui-pc #toolbar{touch-action:auto}
   function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
   function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
   function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
-  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261107c';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
     s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
   var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
   var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));
