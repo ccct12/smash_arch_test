@@ -41,7 +41,7 @@ function addrQueries(addr){
 
 // ---------- 설정 ----------
 const FLOOR_Y = -60, BOTTOM_Y = -75;
-const GAME_VER='2026.11.06';
+const GAME_VER='2026.11.07';
 const NOTICE_MAJOR=true;   // true = 큰 업데이트: '업데이트 소식 끄기'와 상관없이, 처음 온 사람에게도 한 번 띄움   // 패치 노트 버전 — 바꾸면 재방문자에게 업데이트 창이 한 번 뜸 (index.html #mPatch 내용도 같이 수정)
 const opts = {sound:true, labels:true, debris:true, shadows:true, pins:true, mini:false, shake:false, night:true, patch:true, weather:true, suit:'navy'};
 try{ const s = JSON.parse(localStorage.getItem('smasharch_opts')||'null'); if(s) Object.assign(opts,s);}catch(e){}
@@ -811,6 +811,7 @@ function updateDet(dt){
     if(d.weak){d.weakT+=dt;if(d.weakT>0.22){d.weakT=0;const alive=[];for(let f=0;f<d.F;f++)if(d.fl[f])alive.push(f);
       if(alive.length){const f=alive[Math.floor(Math.random()*Math.min(alive.length,Math.max(2,alive.length/2)))];for(let j=0;j<d.C;j++)if(Math.random()<0.35)d.hp[f*d.C+j]-=0.3;
         for(let j=0;j<d.M;j++)if(Math.random()<0.04)d.panel[f*d.M+j]=0;d.dirty=true;detCheck(b)}}}
+    if(!b.det||!b.alive)continue;   // 약해진 건물이 방금 무너져 구조 정보가 지워졌으면 건너뜀
     if(moving){d.dirty=true;b.h=detTop(b);wakeRubble(b.cx,b.cz,Math.sqrt(b.area))}
     if(d.dirty&&b.det){d.dirty=false;b.h=detTop(b);buildDetMesh(b)}
   }
@@ -1057,23 +1058,23 @@ function drawCrane(m,mg,c){
 }
 
 // ---------- 2. 철거반 인부떼 — 수십 명이 외벽을 타고 올라가 층마다 동시에 오함마질 ----------
-const CREW_MAX=160;
+function crewMax(){return EARTH()?Math.max(120,Math.round(380*fxScale())):160}
 function crewCount(){let n=0;for(const c of CREWS)n+=c.ws.length;return n}
-function spawnCrew(h){
-  const b=h.b||nearestBuilding(h.x,h.z,40);if(!b){toast('철거할 건물을 눌러주세요');return}
-  const room=CREW_MAX-crewCount();if(room<10){toast('현장에 인부가 꽉 찼어요 — 잠시 뒤 다시');return}
+function spawnCrew(h,opt){opt=opt||{};
+  const b=h.b||nearestBuilding(h.x,h.z,40);if(!b){if(!opt.quiet)toast('철거할 건물을 눌러주세요');return 0}
+  const room=crewMax()-crewCount();if(room<10){if(!opt.quiet)toast('현장에 인부가 꽉 찼어요 — 잠시 뒤 다시');return 0}
   const d=ensureDet(b);const n=Math.min(room,clamp(Math.round(Math.sqrt(b.area)*2.4+d.F*2),30,90));
   const ws=[],R=Math.sqrt(b.area)/2;
   for(let k=0;k<n;k++){const a=Math.random()*Math.PI*2,r=R+28+Math.random()*30;
     const j=Math.floor(Math.random()*d.M),A=d.nodes[j],C=d.nodes[(j+1)%d.M],tt=Math.random(),nn=d.edgeN[j];
     const fx=A[0]+(C[0]-A[0])*tt,fz=A[1]+(C[1]-A[1])*tt;
     const f=Math.random()<0.7?Math.min(d.F-1,Math.floor(Math.random()*3)):Math.min(d.F-1,Math.floor(Math.pow(Math.random(),1.3)*d.F));
-    const sx=b.cx+Math.cos(a)*r,sz=b.cz+Math.sin(a)*r;
+    const rim=0.85+Math.random()*0.2,sx=opt.from?opt.from.x+Math.cos(a)*opt.from.R*rim:b.cx+Math.cos(a)*r,sz=opt.from?opt.from.z+Math.sin(a)*opt.from.R*rim:b.cz+Math.sin(a)*r;
     ws.push({x:sx,z:sz,y:groundAt(sx,sz),fx,fz,nx:nn[0],nz:nn[1],f,state:'run',t:-Math.random()*1.4,hit:0,vy:0,dir:0,
       vest:Math.random()<0.5?[1,0.45,0.1]:[0.95,0.85,0.15],helm:Math.random()<0.3?[0.95,0.95,0.95]:[0.98,0.8,0.1]})}
-  const ant=EARTH();CREWS.push({b,ws,t:0,ant});
+  const ant=EARTH();CREWS.push({b,ws,t:0,ant});if(opt.quiet)return n;
   if(ant){toast(`흰개미 ${n*10}마리 출동! 기둥을 속부터 갉아먹어요`,2000);floatText(b.cx,b.base+b.h+8,b.cz,`🐜 흰개미 떼`,'cad',1.6)}
-  else{toast(`철거반 ${n}명 투입! 반장: "오늘 안에 다 끝낸다!"`,2000);floatText(b.cx,b.base+b.h+8,b.cz,`인부 ${n}명 투입`,'cad',1.6)}sfx(10,1.2);
+  else{toast(`철거반 ${n}명 투입! 반장: "오늘 안에 다 끝낸다!"`,2000);floatText(b.cx,b.base+b.h+8,b.cz,`인부 ${n}명 투입`,'cad',1.6)}sfx(10,1.2);return n;
 }
 function updateCrews(dt){
   for(let i=CREWS.length-1;i>=0;i--){const c=CREWS[i];c.t+=dt;const b=c.b,live=b.alive;const d=live?b.det:null;let any=false;
@@ -1218,9 +1219,9 @@ function boom3(x,y,z,size){const fx=efx('parts'),n=Math.min(40*fx,Math.floor(siz
   for(let k=0;k<n;k++){const a=Math.random()*Math.PI*2,s=Math.random()*size*0.6;spawn(x,y,z,Math.cos(a)*s,2+Math.random()*size*0.6,Math.sin(a)*s,0.6+Math.random()*size*0.08,Math.random()<0.5?[0.8,0.78,0.74]:[0.62,0.6,0.57],0.5+Math.random()*0.5,1)}
   sfx(size)}
 function updateTools(dt){bossUpdate(dt);boomUpdate(dt);adUpdate(dt);updateEarth(dt);updateDaily(dt);updateWeather(dt);clientUpdate(dt);updateCranes(dt);updateCrews(dt);updateDozers(dt);updateRebar(dt);updateStamps(dt);updateTools2(dt)}
-function drawTools(m,mg){
+function drawTools(m,mg){fxBegin();
   for(const c of CRANES)if(c.earth)drawDungBeetle(m,mg,c);else drawCrane(m,mg,c);
-  for(const c of CREWS)for(const w of c.ws)if(c.ant)drawTermite(m,w,TOY);else drawWorker(m,w,TOY);
+  for(const c of CREWS)for(const w of c.ws)if(c.ant){if(fxOK(8))drawTermite(m,w,TOY)}else drawWorker(m,w,TOY);
   for(const d of DOZERS)drawDozer(m,d);
   drawEarth(m,mg);drawWeather(m,mg);
   for(const r of REBARFX)drawRebarFx(m,r);
@@ -1561,11 +1562,12 @@ function sfxBoom(p){if(!AC||!opts.sound)return;try{const t=AC.currentTime,len=0.
 // 드래그는 항상 화면 회전이라 마우스 조작이 겹치지 않음. Esc · 우클릭 · 같은 곳 다시 클릭 = 취소
 let gesture=null;
 const GKIND={crane:'쇠공',trim:'TRIM',dozer:'불도저',sink:'싱크홀'};
-function gestureStart(mx,my){const id=WEAPONS[weapon].id;
+function gestureStart(mx,my){const id=WL()[weapon].id;
   if(id==='sink'&&sinkLeft()>0){toast(`싱크홀 재충전 중 — ${Math.ceil(sinkLeft())}초 남았어요`,1400);return false}
   if(MODE==='section'){const p=secPlane(mx,my);if(!p||Math.abs(p.x)>SEC.W/2+30||p.y>secTop()+35||p.y<SEC.st[0].y0-3)return false;gesture={kind:id,A:p,cur:{x:mx,y:my}}}
   else{const h=pick(mx,my);if(!h)return false;gesture={kind:id,A:{x:h.x,y:h.y,z:h.z},wa:h,cur:{x:mx,y:my}}}
-  $('#hint').textContent=`${(EARTH()?{crane:'쇠똥구리',trim:'쓰나미',dozer:'코끼리 떼',sink:'지진'}:GKIND)[id]}: 끝점을 클릭하세요 · 드래그로 화면을 돌려도 시작점은 그대로예요 · Esc/우클릭 취소`;sfx(2,0.08);return true}
+  if(TOUCH&&gesture&&MODE!=='section'){const sa=project(gesture.A.x,gesture.A.y,gesture.A.z);if(sa){let dx=innerWidth/2-sa[0],dy=innerHeight/2-sa[1],l=Math.hypot(dx,dy);if(l<80){dx=1;dy=0;l=1}const L=l<2?120:Math.min(150,l);gesture.cur={x:sa[0]+dx/l*L,y:sa[1]+dy/l*L}}}   // 터치는 마우스처럼 따라오는 커서가 없어서, 점선을 미리 보여줌
+  $('#hint').textContent=`${(EARTH()?{herd:'동물 대군',tsunami:'쓰나미'}:GKIND)[id]}: 끝점을 ${TOUCH?'탭':'클릭'}하세요 · 드래그로 화면을 돌려도 시작점은 그대로예요${TOUCH?' · 같은 곳을 다시 탭하면 취소':' · Esc/우클릭 취소'}`;if(TOUCH)$('#hint').classList.add('flash');sfx(2,0.08);return true}
 function gestureCancel(){if(!gesture)return;gesture=null;drawGesture();selectWeapon(weapon)}
 function drawGesture(){const svg=$('#gest');if(!svg)return;
   if(!gesture){svg.style.display='none';return}
@@ -1573,12 +1575,13 @@ function drawGesture(){const svg=$('#gest');if(!svg)return;
   const b=gesture.cur,l=svg.querySelector('line'),c=svg.querySelector('circle');
   svg.style.display='';l.setAttribute('x1',a[0]);l.setAttribute('y1',a[1]);l.setAttribute('x2',b.x);l.setAttribute('y2',b.y);
   if(c){c.setAttribute('cx',a[0]);c.setAttribute('cy',a[1])}
-  svg.setAttribute('class',gesture.kind)}
+  svg.setAttribute('class',({herd:'dozer',tsunami:'trim'})[gesture.kind]||gesture.kind)}
 function gestureEnd(mx,my){const g=gesture;gesture=null;drawGesture();selectWeapon(weapon);if(!g)return;
   const A=g.A,sa=project(A.x,A.y,A.z);if(!sa)return;
   if(Math.hypot(mx-sa[0],my-sa[1])<12){toast('같은 곳을 눌러 취소했어요',1000);return}
   if(MODE==='section'){const Bq=secPlane(mx,my);if(!Bq)return;secPushUndo();
     if(g.kind==='trim')secTrim(A,Bq);else if(g.kind==='dozer')secDozerLine(A,Bq);else secCraneLine(A,Bq);bossTool(g.kind,A.x,A.z);return}
+  if(EARTH()&&(g.kind==='herd'||g.kind==='tsunami')){let hb=pick(mx,my);if(!hb){const q=rayGround(mx,my,groundAt(A.x,A.z));if(q)hb={x:q[0],z:q[1]}}if(!hb)return;snapshot();if(g.kind==='herd')spawnHerd({x:A.x,z:A.z},{x:hb.x,z:hb.z});else spawnTsunami({x:A.x,z:A.z},{x:hb.x,z:hb.z});bossTool(g.kind==='herd'?'dozer':'trim',A.x,A.z);return}
   if(g.kind==='trim'&&EARTH()){let hb=pick(mx,my);if(!hb){const q=rayGround(mx,my,groundAt(A.x,A.z));if(q)hb={x:q[0],z:q[1]}}if(!hb)return;snapshot();spawnTsunami({x:A.x,z:A.z},{x:hb.x,z:hb.z});bossTool('trim',A.x,A.z);return}
   if(g.kind==='trim'){snapshot();runTrimCity({x:sa[0],y:sa[1]},{x:mx,y:my});bossTool('trim',A.x,A.z);return}
   if(g.kind==='dozer'){let hb=pick(mx,my);if(!hb){const q=rayGround(mx,my,groundAt(A.x,A.z));if(q)hb={x:q[0],z:q[1]}}if(!hb)return;
@@ -1652,7 +1655,7 @@ const WEAPONS=[
   {id:'trim',team:'설계',name:'TRIM',hold:'line',shold:'line'},
   {id:'sink',team:'설계',name:'싱크홀',fire(h){if(EARTH())earthquake(h);else sinkStorm(h)},nosnap:false},
 ];
-function holdOf(){const w=WEAPONS[weapon];return MODE==='section'?(w.shold||null):(w.hold||null)}
+function holdOf(){const w=WL()[weapon];return MODE==='section'?(w.shold||null):(w.hold||null)}
 const ULTIMATE={id:'nuke',name:'전부 다시',fire(h){if(EARTH())sunFragment(h.x,h.z);else this.fire0(h)},fire0({x,z},k){k=k||1;
     const f=$('#flash');f.style.transition='none';f.style.opacity=1;requestAnimationFrame(()=>{f.style.transition='opacity 1.6s';f.style.opacity=0});
     const v=carve(x,z,80*k,40);addScore(v*0.6);
@@ -1663,7 +1666,7 @@ const ULTIMATE={id:'nuke',name:'전부 다시',fire(h){if(EARTH())sunFragment(h.
     cam.shake=14;if(!EARTH())toast('클라이언트: "그냥 전부 다시 해와요"')}};
 const HINTS=['클릭: 철거반 인부떼 — 수십 명이 외벽을 타고 올라가 층마다 동시에 오함마질','클릭 → 클릭으로 선 긋기: 불도저 — 그 방향으로 밀고 가며 경로의 건물 저층에 구멍을 뚫어요','클릭 → 클릭으로 선 긋기: 쇠공 — 그은 선을 따라 휘두르고 되돌아오며 한 번 더','클릭: 레미콘 과타설 — 옥상에 콘크리트를 부어 과하중 붕괴','클릭: 다이너마이트 설치(최대 12개, 누른 층) → Space 또는 [기폭]으로 연쇄 폭파','클릭: 철근 빼기 — 순살 구조가 스스로 무너짐','건물을 잡고 끌어서 놓기: MOVE — 들어 올려 던지면 떨어진 곳을 덮쳐요','클릭: EXTRUDE — 무한 증축 → 용적률 초과로 쓰러지며 옆 건물들을 덮침','클릭 → 클릭으로 건물을 가로질러 선 긋기: TRIM — 잘린 윗부분이 미끄러져 떨어짐','클릭: 싱크홀 — 누른 곳 일대 지반이 약해져 몇 초 동안 무작위로 땅이 여러 번 꺼져요'];
 const SHINTS=['클릭: 철거반 인부떼 — 외벽을 타고 각 층으로 올라가 기둥을 오함마로','클릭 → 클릭으로 좌우 선 긋기: 불도저 — 시작한 층 바닥을 따라 밀고 가며 터널','클릭 → 클릭으로 선 긋기: 쇠공 — 그은 선을 따라 휘둘러 지나간 자리를 쓸어버림','클릭: 레미콘 — 옥상에 타설, 위층부터 내려앉음','클릭: 다이너마이트 붙이기(최대 12개) → Space 또는 [기폭]으로 연쇄 폭파','클릭: 철근 빼기 (기둥이 서서히 약해짐)','층을 잡고 끌어서 던지기: MOVE — 빼낸 층은 위층이 내려앉고, 던진 층은 떨어진 곳을 부숴요','누른 채 위로 끌기: EXTRUDE — 끈 만큼 증축, 놓으면 하중 초과로 아래층부터 무너짐','클릭 → 클릭으로 선 긋기: TRIM — 선 위쪽이 잘려 미끄러져 떨어짐','클릭: 싱크홀 — 누른 곳 주변 지하·1층이 무작위로 여러 번 꺼지며 위층이 내려앉아요'];
-function selectWeapon(i){if(i<0||i>=WEAPONS.length)return;if(gesture&&i!==weapon){gesture=null;drawGesture()}weapon=i;pickHQ=false;document.querySelectorAll('.tool[data-w]').forEach(b=>b.classList.toggle('on',+b.dataset.w===i));
+function selectWeapon(i){if(i<0||i>=WL().length)return;if(gesture&&i!==weapon){gesture=null;drawGesture()}weapon=i;pickHQ=false;document.querySelectorAll('.tool[data-w]').forEach(b=>b.classList.toggle('on',+b.dataset.w===i));
   flashHint();
   if(TOUCH){const hd=holdOf();let t=(MODE==='section'?SHINTS:EARTH()?E_HINTS:HINTS)[i].replace(/클릭/g,'탭').replace(/Space 또는 /g,'');
     if(hd==='grab'||hd==='sgrab'||hd==='sext')t='꾹 눌렀다가 끌기 · '+t;
@@ -1683,15 +1686,23 @@ function EARTH(){return GM==='earth'}
 //   실제 파괴 범위·점수는 그대로: 오늘의 사옥 순위는 건축·재난 모드가 한 표에서 겨뤄서 공정성 유지
 const E_FX={ring:1.6,flash:1.6,parts:2,shake:1.6};
 function efx(k){return EARTH()?E_FX[k]:1}
-const E_TOOLS=[['🐜','흰개미 떼'],['🐘','코끼리 떼'],['🪲','쇠똥구리'],['🕊️','비둘기 떼'],['🕳️','두더지 굴'],['🌧️','산성비'],['🌪️','토네이도'],['🌋','화산'],['🌊','쓰나미'],['🫨','지진']];
-const E_HINTS=['클릭: 흰개미 떼 — 건물 기둥을 속부터 갉아먹어요','클릭 → 클릭으로 선 긋기: 코끼리 떼 — 그 방향으로 우르르 돌진','클릭 → 클릭으로 선 긋기: 쇠똥구리 — 거대한 똥공을 굴려 지나간 자리를 쓸어버려요',
-  '클릭: 비둘기 떼 — 옥상에 수천 마리가 내려앉아 무게로 위층부터 내려앉아요','클릭: 두더지 굴 파기(최대 12곳) → Space 또는 [와르르!]로 한꺼번에 꺼짐','클릭: 산성비 — 누른 곳 일대 건물 철근이 녹슬어 서서히 약해져요',
-  '건물을 잡고 끌어서 놓기: 토네이도 — 들어 올려 날려 보내요','클릭: 화산 — 땅속 마그마가 건물을 밀어 올리다 쓰러뜨려요','클릭 → 클릭으로 선 긋기: 쓰나미 — 그 방향으로 거대한 파도가 덮쳐요','클릭: 지진 — 누른 곳 일대가 흔들리며 땅이 꺼져요'];
+const E_TOOLS=[['🐜','흰개미 떼'],['🐘','동물 대군'],['🐦','새 떼 운석'],['⚡','벼락'],['🌧️','산성비'],['🌀','태풍'],['🌊','쓰나미'],['🫨','지진'],['🌋','화산'],['🛰️','인공위성']];
+const E_HINTS=['클릭: 흰개미 떼 — 고른 곳 둘레 건물로 사방에서 몰려와 기둥을 갉아먹어요',
+  '클릭 → 클릭으로 선 긋기: 동물 대군 — 코끼리·코뿔소·곰·멧돼지·늑대가 넓게 몰려가고, 부딪힌 건물은 이웃까지 도미노로 무너져요',
+  '클릭: 새 떼 운석 — 새 떼가 하늘을 덮고 불붙은 돌을 쏟아부어요',
+  '클릭: 벼락 — 범위 안 여기저기에 번개가 내리쳐요',
+  '클릭: 산성비 — 아주 넓은 범위 건물 철근이 녹슬어 스스로 무너져요',
+  '클릭: 태풍 — 범위 안 모든 게 휘말려 올라갔다가 사방으로 날아가요',
+  '클릭 → 클릭으로 선 긋기: 쓰나미 — 그 방향으로 거대한 파도가 순식간에 덮쳐요',
+  '클릭: 지진 — 일대 땅이 갈라지고 크게 꺼져요',
+  '클릭: 화산 — 땅이 솟구치고 용암이 사방으로 흘러요',
+  '클릭: 인공위성 — 붉은 경고 고리가 뜨고, 잠시 뒤 불타는 위성이 떨어져 일대를 날려요'];
 let TOOL_ORIG=null;
 function applyGM(silent){const e=EARTH();document.body.classList.toggle('earth',e);
   const btns=[...document.querySelectorAll('.tool[data-w]')];
   if(!TOOL_ORIG)TOOL_ORIG=btns.map(b=>b.innerHTML);
-  btns.forEach((b,i)=>{b.innerHTML=e?`<span class="num">${(i+1)%10}</span><i class="emo">${E_TOOLS[i][0]}</i>${E_TOOLS[i][1]}`:TOOL_ORIG[i];b.title=e?E_TOOLS[i][1]:b.textContent.trim()});
+  btns.forEach((b,i)=>{const et=E_TOOLS[i];b.style.display=e&&!et?'none':'';b.innerHTML=e&&et?`<span class="num">${(i+1)%10}</span><i class="emo">${et[0]}</i>${et[1]}`:TOOL_ORIG[i];b.title=e&&et?et[1]:b.textContent.trim()});
+  {const gs=document.querySelectorAll('#toolbar .grp'),cut=e?3:6;if(gs.length>=2)btns.forEach((b,i)=>gs[i<cut?0:1].appendChild(b));if(weapon>=WL().length)weapon=0}
   const gl=document.querySelectorAll('#toolbar .glbl');if(gl[0])gl[0].textContent=e?'동물의 분노':'시공팀';if(gl[1])gl[1].textContent=e?'자연의 분노':'설계팀';
   const det=$('#btnDet');if(det&&det.firstChild)det.firstChild.textContent=e?'와르르! (Space)':'기폭! (Space)';
   const ul=$('#ult span');if(ul)ul.textContent=e?'태양 조각':'필살기';
@@ -1701,8 +1712,10 @@ function applyGM(silent){const e=EARTH();document.body.classList.toggle('earth',
   try{const u=new URL(location.href);if(e)u.searchParams.set('mode','earth');else u.searchParams.delete('mode');history.replaceState(null,'',u)}catch(err){}
   if(!silent)selectWeapon(weapon)}
 function setGM(m,quiet){if(m!=='earth')m='build';if(m===GM){applyGM(true);return}
+  if(m==='earth'&&CH&&(CH.on||CH.pending)){toast('오늘의 사옥 도전 중에는 재난 모드로 바꿀 수 없어요',2400);return}
   if(MODE==='section')exitSection();clearTools();HELD=null;try{if(CONQ_Q.size)flushConq()}catch(e){}GM=m;try{CONQ_ALL=null}catch(e){}lsSet('smasharch_gmode',m);ultArmed=false;applyGM();RANK_LAST=null;
   if(MS)missionStart();
+  try{dailyCard()}catch(e){}
   if(!quiet)toast(m==='earth'?'🌍 재난 모드 — 건축을 너무 많이 해서 지구가 화났어요! 동물의 분노 · 자연의 분노':'🏗 건축 모드 — 다시 철거 현장으로',3000)}
 
 // ---- 1. 흰개미 (철거반 인부 대신 그림) ----
@@ -1753,15 +1766,418 @@ function moleBurst(c){const x=c.x,z=c.z,b=c.b;const v=carve(x,z,11,5);addScore(v
   forTreesNear(x,z,12,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<12)killTree(t)});
   for(let k=0;k<26;k++)spawn(x+(Math.random()-.5)*8,groundAt(x,z)+1,z+(Math.random()-.5)*8,(Math.random()-.5)*14,6+Math.random()*10,(Math.random()-.5)*14,1+Math.random()*2,Math.random()<0.6?[0.45,0.34,0.22]:[0.6,0.5,0.36]);
   sfxBoom(0.6);cam.shake=Math.max(cam.shake,5);floatText(x,groundAt(x,z)+6,z,'와르르!','boom',1);if(CLIENT)clientHitAt(x,groundAt(x,z)+2,z,12,3)}
-// ---- 6. 산성비 (철근 빼기 대신: 누른 곳 반경 45m 건물 전부) ----
+// <<EARTH_V2_BEGIN>>
+// =====================================================================
+//  🌍 재난 모드 v2 — 동물의 분노 3종 · 자연의 분노 6종 (+ 필살기 태양 조각)
+//   동물: 1 흰개미 떼(범위) · 2 동물 대군(선 긋기) · 3 새 떼 운석(범위)
+//   자연: 4 벼락 · 5 산성비 · 6 태풍 · 7 쓰나미(선 긋기) · 8 지진 · 9 화산  (벼락·산성비·태풍·지진·화산은 범위)
+//   모바일 성능: fxScale()/fxN()/fxOK() 로 입자·도형 수를 화질 단계(PERF.q)와 프레임 지연에 맞춰 자동으로 줄임
+//   조정값: E_R(도구별 반경 m) · 각 spawnXxx 함수 위쪽 숫자
+// =====================================================================
+const E_R={termite:75,meteor:100,bolt:110,acid:140,typhoon:105,quake:120,volcano:105,sat:130};
+const WEAPONS_E=[
+  {id:'termite',bid:'crew',name:'흰개미 떼',fire(h){return spawnTermites(h)}},
+  {id:'herd',bid:'dozer',name:'동물 대군',hold:'line'},
+  {id:'meteor',bid:'pour',name:'새 떼 운석',fire(h){return spawnMeteorBirds(h)}},
+  {id:'bolt',bid:'blast',name:'벼락',fire(h){return spawnBolts(h)}},
+  {id:'acid',bid:'rebar',name:'산성비',fire(h){return spawnAcid(h)}},
+  {id:'typhoon',bid:'move',name:'태풍',fire(h){return spawnTyphoon(h)}},
+  {id:'tsunami',bid:'trim',name:'쓰나미',hold:'line'},
+  {id:'quake',bid:'sink',name:'지진',fire(h){return spawnQuake(h)}},
+  {id:'volcano',bid:'extrude',name:'화산',fire(h){return spawnVolcano(h)}},
+  {id:'sat',bid:'crane',name:'인공위성',fire(h){return spawnSatellite(h)}},
+];
+function WL(){return EARTH()?WEAPONS_E:WEAPONS}
+
+// ---- 성능: 화질 단계·프레임 지연에 따라 입자·도형 수를 자동으로 줄임 ----
+function fxScale(){const q=[1,0.72,0.5,0.32][Math.min(3,PERF.q||0)],lag=PERF.ema>34?Math.max(0.5,1-(PERF.ema-34)/50):1;return q*lag*(TOUCH?0.8:1)}
+function fxN(n,min){return Math.max(min||1,Math.round(n*fxScale()))}
+const FXB={n:0,cap:9000};   // 한 프레임에 재난 효과가 그릴 수 있는 도형 수 상한 (넘으면 그리기를 건너뜀)
+function fxBegin(){FXB.n=0;FXB.cap=Math.round([9000,6500,4200,2600][Math.min(3,PERF.q||0)]*(TOUCH?0.75:1))}
+function fxOK(k){FXB.n+=k;return FXB.n<=FXB.cap}
+function fxSp(x,y,z,vx,vy,vz,s,c,life,glow){if(Math.random()<fxScale())spawn(x,y,z,vx,vy,vz,s,c,life,glow)}
+function eBusy(){if(TYPH.length+VOLCS.length+QUAKES.length>=(TOUCH?2:3)){toast('재해가 아직 진행 중이에요 — 잠시 뒤 다시',1400);return true}return false}
+
+// ---- 공용 ----
+const eRnd=(a,b)=>a+Math.random()*(b-a);
+function eRing(x,y,z,max,col){ring(x,y,z,max/efx('ring'),col)}   // 재난 모드 고리 확대 배율(efx)을 빼서 실제 범위와 같게
+function eBuildings(x,z,R){const o=[];forBuildingsNear(x,z,R,b=>{if(b.alive&&!b.lifted&&distToBuilding(b,x,z)<R)o.push(b)});return o}
+function eSmall(b){return b.area<110&&b.h0<10}
+function eTop(b){return b.base+Math.max(b.h,2)}
+// 1층부터 nf개 층의 기둥을 차례로 때림 (위층일수록 약하게)
+function eHitLow(b,x,z,r,p,nf){if(!b.alive||b.lifted)return;const d=b.det||ensureDet(b);const n=Math.min(nf,d.F);
+  for(let f=0;f<n;f++){if(!b.alive||!b.det)return;structDamage(b,x,b.base+d.fy[f]+d.fh*0.5,z,r,p/(1+f*0.35),{floors:[f]})}}
+function ePushDebris(cx,cz,dx,dz,w,len,sp){   // 앞쪽에 쌓인 잔해를 진행 방향으로 쓸어감
+  const px=-dz,pz=dx;
+  for(let k=0;k<MAXD;k++){if(!D.used[k]||!D.rest[k])continue;const ax=D.x[k]-cx,az=D.z[k]-cz,al=ax*dx+az*dz,la=ax*px+az*pz;
+    if(al>-len*0.2&&al<len&&Math.abs(la)<w){D.rest[k]=0;D.vx[k]=dx*sp+(Math.random()-.5)*5;D.vz[k]=dz*sp+(Math.random()-.5)*5;D.vy[k]=3+Math.random()*7;rubDirty=true}}}
+
+// =====================================================================
+//  1. 흰개미 떼 — 고른 반경 가장자리에서 사방으로 몰려와 범위 안 건물 기둥을 갉아먹음
+// =====================================================================
+function spawnTermites(h){
+  if(MODE!=='city')return false;
+  const R=E_R.termite,bs=eBuildings(h.x,h.z,R);
+  if(!bs.length){toast('범위 안에 건물이 없어요 — 건물 근처를 눌러주세요',1800);return false}
+  bs.sort((a,b)=>distToBuilding(a,h.x,h.z)-distToBuilding(b,h.x,h.z));
+  let n=0;for(const b of bs.slice(0,fxN(9,4)))n+=spawnCrew({b},{quiet:true,from:{x:h.x,z:h.z,R}});
+  if(!n){toast('현장에 흰개미가 꽉 찼어요 — 잠시 뒤 다시',1500);return false}
+  const g=groundAt(h.x,h.z);eRing(h.x,g+1,h.z,R,[0.85,0.55,0.25]);eRing(h.x,g+1,h.z,R*0.6,[0.7,0.4,0.2]);
+  toast(`🐜 흰개미 ${fmt(n*12)}마리가 사방에서 몰려와요! 기둥을 속부터 갉아먹어요`,2400);floatText(h.x,g+10,h.z,'🐜 흰개미 떼','cad',1.6);sfx(12,1.4);return true}
+
+// =====================================================================
+//  2. 동물 대군 (선 긋기) — 코끼리·코뿔소·곰·멧돼지·늑대가 넓은 폭으로 빠르게 돌진. 부딪히면 이웃 건물까지 도미노로 무너짐
+// =====================================================================
+let HERDS=[];
+const BEAST={
+  ele:{s:2.5,bodyL:2.6,bodyH:1.7,bodyW:1.7,legH:1.5,legW:0.75,head:1.15,c:[0.55,0.55,0.58],c2:[0.45,0.45,0.48],gait:7,trunk:1,tusk:1,ear:1.0},
+  rhino:{s:2.3,bodyL:2.4,bodyH:1.5,bodyW:1.5,legH:1.1,legW:0.7,head:1.0,c:[0.52,0.5,0.48],c2:[0.38,0.36,0.34],gait:8,horn:1},
+  bear:{s:2.1,bodyL:2.0,bodyH:1.4,bodyW:1.3,legH:1.0,legW:0.6,head:0.85,c:[0.38,0.25,0.15],c2:[0.28,0.18,0.1],gait:9,ear:0.3},
+  boar:{s:1.8,bodyL:1.9,bodyH:1.0,bodyW:1.0,legH:0.8,legW:0.4,head:0.7,c:[0.36,0.27,0.2],c2:[0.2,0.15,0.12],gait:12,tusk:1},
+  wolf:{s:1.6,bodyL:1.9,bodyH:0.8,bodyW:0.7,legH:1.0,legW:0.3,head:0.6,c:[0.62,0.63,0.66],c2:[0.45,0.46,0.5],gait:13,ear:0.3,tail:1},
+};
+function herdKind(row){const r=Math.random();
+  if(row<2)return r<0.4?'ele':r<0.7?'rhino':'bear';
+  if(row<5)return r<0.2?'ele':r<0.4?'rhino':r<0.65?'bear':'boar';
+  return r<0.35?'boar':r<0.7?'wolf':r<0.85?'bear':'rhino'}
+function spawnHerd(A,B){
+  let dx=B.x-A.x,dz=B.z-A.z,l=Math.hypot(dx,dz);
+  if(l<10){toast('동물 대군: 몰려갈 방향으로 길게 그어주세요');return false}
+  dx/=l;dz/=l;l=Math.min(Math.max(l,180),640);const W=90,cols=10,n=fxN(90,40),an=[];
+  for(let i=0;i<n;i++){const row=Math.floor(i/cols),col=i%cols,o=(col/(cols-1)-0.5)*W*(1+eRnd(-0.06,0.06));
+    an.push({k:herdKind(row),u:-(row*10+eRnd(-3,3))-4+(1-Math.abs(o)/(W/2))*8,o,ph:Math.random()*6})}
+  statTool('herd');HERDS.push({x:A.x-dx*40,z:A.z-dz*40,dx,dz,W,left:l+40,v:20,t:0,acc:0,gone:0,an,hits:new Set()});
+  toast('🐘🦏🐻🐗🐺 동물 대군이 우르르 돌진해요!',1800);sfx(26,2);cam.shake=Math.max(cam.shake,3);return true}
+function herdSmash(h,b,x,z){
+  if(eSmall(b)||(b.area<260&&b.h0<16)){killBuilding(b);boom3(x,b.base+2,z,10);return}
+  if(!h.hits.has(b)){h.hits.add(b);hitStop(0.04);floatText(x,eTop(b)+2,z,'쾅!','boom',0.8);sfxBoom(0.45);herdDomino(h,b,0)}
+  eHitLow(b,x,z,12,11,6)}
+// 도미노: 부딪힌 건물에서 이웃으로 시간차를 두고 연쇄 타격 (최대 3단계)
+function herdDomino(h,b,depth){if(depth>=3)return;const R=Math.sqrt(b.area)/2+28;
+  forBuildingsNear(b.cx,b.cz,R+12,o=>{if(o===b||!o.alive||o.lifted||h.hits.has(o))return;const d=distToBuilding(o,b.cx,b.cz);if(d>R)return;h.hits.add(o);
+    later(0.1+d/70,()=>{if(!o.alive)return;if(eSmall(o)){killBuilding(o);return}eHitLow(o,o.cx,o.cz,14,9,5);
+      for(let k=0;k<fxN(6,2);k++)spawn(o.cx+eRnd(-6,6),o.base+eRnd(1,6),o.cz+eRnd(-6,6),h.dx*eRnd(6,16)+eRnd(-4,4),eRnd(3,9),h.dz*eRnd(6,16)+eRnd(-4,4),eRnd(1,2.4),o.col);
+      if(o.alive)herdDomino(h,o,depth+1)})})}
+function updateHerds(dt){for(let i=HERDS.length-1;i>=0;i--){const h=HERDS[i];h.t+=dt;
+  h.v+=(62-h.v)*Math.min(1,dt*1.8);const sp=h.v*dt;h.x+=h.dx*sp;h.z+=h.dz*sp;h.left-=sp;
+  if(h.left<=0){h.gone+=dt;if(h.gone>2.2)HERDS.splice(i,1);continue}
+  h.acc+=dt;if(h.acc<0.06)continue;h.acc=0;const px=-h.dz,pz=h.dx;
+  for(let o=-h.W/2;o<=h.W/2;o+=8){const x=h.x+px*o+h.dx*4,z=h.z+pz*o+h.dz*4;
+    forBuildingsNear(x,z,10,b=>{if(b.alive&&!b.lifted&&distToBuilding(b,x,z)<=5)herdSmash(h,b,x,z)});
+    forTreesNear(x,z,7,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<7)killTree(t)});
+    if(CLIENT)clientHitAt(x,groundAt(x,z)+2,z,8,2.5,h.hits)}
+  ePushDebris(h.x+h.dx*3,h.z+h.dz*3,h.dx,h.dz,h.W*0.5,14,36);
+  if(Math.random()<0.7){const o=eRnd(-h.W/2,h.W/2);fxSp(h.x+px*o-h.dx*6,groundAt(h.x,h.z)+1,h.z+pz*o-h.dz*6,eRnd(-3,3),eRnd(2,6),eRnd(-3,3),eRnd(1.2,2.6),[0.62,0.55,0.44],1,3)}
+  cam.shake=Math.max(cam.shake,2.2)}}
+function drawQuad(m,k,x,gy,z,dx,dz,ph){const sp=BEAST[k],s=sp.s,ro=-Math.atan2(dz,dx);
+  const P=(a,b,y)=>[x+(dx*a-dz*b)*s,gy+y*s,z+(dz*a+dx*b)*s];
+  const g=ph*sp.gait,bob=Math.abs(Math.sin(g))*0.22,by=sp.legH+sp.bodyH/2+bob;
+  let p=P(0,0,by);pushShape(m,SPHERE,p[0],p[1],p[2],sp.bodyL*s,sp.bodyH*s,sp.bodyW*s,ro,sp.c,0);
+  p=P(sp.bodyL*0.5+sp.head*0.3,0,by+sp.bodyH*0.18);pushShape(m,SPHERE,p[0],p[1],p[2],sp.head*s,sp.head*0.9*s,sp.head*0.9*s,ro,sp.c,0);
+  for(let i=0;i<4;i++){const a=(i<2?1:-1)*sp.bodyL*0.3,b=(i%2?1:-1)*sp.bodyW*0.3,sw=Math.sin(g+(i%3===0?0:Math.PI))*0.45;p=P(a+sw,b,sp.legH/2+bob*0.3);pushShape(m,CUBE,p[0],p[1],p[2],sp.legW*s,sp.legH*s,sp.legW*s,ro,sp.c2,0)}
+  if(sp.ear)for(const q of[-1,1]){p=P(sp.bodyL*0.5+sp.head*0.1,q*sp.head*0.55,by+sp.bodyH*0.45);pushShape(m,CUBE,p[0],p[1],p[2],0.2*s,sp.head*0.6*sp.ear*s+0.15*s,sp.head*0.5*sp.ear*s+0.15*s,ro,sp.c2,0)}
+  if(sp.trunk)for(let t=0;t<4;t++){p=P(sp.bodyL*0.5+sp.head*0.9+t*0.35,0,by-0.1-t*0.45+Math.sin(ph*6+t)*0.12);pushShape(m,CUBE,p[0],p[1],p[2],0.5*s,0.7*s,0.45*s,ro,sp.c2,0)}
+  if(sp.tusk)for(const q of[-1,1]){p=P(sp.bodyL*0.5+sp.head*0.95,q*sp.head*0.35,by-0.15);pushShape(m,CUBE,p[0],p[1],p[2],0.8*s,0.14*s,0.14*s,ro,[0.97,0.95,0.88],0)}
+  if(sp.horn){p=P(sp.bodyL*0.5+sp.head*1.0,0,by+0.1);pushShape(m,CUBE,p[0],p[1],p[2],0.2*s,0.55*s,0.2*s,ro,[0.85,0.82,0.76],0)}
+  if(sp.tail){p=P(-sp.bodyL*0.5-0.3,0,by+0.1);pushShape(m,CUBE,p[0],p[1],p[2],0.6*s,0.12*s,0.12*s,ro,sp.c2,0)}}
+function drawHerds(m,mg){const now=performance.now()/1000;
+  for(const h of HERDS){const px=-h.dz,pz=h.dx;
+    for(const a of h.an){if(!fxOK(11))return;const x=h.x+h.dx*a.u+px*a.o,z=h.z+h.dz*a.u+pz*a.o;drawQuad(m,a.k,x,groundAt(x,z),z,h.dx,h.dz,now+a.ph)}}}
+
+// =====================================================================
+//  3. 새 떼 운석 — 새 떼가 하늘을 뒤덮고 돌을 떨궈 불붙은 운석 조각이 범위 안에 쏟아짐
+// =====================================================================
+let FLOCKS=[],ROCKS=[];
+function spawnMeteorBirds(h){
+  if(MODE!=='city')return false;
+  const R=E_R.meteor,g=groundAt(h.x,h.z),nb=fxN(52,20),nr=fxN(36,14),f={x:h.x,z:h.z,g,R,t:0,T:10.5,nr,sent:0,a0:Math.random()*6.283,bs:eBuildings(h.x,h.z,R),birds:[]};
+  for(let i=0;i<nb;i++)f.birds.push({a:eRnd(0,6.283),rad:eRnd(0.35,0.95),sp:eRnd(0.5,1.1)*(Math.random()<0.5?1:-1),alt:eRnd(95,165),ph:Math.random()*6,off:eRnd(0,1.2)});
+  FLOCKS.push(f);eRing(h.x,g+1,h.z,R,[0.9,0.85,0.7]);toast('🐦 새 떼가 하늘을 뒤덮고 돌을 떨궈요!',2400);sfx(14,1.6);return true}
+function birdPos(f,b){
+  const k=Math.min(1,Math.max(0,(f.t-b.off)/2.0)),e=1-Math.pow(1-k,3),orb=b.a+f.t*b.sp*0.9,leave=Math.max(0,f.t-(f.T-1.5));
+  const ox=f.x+Math.cos(orb)*f.R*(b.rad+leave*0.6),oz=f.z+Math.sin(orb)*f.R*(b.rad+leave*0.6);
+  const sx=f.x+Math.cos(f.a0)*f.R*3.2+Math.cos(b.a)*30,sz=f.z+Math.sin(f.a0)*f.R*3.2+Math.sin(b.a)*30;
+  return{x:sx+(ox-sx)*e,z:sz+(oz-sz)*e,y:f.g+b.alt+leave*40,r:k<1?Math.atan2(oz-sz,ox-sx):orb+(b.sp>0?1.5708:-1.5708)}}
+function meteorHit(x,z,size,lava){
+  const g=groundAt(x,z),rad=size*2.6;
+  if(!lava)carve(x,z,rad*0.8,2+rad*0.22);
+  forBuildingsNear(x,z,rad+14,b=>{if(!b.alive||b.lifted||distToBuilding(b,x,z)>rad)return;
+    if(eSmall(b)){killBuilding(b);return}
+    structDamage(b,x,Math.max(b.base+1,eTop(b)-1),z,rad+4,lava?6:8);eHitLow(b,x,z,rad,lava?3:4,2)});
+  forTreesNear(x,z,rad,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<rad)killTree(t)});
+  if(CLIENT)clientHitAt(x,g+2,z,rad,4);
+  boom(x,z,size*2.2);eRing(x,g+1,z,rad*1.8,lava?[1,0.5,0.15]:[1,0.75,0.4]);sfxBoom(0.6);hitStop(0.02);cam.shake=Math.max(cam.shake,3);
+  if(Math.random()<0.4)floatText(x,g+8,z,lava?'🔥':'☄','boom',0.7)}
+function updateFlocks(dt){
+  for(let i=FLOCKS.length-1;i>=0;i--){const f=FLOCKS[i];f.t+=dt;
+    const gap=(f.T-4.2)/f.nr;
+    while(f.sent<f.nr&&f.t>2.2+f.sent*gap){f.sent++;const bd=f.birds[Math.floor(Math.random()*f.birds.length)],p=birdPos(f,bd);
+      let tx,tz;if(f.bs.length&&Math.random()<0.65){const b=f.bs[Math.floor(Math.random()*f.bs.length)];tx=b.cx+eRnd(-1,1)*Math.sqrt(b.area)*0.25;tz=b.cz+eRnd(-1,1)*Math.sqrt(b.area)*0.25}
+      else{const a=Math.random()*6.283,r=f.R*Math.sqrt(Math.random());tx=f.x+Math.cos(a)*r;tz=f.z+Math.sin(a)*r}
+      ROCKS.push({x0:p.x,y0:p.y,z0:p.z,tx,tz,ty:groundAt(tx,tz),t:0,T:eRnd(1.0,1.5),size:eRnd(3.2,5.6),x:p.x,y:p.y,z:p.z})}
+    if(f.t>f.T+1.5)FLOCKS.splice(i,1)}
+  for(let i=ROCKS.length-1;i>=0;i--){const r=ROCKS[i];r.t+=dt;const u=Math.min(1,r.t/r.T);
+    r.x=r.x0+(r.tx-r.x0)*u;r.z=r.z0+(r.tz-r.z0)*u;r.y=r.y0+(r.ty-r.y0)*Math.pow(u,1.8);
+    fxSp(r.x,r.y,r.z,eRnd(-2,2),eRnd(2,6),eRnd(-2,2),eRnd(1.2,2.4),[1,eRnd(0.4,0.7),0.12],0.6,1);
+    if(u>=1){ROCKS.splice(i,1);meteorHit(r.tx,r.tz,r.size,r.lava)}}}
+function drawFlocks(m,mg){const now=performance.now()/1000;
+  for(const f of FLOCKS)for(const b of f.birds){if(!fxOK(4))break;const p=birdPos(f,b),fl=Math.sin(now*13+b.ph)*0.9;
+    pushShape(m,SPHERE,p.x,p.y,p.z,2.4,1.3,1.3,-p.r,[0.16,0.17,0.2],0);pushShape(m,CUBE,p.x,p.y+0.3+fl*0.6,p.z,1.0,0.2,6.4,-p.r,[0.2,0.21,0.25],0);pushShape(m,SPHERE,p.x+Math.cos(p.r)*1.5,p.y+0.2,p.z+Math.sin(p.r)*1.5,0.8,0.8,0.8,0,[0.3,0.3,0.34],0)}
+  for(const r of ROCKS){if(!fxOK(3))break;const s=r.size*(r.lava?0.9:1);
+    pushShape(m,ICO,r.x,r.y,r.z,s,s*0.85,s,r.t*3,r.lava?[0.35,0.12,0.06]:[0.3,0.26,0.24],0);pushShape(mg,SPHERE,r.x,r.y,r.z,s*1.5,s*1.3,s*1.5,0,[1,0.5,0.12],1)}}
+
+// =====================================================================
+//  4. 벼락 — 범위 안 여기저기(주로 건물 옥상)에 시간차를 두고 내리침
+// =====================================================================
+let BOLTS=[];
+function spawnBolts(h){
+  if(MODE!=='city')return false;
+  const R=E_R.bolt,bs=eBuildings(h.x,h.z,R),n=fxN(11,6),T=3.6,g=groundAt(h.x,h.z);
+  eRing(h.x,g+1,h.z,R,[0.7,0.8,1]);flashScreen(0.18,'#cfe0ff');toast('⚡ 먹구름이 몰려오더니 벼락이 군데군데 내리쳐요!',2200);sfx(24,1.8);
+  for(let k=0;k<n;k++){const t=0.45+k*(T/n)+Math.random()*0.15;let x,z;
+    if(bs.length&&Math.random()<0.78){const b=bs[Math.floor(Math.random()*bs.length)];x=b.cx+eRnd(-1,1)*Math.sqrt(b.area)*0.2;z=b.cz+eRnd(-1,1)*Math.sqrt(b.area)*0.2}
+    else{const a=Math.random()*6.283,r=R*Math.sqrt(Math.random());x=h.x+Math.cos(a)*r;z=h.z+Math.sin(a)*r}
+    later(t,()=>boltStrike(x,z))}
+  return true}
+function boltStrike(x,z){
+  if(MODE!=='city')return;const g=groundAt(x,z),rad=15;
+  BOLTS.push({x,z,g,t:0,seed:Math.random()*1000});
+  flashScreen(0.3,'#e8f0ff');sfxBoom(0.9);hitStop(0.05);cam.shake=Math.max(cam.shake,4);
+  forBuildingsNear(x,z,rad+12,b=>{if(!b.alive||b.lifted||distToBuilding(b,x,z)>rad)return;
+    if(eSmall(b)){killBuilding(b);return}
+    structDamage(b,x,Math.max(b.base+1,eTop(b)-1.5),z,rad,9);eHitLow(b,x,z,rad,3.4,2)});
+  forTreesNear(x,z,12,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<12)killTree(t)});
+  if(CLIENT)clientHitAt(x,g+2,z,rad,5);
+  boom3(x,g+2,z,16);eRing(x,g+1,z,30,[0.8,0.9,1]);
+  for(let k=0;k<fxN(14,5);k++)spawn(x+eRnd(-3,3),g+eRnd(1,6),z+eRnd(-3,3),eRnd(-16,16),eRnd(8,22),eRnd(-16,16),eRnd(0.4,1),[0.8,0.9,1],0.5,1);
+  floatText(x,g+14,z,'⚡','boom',0.8)}
+function updateBolts(dt){for(let i=BOLTS.length-1;i>=0;i--){BOLTS[i].t+=dt;if(BOLTS[i].t>0.5)BOLTS.splice(i,1)}}
+function drawBolts(m,mg){
+  for(const b of BOLTS){if(b.t>0.14&&Math.random()<0.35)continue;const top=b.g+330,n=16,seg=(top-b.g)/n;let ox=0,oz=0;const rs=k=>{const s=Math.sin((b.seed+k)*12.9898)*43758.5453;return s-Math.floor(s)-0.5};
+    for(let s=0;s<n;s++){if(!fxOK(3))return;const y=top-seg*(s+0.5);ox+=rs(s)*9*(1-s/n*0.6);oz+=rs(s+99)*9*(1-s/n*0.6);if(s===n-1){ox*=0.4;oz*=0.4}
+      pushShape(mg,CUBE,b.x+ox,y,b.z+oz,2.2,seg*1.15,2.2,0,[0.92,0.96,1],1);pushShape(mg,CUBE,b.x+ox,y,b.z+oz,6,seg*1.05,6,0,[0.45,0.6,1],1);
+      if(s%5===2){let bx=ox,bz=oz;for(let q=0;q<4;q++){bx+=rs(s*7+q)*14;bz+=rs(s*7+q+50)*14;pushShape(mg,CUBE,b.x+bx,y-q*seg*0.7,b.z+bz,1.2,seg*0.8,1.2,0,[0.7,0.82,1],1)}}}
+    pushShape(mg,SPHERE,b.x,b.g+2,b.z,22*(1-b.t),8*(1-b.t),22*(1-b.t),0,[0.8,0.9,1],1)}}
+
+// =====================================================================
+//  5. 산성비 — 훨씬 넓은 범위(E_R.acid)의 건물 철근을 녹슬게 해서 스스로 무너지게 함
+// =====================================================================
 let ACID=[];
-function spawnAcid(h){const x=h.x,z=h.z,R=45;let n=0;
-  forBuildingsNear(x,z,R,b=>{if(n>=10||!b.alive||b.lifted||distToBuilding(b,x,z)>R)return;n++;const d=ensureDet(b);
-    for(let i=0;i<d.hp.length;i++)d.hp[i]=Math.min(d.hp[i],d.hp0*(0.32+Math.random()*0.14));d.weak=1;d.weakT=-1.6-Math.random()*1.5;d.dirty=true});
-  ACID.push({x,z,R,t:0});sfx(15,1.4);toast(n?`산성비! 건물 ${n}채 철근이 녹슬어요… 자기 무게도 못 버텨요`:'산성비가 내렸지만 근처에 건물이 없어요',2600);statTool('rebar')}
-function updateAcid(dt){for(let i=ACID.length-1;i>=0;i--){const a=ACID[i];a.t+=dt;if(a.t>4){ACID.splice(i,1);continue}
-  for(let k=0;k<6;k++){const r=a.R*Math.sqrt(Math.random()),t=Math.random()*6.28,px=a.x+Math.cos(t)*r,pz=a.z+Math.sin(t)*r;spawn(px,groundAt(px,pz)+70,pz,0,-60,0,0.35,[0.55,0.9,0.3],0.9,1)}}}
-function drawAcid(m,mg){for(const a of ACID){const k=Math.min(1,a.t*2)*Math.min(1,(4-a.t)*1.5);for(let i=0;i<7;i++){const t=i*0.9+a.t*0.2;pushShape(m,SPHERE,a.x+Math.cos(t)*a.R*0.55,groundAt(a.x,a.z)+78,a.z+Math.sin(t)*a.R*0.55,14*k,6*k,14*k,t,[0.42,0.5,0.36],0)}}}
+function spawnAcid(h){const x=h.x,z=h.z,R=E_R.acid;let n=0;
+  forBuildingsNear(x,z,R,b=>{if(n>=32||!b.alive||b.lifted||distToBuilding(b,x,z)>R)return;n++;const d=ensureDet(b);
+    for(let i=0;i<d.hp.length;i++)d.hp[i]=Math.min(d.hp[i],d.hp0*(0.3+Math.random()*0.14));d.weak=1;d.weakT=-1.2-Math.random()*2.4;d.dirty=true});
+  ACID.push({x,z,R,t:0});eRing(x,groundAt(x,z)+1,z,R,[0.55,0.9,0.3]);sfx(15,1.4);
+  toast(n?`☔ 산성비! 넓은 범위 건물 ${n}채 철근이 녹슬어요… 자기 무게도 못 버텨요`:'산성비가 내렸지만 근처에 건물이 없어요',2600);return n>0}
+function updateAcid(dt){for(let i=ACID.length-1;i>=0;i--){const a=ACID[i];a.t+=dt;if(a.t>5.5){ACID.splice(i,1);continue}
+  const nn=fxN(16,6);for(let k=0;k<nn;k++){const r=a.R*Math.sqrt(Math.random()),t=Math.random()*6.28,px=a.x+Math.cos(t)*r,pz=a.z+Math.sin(t)*r;spawn(px,groundAt(px,pz)+85,pz,0,-70,0,0.4,[0.55,0.9,0.3],1.0,1)}}}
+function drawAcid(m,mg){for(const a of ACID){const k=Math.min(1,a.t*2)*Math.min(1,(5.5-a.t)*1.5),gy=groundAt(a.x,a.z);
+  for(let i=0;i<9;i++){if(!fxOK(2))return;const t=i*0.7+a.t*0.18,rr=a.R*(i%3===0?0.15:0.55);pushShape(m,SPHERE,a.x+Math.cos(t)*rr,gy+90+(i%2)*6,a.z+Math.sin(t)*rr,a.R*0.36*k,a.R*0.1*k,a.R*0.36*k,t,[0.42,0.5,0.36],0)}}}
+
+// =====================================================================
+//  6. 태풍 — 범위가 태풍에 휘말려 건물이 부서지고, 잔해가 소용돌이치며 올라가다 사방으로 무작위로 날아감
+// =====================================================================
+let TYPH=[];
+function spawnTyphoon(h){
+  if(MODE!=='city'||eBusy())return false;
+  const R=E_R.typhoon,g=groundAt(h.x,h.z);
+  TYPH.push({x:h.x,z:h.z,R,g,t:0,T:8.8,acc:0,burst:false});
+  eRing(h.x,g+1,h.z,R,[0.7,0.8,0.9]);toast('🌀 태풍 상륙! 범위 안 모든 게 휘말려 올라가요',2400);sfx(30,2.4);flashScreen(0.12,'#bcd0e0');return true}
+function updateTyphoons(dt){
+  for(let i=TYPH.length-1;i>=0;i--){const y=TYPH[i];y.t+=dt;const t=y.t;if(t>y.T){TYPH.splice(i,1);continue}
+    const kk=Math.min(1,t/1.4)*(t>7.8?Math.max(0,1-(t-7.8)):1);
+    cam.shake=Math.max(cam.shake,3.5*kk);
+    y.acc+=dt;
+    if(y.acc>0.22&&t>0.7&&t<7.6){y.acc=0;
+      for(const b of eBuildings(y.x,y.z,y.R)){const d=distToBuilding(b,y.x,y.z),w=1-d/y.R*0.55;
+        if(eSmall(b)){if(Math.random()<0.45+t*0.05)killBuilding(b);continue}
+        eHitLow(b,b.cx,b.cz,10,2.7*w,3);if(b.alive)structDamage(b,b.cx,eTop(b)-2,b.cz,10,2.4*w)}
+      forTreesNear(y.x,y.z,y.R*0.9,tr=>{if(tr.alive&&Math.hypot(tr.x-y.x,tr.z-y.z)<y.R*0.9)killTree(tr)})}
+    // 잔해: 소용돌이로 빨려 올라가다가(1.4~6.4초) 마지막에 사방으로 무작위로 날려감
+    if(t>1.2&&t<6.4){const sp=kk;
+      for(let k=0;k<MAXD;k++){if(!D.used[k])continue;const dx=D.x[k]-y.x,dz=D.z[k]-y.z,d=Math.hypot(dx,dz);if(d>y.R||d<0.5)continue;
+        if(D.rest[k]){D.rest[k]=0;rubDirty=true;D.vy[k]=3+Math.random()*4}
+        const tg=(22+36*(1-d/y.R))*sp,tvx=-dz/d*tg-dx/d*6,tvz=dx/d*tg-dz/d*6;
+        D.vx[k]+=(tvx-D.vx[k])*Math.min(1,dt*3);D.vz[k]+=(tvz-D.vz[k])*Math.min(1,dt*3);
+        if(D.y[k]<y.g+120)D.vy[k]+=(45*sp)*dt}}
+    if(t>=6.4&&!y.burst){y.burst=true;flashScreen(0.15,'#dfe8f0');sfx(34,1.4);cam.shake=Math.max(cam.shake,9);
+      for(let k=0;k<MAXD;k++){if(!D.used[k])continue;const dx=D.x[k]-y.x,dz=D.z[k]-y.z;if(Math.hypot(dx,dz)>y.R*1.15)continue;
+        D.rest[k]=0;const a=Math.random()*6.283,s=eRnd(28,80);D.vx[k]=Math.cos(a)*s;D.vz[k]=Math.sin(a)*s;D.vy[k]=eRnd(-4,30)}
+      rubDirty=true}
+    if(Math.random()<0.9)for(let q=0;q<fxN(4,2);q++){const a=Math.random()*6.283,r=eRnd(0.2,1)*y.R;fxSp(y.x+Math.cos(a)*r,y.g+eRnd(1,30),y.z+Math.sin(a)*r,-Math.sin(a)*30,eRnd(2,12),Math.cos(a)*30,eRnd(0.5,1.6),[0.72,0.74,0.78],0.9,3)}}}
+function drawTyphoons(m,mg){const now=performance.now()/1000;
+  for(const y of TYPH){const t=y.t,kk=Math.min(1,t/1.4)*(t>7.8?Math.max(0,1-(t-7.8)):1);if(kk<=0.01)continue;const H=150,N=14;
+    for(let l=0;l<N;l++){const u=l/(N-1),yy=y.g+u*H,r=(y.R*0.12+u*u*y.R*0.6)*kk;
+      for(let q=0;q<6;q++){if(!fxOK(1))return;const a=now*(5-3*u)+q*1.047+u*2.4;pushShape(m,CUBE,y.x+Math.cos(a)*r,yy,y.z+Math.sin(a)*r,r*0.62+4,H/N*1.2,2.4,-a-1.57,[0.5+0.12*u,0.55+0.1*u,0.62+0.08*u],0)}}
+    for(let q=0;q<10;q++){if(!fxOK(2))return;const a=q*0.628+now*0.9;pushShape(m,SPHERE,y.x+Math.cos(a)*y.R*0.7*kk,y.g+H+8,y.z+Math.sin(a)*y.R*0.7*kk,y.R*0.5*kk,y.R*0.12*kk,y.R*0.5*kk,a,[0.38,0.42,0.48],0)}
+    for(let q=0;q<fxN(30,10);q++){if(!fxOK(1))return;const ph=(now*0.35+q/30)%1,a=q*2.4+now*(4-2*ph),r=(y.R*0.15+ph*ph*y.R*0.7)*kk;pushShape(m,CUBE,y.x+Math.cos(a)*r,y.g+ph*H*0.9,y.z+Math.sin(a)*r,eRnd(1.6,3.4),eRnd(1,2.4),eRnd(1.6,3.4),a,[0.6,0.58,0.54],0)}}}
+
+// =====================================================================
+//  7. 쓰나미 (선 긋기) — 폭 160m, 매우 빠른 거대한 파도. 닿자마자 건물이 무너짐
+// =====================================================================
+let WAVES=[];
+function spawnTsunami(A,B){let dx=B.x-A.x,dz=B.z-A.z,l=Math.hypot(dx,dz);if(l<10){toast('쓰나미: 파도가 밀려갈 방향으로 길게 그어주세요');return false}
+  dx/=l;dz/=l;l=Math.min(Math.max(l,260),760);const W=160;
+  statTool('tsunami');WAVES.push({x:A.x-dx*80,z:A.z-dz*80,dx,dz,W,left:l+90,v:30,t:0,acc:0,hits:new Set(),h:0,end:0});
+  toast('🌊 쓰나미! 거대한 파도가 순식간에 밀려와요',1800);sfx(34,2.4);cam.shake=Math.max(cam.shake,4);return true}
+function updateWaves(dt){for(let i=WAVES.length-1;i>=0;i--){const w=WAVES[i];w.t+=dt;w.h=Math.min(1,w.t/0.9);
+  if(w.left<=0){w.h=Math.max(0,1-(w.t-w.end)/1.5);if(w.t-w.end>1.5)WAVES.splice(i,1);continue}
+  w.v+=(84-w.v)*Math.min(1,dt*1.6);const sp=w.v*dt;w.x+=w.dx*sp;w.z+=w.dz*sp;w.left-=sp;if(w.left<=0)w.end=w.t;
+  w.acc+=dt;if(w.acc<0.07)continue;w.acc=0;const px=-w.dz,pz=w.dx,now=performance.now();
+  for(let o=-w.W/2;o<=w.W/2;o+=9){const x=w.x+px*o,z=w.z+pz*o;
+    forBuildingsNear(x,z,12,b=>{if(!b.alive||b.lifted||distToBuilding(b,x,z)>6)return;
+      if(b.area<300&&b.h0<22){killBuilding(b);boom3(x,b.base+3,z,10);return}
+      if(!w.hits.has(b)){w.hits.add(b);hitStop(0.05);floatText(x,eTop(b)+2,z,'쾅!','boom',0.9);sfxBoom(0.5)}
+      if(b._ts&&now-b._ts<150)return;b._ts=now;   // 건물마다 0.15초에 한 번만 (성능)
+      const d=b.det||ensureDet(b);for(let f=0;f<Math.min(d.F,8);f++){if(!b.alive||!b.det)break;structDamage(b,x,b.base+d.fy[f]+d.fh*0.5,z,16,13,{floors:[f]})}
+      if(Math.random()<0.5)spawn(x,b.base+3,z,w.dx*18+eRnd(-6,6),eRnd(4,12),w.dz*18+eRnd(-6,6),eRnd(0.8,2),Math.random()<0.6?[0.85,0.93,1]:b.col,0)});
+    forTreesNear(x,z,9,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<9)killTree(t)});
+    if(CLIENT)clientHitAt(x,groundAt(x,z)+2,z,9,3,w.hits)}
+  ePushDebris(w.x,w.z,w.dx,w.dz,w.W*0.5,16,46);
+  cam.shake=Math.max(cam.shake,2.2)}}
+function drawWaves(m,mg){for(const w of WAVES){const px=-w.dz,pz=w.dx,rot=Math.atan2(w.dz,w.dx),H=34*w.h,now=performance.now()/1000,step=fxScale()<0.6?11:7;
+  for(let o=-w.W/2;o<=w.W/2;o+=step){if(!fxOK(4))return;const bob=Math.sin(now*3+o*0.2)*1.8,x=w.x+px*o,z=w.z+pz*o,g=groundAt(x,z);
+    pushShape(m,CUBE,x-w.dx*4,g+H/2+bob/2,z-w.dz*4,8,H+bob,step+0.6,-rot,[0.12,0.42,0.72],0);
+    pushShape(m,CUBE,x+w.dx*0.5,g+H+bob,z+w.dz*0.5,4,3.4,step+0.8,-rot,[0.93,0.97,1],0);
+    pushShape(m,CUBE,x-w.dx*24,g+H*0.25,z-w.dz*24,40,H*0.5,step+0.6,-rot,[0.16,0.5,0.78],0);
+    if(Math.random()<0.2)fxSp(x+w.dx*2,g+H+1,z+w.dz*2,w.dx*16+eRnd(-5,5),eRnd(4,12),w.dz*16+eRnd(-5,5),eRnd(0.6,1.4),[0.95,0.98,1],0.6,2)}}}
+
+// =====================================================================
+//  8. 지진 — 진원지에서 충격파가 퍼지며 땅이 갈라지고, 큰 구덩이들이 연달아 꺼지고, 한가운데는 넓게 내려앉음
+// =====================================================================
+let QUAKES=[];
+function spawnQuake(h){
+  if(MODE!=='city'||eBusy())return false;
+  const R=E_R.quake,q={x:h.x,z:h.z,R,t:0,T:7,acc:0,front:0,cracks:[],pits:0,basin:false,npit:fxN(10,5)},nc=fxN(14,7);
+  for(let i=0;i<nc;i++){let ang=i/nc*6.283+eRnd(-0.2,0.2);const len=R*eRnd(0.7,1.15),seg=8,pts=[];let cx=0,cz=0;
+    for(let s=0;s<=seg;s++){pts.push([q.x+cx,q.z+cz]);ang+=eRnd(-0.35,0.35);cx+=Math.cos(ang)*len/seg;cz+=Math.sin(ang)*len/seg}
+    q.cracks.push(pts)}
+  QUAKES.push(q);eRing(h.x,groundAt(h.x,h.z)+1,h.z,R,[0.7,0.6,0.5]);toast('🫨 지진! 일대가 갈라지며 땅이 꺼져요',2400);sfx(32,3);cam.shake=Math.max(cam.shake,9);return true}
+function updateQuakes(dt){
+  for(let i=QUAKES.length-1;i>=0;i--){const q=QUAKES[i];q.t+=dt;const t=q.t;if(t>q.T){QUAKES.splice(i,1);continue}
+    q.front=Math.min(q.R,t*q.R/2.2);cam.shake=Math.max(cam.shake,7*Math.max(0,1-t/q.T));
+    q.acc+=dt;
+    if(q.acc>0.2&&t<5.2){q.acc=0;
+      for(const b of eBuildings(q.x,q.z,q.front)){const d=distToBuilding(b,q.x,q.z),w=1-d/q.R*0.6;
+        if(eSmall(b)){if(Math.random()<0.25)killBuilding(b);continue}
+        eHitLow(b,b.cx,b.cz,9,2.4*w,2)}
+      for(let k=0;k<fxN(8,3);k++){const c=q.cracks[Math.floor(Math.random()*q.cracks.length)],p=c[Math.floor(Math.random()*c.length)];
+        if(Math.hypot(p[0]-q.x,p[1]-q.z)<q.front)fxSp(p[0],groundAt(p[0],p[1])+0.5,p[1],eRnd(-3,3),eRnd(4,12),eRnd(-3,3),eRnd(0.8,2),[0.6,0.56,0.5],1,3)}}
+    // 큰 구덩이: 1.0~4.6초 사이 균열 위에서 차례로 꺼짐
+    while(q.pits<q.npit&&t>1.0+q.pits*(3.6/q.npit)){q.pits++;
+      const c=q.cracks[Math.floor(Math.random()*q.cracks.length)],k=1+Math.floor(Math.random()*(c.length-1)),p=c[k];
+      sinkHole(p[0]+eRnd(-4,4),p[1]+eRnd(-4,4),eRnd(12,26))}
+    // 한가운데: 넓게 내려앉음
+    if(!q.basin&&t>2.4){q.basin=true;carve(q.x,q.z,q.R*0.5,9.5);eRing(q.x,groundAt(q.x,q.z)+1,q.z,q.R*0.9,[0.6,0.5,0.4]);flashScreen(0.12,'#d8c8b0');sfxBoom(0.9);hitStop(0.06);cam.shake=Math.max(cam.shake,12)}}}
+function drawQuakes(m,mg){
+  for(const q of QUAKES){const fade=q.t>q.T-1.5?Math.max(0,(q.T-q.t)/1.5):1;if(fade<=0)continue;
+    for(const c of q.cracks)for(let s=0;s<c.length-1;s++){const p=c[s],n=c[s+1];if(Math.hypot(p[0]-q.x,p[1]-q.z)>q.front)break;if(!fxOK(2))return;
+      const dx=n[0]-p[0],dz=n[1]-p[1],l=Math.hypot(dx,dz)||1,w=(2.4-s*0.18)*fade+0.4,y=groundAt(p[0],p[1])+0.25;
+      pushShape(m,CUBE,(p[0]+n[0])/2,y,(p[1]+n[1])/2,l+0.8,0.3,w,-Math.atan2(dz,dx),[0.06,0.05,0.05],0);
+      if(q.t>0.6&&q.t<4.5)pushShape(mg,CUBE,(p[0]+n[0])/2,y+0.05,(p[1]+n[1])/2,l*0.9,0.2,w*0.35,-Math.atan2(dz,dx),[0.55,0.2,0.08],1)}}}
+
+// =====================================================================
+//  9. 화산 — 일대 지면이 실제로 솟아 원뿔이 되고, 분화구에서 용암탄이 쏟아지며 용암이 사방으로 흘러 건물을 삼킴
+// =====================================================================
+let VOLCS=[];
+function raiseTerrain(x,z,r,hh){
+  for(let ti=tileOf(x-r);ti<=tileOf(x+r);ti++)for(let tj=tileOf(z-r);tj<=tileOf(z+r);tj++){
+    const c=getChunk(ti,tj);if(!c||!c.Hg)continue;const H=c.Hg,H0=c.H0;
+    const i0=Math.max(0,Math.floor((x-r-c.ox)/CELL)),i1=Math.min(CN,Math.ceil((x+r-c.ox)/CELL)),j0=Math.max(0,Math.floor((z-r-c.oz)/CELL)),j1=Math.min(CN,Math.ceil((z+r-c.oz)/CELL));
+    for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const k=j*CV+i,d=Math.hypot(c.ox+i*CELL-x,c.oz+j*CELL-z);
+      if(d<r){const u=1-d/r,prof=u*u*(3-2*u),tg=H0[k]+hh*prof;if(tg>H[k])H[k]=tg}}
+    c.dG=true;c.dT=true}
+  for(let k=0;k<MAXD;k++){if(!D.used[k]||!D.rest[k])continue;if(Math.hypot(D.x[k]-x,D.z[k]-z)<r)D.y[k]=Math.max(D.y[k],groundAt(D.x[k],D.z[k])+D.s[k]*0.35)}
+  rubDirty=true}
+function spawnVolcano(h){
+  if(MODE!=='city'||eBusy())return false;
+  const R=E_R.volcano,g=groundAt(h.x,h.z),v={x:h.x,z:h.z,R,rc:R*0.42,g,t:0,T:19,rise:0,flows:[],bomb:0,dmg:0,Hmax:eRnd(34,42)},nf=fxN(9,5);
+  for(let i=0;i<nf;i++){let ang=i/nf*6.283+eRnd(-0.3,0.3);const L=R*eRnd(0.65,1.1),n=Math.ceil(L/6),pts=[];let px=0,pz=0;
+    for(let s=0;s<=n;s++){pts.push([v.x+px,v.z+pz]);ang+=eRnd(-0.22,0.22);px+=Math.cos(ang)*6;pz+=Math.sin(ang)*6}
+    v.flows.push({pts,w:eRnd(5,9),sp:eRnd(0.8,1.15),len:0})}
+  VOLCS.push(v);eRing(h.x,g+1,h.z,R,[1,0.5,0.15]);toast('🌋 화산 폭발! 땅이 솟구치고 용암이 사방으로 흘러요',2600);sfx(36,3);flashScreen(0.3,'#ff9a3c');cam.shake=Math.max(cam.shake,10);return true}
+function updateVolcs(dt){
+  for(let i=VOLCS.length-1;i>=0;i--){const v=VOLCS[i];v.t+=dt;const t=v.t;if(t>v.T){VOLCS.splice(i,1);continue}
+    const steps=[0,0.7,1.4,2.1];
+    while(v.rise<4&&t>=steps[v.rise]){v.rise++;raiseTerrain(v.x,v.z,v.rc*1.35,v.Hmax*v.rise/4);
+      if(v.rise===3){for(const b of eBuildings(v.x,v.z,v.rc))killBuilding(b);forTreesNear(v.x,v.z,v.rc*1.35,tr=>{if(tr.alive)killTree(tr)});sfxBoom(1);hitStop(0.08)}}
+    const top=groundAt(v.x,v.z);
+    if(t>2.2&&t<11){
+      for(let k=0;k<fxN(12,5);k++)fxSp(v.x+eRnd(-3,3),top+1,v.z+eRnd(-3,3),eRnd(-14,14),eRnd(22,48),eRnd(-14,14),eRnd(0.8,2),[1,eRnd(0.35,0.7),0.08],eRnd(0.8,1.6),1);
+      if(Math.random()<0.5)fxSp(v.x,top+4,v.z,eRnd(-4,4),eRnd(12,24),eRnd(-4,4),eRnd(3,6),[0.28,0.28,0.3],2.2,2);
+      v.bomb+=dt;if(v.bomb>0.22){v.bomb=0;const a=Math.random()*6.283,r=v.R*0.95*Math.sqrt(Math.random()),tx=v.x+Math.cos(a)*r,tz=v.z+Math.sin(a)*r;
+        ROCKS.push({x0:v.x,y0:top+6,z0:v.z,tx,tz,ty:groundAt(tx,tz),t:0,T:eRnd(1.1,1.7),size:eRnd(2.6,4.4),x:v.x,y:top+6,z:v.z,lava:true})}}
+    for(const f of v.flows)f.len=Math.min(f.pts.length-1,Math.max(0,t-2.6)*f.sp*(f.pts.length/9.5));
+    v.dmg+=dt;
+    if(v.dmg>0.3&&t>2.6&&t<15){v.dmg=0;
+      for(const b of eBuildings(v.x,v.z,v.R+10)){let hit=false;
+        for(const f of v.flows){const n=Math.floor(f.len);for(let s=0;s<=n&&!hit;s++){const p=f.pts[s];if(distToBuilding(b,p[0],p[1])<f.w*0.9)hit=true}if(hit)break}
+        if(!hit)continue;if(eSmall(b)){killBuilding(b);continue}
+        eHitLow(b,b.cx,b.cz,10,3.4,3);fxSp(b.cx,eTop(b),b.cz,eRnd(-3,3),eRnd(6,14),eRnd(-3,3),eRnd(2,4),[0.3,0.3,0.32],1.6,2)}}}}
+function drawVolcs(m,mg){
+  for(const v of VOLCS){const t=v.t,cool=Math.min(1,Math.max(0,(t-13)/5)),top=groundAt(v.x,v.z);
+    if(t>1.8&&t<15)pushShape(mg,CUBE,v.x,top+0.5,v.z,v.rc*0.35,0.8,v.rc*0.35,t*0.3,[1,0.45,0.1],1);
+    for(const f of v.flows){const n=Math.floor(f.len);
+      for(let s=0;s<n;s++){if(!fxOK(2))return;const p=f.pts[s],q=f.pts[s+1]||p,dx=q[0]-p[0],dz=q[1]-p[1],l=Math.hypot(dx,dz)||1,fw=f.w*(1-s/f.pts.length*0.4)*(s===n-1?0.8:1),y=groundAt(p[0],p[1])+0.35;
+        if(cool<1)pushShape(mg,CUBE,(p[0]+q[0])/2,y,(p[1]+q[1])/2,l+1.5,0.7,fw*2,-Math.atan2(dz,dx),[1-0.7*cool,(0.38+0.12*Math.sin(t*3+s))*(1-cool*0.8),0.06],1);
+        else pushShape(m,CUBE,(p[0]+q[0])/2,y,(p[1]+q[1])/2,l+1.5,0.7,fw*2,-Math.atan2(dz,dx),[0.16,0.1,0.08],0)}}}}
+
+// ---- 태양 조각(필살기)은 기존 그대로 ----
+
+// ---- 범위 미리보기: PC에서 범위 도구를 고르면 마우스 둘레에 반경 고리를 보여줌 ----
+const HOVER={x:0,z:0,ok:false,t:0};
+canvas.addEventListener('pointermove',e=>{if(!EARTH()||e.pointerType==='touch'||MODE!=='city')return;const n=performance.now();if(n-HOVER.t<100)return;HOVER.t=n;
+  const w=WL()[weapon];if(!w||!E_R[w.id]){HOVER.ok=false;return}const h=pick(e.clientX,e.clientY);if(h){HOVER.x=h.x;HOVER.z=h.z;HOVER.ok=true}else HOVER.ok=false});
+canvas.addEventListener('pointerleave',()=>{HOVER.ok=false});
+function drawHover(m,mg){if(!HOVER.ok||!EARTH()||MODE!=='city'||TOUCH)return;const w=WL()[weapon];const R=w&&E_R[w.id];if(!R||!fxOK(40))return;
+  const col={termite:[0.85,0.55,0.25],meteor:[1,0.75,0.4],bolt:[0.7,0.8,1],acid:[0.55,0.9,0.3],typhoon:[0.75,0.85,0.95],quake:[0.8,0.65,0.45],volcano:[1,0.45,0.12],sat:[1,0.2,0.1]}[w.id]||[1,1,1],N=40;
+  for(let i=0;i<N;i++){const a=i/N*6.283,x=HOVER.x+Math.cos(a)*R,z=HOVER.z+Math.sin(a)*R;pushShape(mg,CUBE,x,groundAt(x,z)+0.8,z,R*6.283/N*0.7,0.5,0.9,-(a+1.5708),col,1)}}
+
+
+// =====================================================================
+//  10. 인공위성 낙하 — 경고 고리 → 불타는 위성이 비스듬히 추락 → 거대한 충돌 구덩이·충격파·파편 비
+// =====================================================================
+let SATS=[];
+function spawnSatellite(h){
+  if(MODE!=='city'||SATS.length>=(TOUCH?1:2)){if(MODE==='city')toast('위성이 아직 떨어지는 중이에요',1400);return false}
+  const a=Math.random()*6.283,R=E_R.sat;statTool('sat');
+  SATS.push({x:h.x,z:h.z,g:groundAt(h.x,h.z),R,t:0,T:3.4,dx:Math.cos(a),dz:Math.sin(a),done:false,after:0});
+  toast('🛰 인공위성 추락 경고! 붉은 고리 안은 위험해요',2000);sfx(30,1.8);return true}
+function satPos(s){const p=Math.min(1,s.t/s.T),k=Math.pow(p,1.7),d=200*(1-k);return[s.x+s.dx*d*0.8,s.g+6+300*(1-k),s.z+s.dz*d*0.8]}
+function satImpact(s){
+  const x=s.x,z=s.z,g=s.g,R=s.R;s.done=true;
+  carve(x,z,R*0.42,14);carve(x,z,R*0.22,10);
+  forBuildingsNear(x,z,R*1.5,b=>{if(!b.alive||b.lifted)return;const d=distToBuilding(b,x,z);if(d>R)return;const k=1-d/R;
+    if(d<R*0.45||eSmall(b)){killBuilding(b);return}
+    const dd=b.det||ensureDet(b);for(let f=0;f<Math.min(dd.F,10);f++){if(!b.alive||!b.det)break;structDamage(b,x,b.base+dd.fy[f]+dd.fh*0.5,z,R*0.5,6+k*16,{floors:[f]})}});
+  forTreesNear(x,z,R*1.4,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<R*1.3)killTree(t)});
+  shock={x,z,r:10,max:R*1.9,id:Math.random()};
+  if(CLIENT)clientHitAt(x,g+2,z,R,8);
+  for(let k=0;k<fxN(90,30);k++){const a=Math.random()*6.283,v=eRnd(14,52);fxSp(x,g+2,z,Math.cos(a)*v,eRnd(18,60),Math.sin(a)*v,eRnd(1.5,4),Math.random()<0.5?[1,0.62,0.2]:[0.45,0.43,0.4],1,2)}
+  boom(x,z,R*0.9);boom3(x,g+3,z,40);eRing(x,g+1,z,R*1.9,[1,0.8,0.45]);later(0.15,()=>eRing(x,g+1,z,R*1.3,[1,0.55,0.2]));
+  flashScreen(0.9,'#fff2d0');hitStop(0.12);cam.shake=Math.max(cam.shake,11);sfxBoom(1);sfx(8,2.2);
+  floatText(x,g+30,z,'쾅!!','boom',1.4);
+  for(let i=0;i<fxN(7,3);i++){const a=Math.random()*6.283,r=eRnd(R*0.4,R*1.1);later(0.25+i*0.18,()=>meteorHit(x+Math.cos(a)*r,z+Math.sin(a)*r,eRnd(3,5.5),Math.random()<0.5))}}
+function updateSats(dt){for(let i=SATS.length-1;i>=0;i--){const s=SATS[i];s.t+=dt;
+  if(!s.done){const p=satPos(s);
+    for(let k=0;k<2;k++)fxSp(p[0]+eRnd(-2,2),p[1]+eRnd(-2,2),p[2]+eRnd(-2,2),s.dx*eRnd(10,30),eRnd(10,30),s.dz*eRnd(10,30),eRnd(2,4.5),Math.random()<0.5?[1,0.55,0.15]:[0.9,0.9,0.9],0.9,2);
+    if(s.t>=s.T)satImpact(s)}
+  else{s.after+=dt;if(s.after>1.2)SATS.splice(i,1)}}}
+function drawSats(m,mg){for(const s of SATS){
+  if(!s.done){const a=Math.min(1,s.t/s.T),pulse=0.55+0.45*Math.sin(s.t*14),N=36,R=s.R*(0.6+0.4*a);
+    if(fxOK(N+8)){for(let i=0;i<N;i++){const an=i/N*6.283,x=s.x+Math.cos(an)*R,z=s.z+Math.sin(an)*R;pushShape(mg,CUBE,x,groundAt(x,z)+0.9,z,R*6.283/N*0.75,0.6,1.1,-(an+1.5708),[1*pulse+0.2,0.12,0.08],1)}
+      const p=satPos(s),r=s.t*5;
+      pushShape(m,CUBE,p[0],p[1],p[2],5,5,9,r,[0.6,0.62,0.66],0);
+      pushShape(m,CUBE,p[0],p[1],p[2],22,0.5,5.5,r,[0.15,0.3,0.7],0);
+      pushShape(mg,SPHERE,p[0]-s.dx*3,p[1]+3,p[2]-s.dz*3,9,9,9,0,[1,0.5,0.12],1)}}}}
+
+// ---- 묶음: 갱신·그리기·정리 ----
+function updateEarth2(dt){
+  if(MODE!=='city'){clearEarth2();return}
+  updateHerds(dt);updateFlocks(dt);updateBolts(dt);updateTyphoons(dt);updateQuakes(dt);updateVolcs(dt);updateSats(dt)}
+function drawEarth2(m,mg){drawHerds(m,mg);drawFlocks(m,mg);drawBolts(m,mg);drawTyphoons(m,mg);drawQuakes(m,mg);drawVolcs(m,mg);drawSats(m,mg);drawHover(m,mg)}
+function clearEarth2(){HERDS=[];FLOCKS=[];ROCKS=[];BOLTS=[];TYPH=[];QUAKES=[];VOLCS=[];SATS=[]}
+// <<EARTH_V2_END>>
+
 // ---- 7. 토네이도 (MOVE 로 든 건물 아래 깔때기) ----
 function drawTornado(m,mg){if(!HELD)return;const h=HELD,gy=groundAt(h.x,h.z),top=h.y+h.b.h0*0.6,now=performance.now()/1000,n=12;
   for(let k=0;k<n;k++){const u=k/(n-1),y=gy+(top-gy)*u,r=3+u*u*Math.max(h.b.ob.W,h.b.ob.D)*0.9;for(let q=0;q<5;q++){const a=now*6+q*1.26+u*3;pushShape(m,CUBE,h.x+Math.cos(a)*r,y,h.z+Math.sin(a)*r,r*0.7,(top-gy)/n*1.1,1.2,-a,[0.62,0.63,0.66],0)}}
@@ -1773,31 +2189,6 @@ function drawVolcano(m,mg,e){const b=e.b,ob=b.ob,x=b.cx+ob.ox,z=b.cz+ob.oz,gy=gr
   for(let k=0;k<3;k++){const a=k*2.1+performance.now()/900;pushShape(mg,CUBE,x+Math.cos(a)*R*0.5,gy+H*0.5,z+Math.sin(a)*R*0.5,2.2,H*0.9,2.2,a,[1,0.35+k*0.1,0.05],1)}
   if(Math.random()<0.8)spawn(x+(Math.random()-.5)*R*0.4,gy+H+1,z+(Math.random()-.5)*R*0.4,(Math.random()-.5)*16,14+Math.random()*16,(Math.random()-.5)*16,0.8+Math.random()*1.2,[1,0.4+Math.random()*0.3,0.08],0.8+Math.random()*0.6,1);
   if(Math.random()<0.5)spawn(x,gy+H+4,z,(Math.random()-.5)*3,6,(Math.random()-.5)*3,2+Math.random()*2,[0.3,0.3,0.32],1.6,2)}
-// ---- 9. 쓰나미 (새 도구: 선 방향으로 폭 90m 파도가 지나가며 저층을 쓸어버림) ----
-let WAVES=[];
-function spawnTsunami(A,B){let dx=B.x-A.x,dz=B.z-A.z,l=Math.hypot(dx,dz);if(l<10){toast('쓰나미: 파도가 밀려갈 방향으로 길게 그어주세요');return false}
-  dx/=l;dz/=l;l=Math.min(l,380);const W=90;
-  WAVES.push({x:A.x-dx*45,z:A.z-dz*45,dx,dz,W,left:l+60,v:18,t:0,acc:0,hits:new Set(),h:0});
-  toast('🌊 쓰나미! 거대한 파도가 밀려와요',1800);sfx(30,2);statTool('trim');return true}
-function updateWaves(dt){for(let i=WAVES.length-1;i>=0;i--){const w=WAVES[i];w.t+=dt;w.h=Math.min(1,w.t/1.2);
-  if(w.left<=0){w.h=Math.max(0,1-(w.t-w.end)/1.5);if(w.t-w.end>1.5)WAVES.splice(i,1);continue}
-  w.v+=(34-w.v)*Math.min(1,dt);const sp=w.v*dt;w.x+=w.dx*sp;w.z+=w.dz*sp;w.left-=sp;if(w.left<=0)w.end=w.t;
-  w.acc+=dt;if(w.acc<0.09)continue;w.acc=0;const px=-w.dz,pz=w.dx;
-  for(let o=-w.W/2;o<=w.W/2;o+=7){const x=w.x+px*o,z=w.z+pz*o;
-    forBuildingsNear(x,z,9,b=>{if(!b.alive||b.lifted||distToBuilding(b,x,z)>4)return;
-      if(b.area<90&&b.h0<9){killBuilding(b);return}
-      if(!w.hits.has(b)){w.hits.add(b);hitStop(0.03);floatText(x,b.base+8,z,'콰아!','boom',0.7);sfxBoom(0.35)}
-      structDamage(b,x,b.base+1.8,z,8,2.0,{floors:[0]});if(b.alive&&b.det&&b.det.F>1)structDamage(b,x,b.base+b.det.fh+1.5,z,7,1.3,{floors:[1]});
-      if(Math.random()<0.4)spawn(x,b.base+3,z,w.dx*10+(Math.random()-.5)*6,4+Math.random()*4,w.dz*10+(Math.random()-.5)*6,0.8+Math.random(),Math.random()<0.6?[0.85,0.93,1]:b.col,0)});
-    forTreesNear(x,z,7,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<7)killTree(t)});
-    if(CLIENT)clientHitAt(x,groundAt(x,z)+2,z,7,2,w.hits)}
-  cam.shake=Math.max(cam.shake,1.5)}}
-function drawWaves(m,mg){for(const w of WAVES){const px=-w.dz,pz=w.dx,rot=Math.atan2(w.dz,w.dx),H=16*w.h,now=performance.now()/1000;
-  for(let o=-w.W/2;o<=w.W/2;o+=6){const bob=Math.sin(now*3+o*0.2)*1.2,x=w.x+px*o,z=w.z+pz*o,g=groundAt(x,z);
-    pushShape(m,CUBE,x-w.dx*3,g+H/2+bob/2,z-w.dz*3,6,H+bob,6.4,-rot,[0.12,0.42,0.72],0);
-    pushShape(m,CUBE,x+w.dx*0.5,g+H+bob,z+w.dz*0.5,3,2.2,6.6,-rot,[0.93,0.97,1],0);
-    pushShape(m,CUBE,x-w.dx*16,g+H*0.25,z-w.dz*16,26,H*0.5,6.4,-rot,[0.16,0.5,0.78],0);
-    if(Math.random()<0.15)spawn(x+w.dx*2,g+H+1,z+w.dz*2,w.dx*8+(Math.random()-.5)*4,4+Math.random()*4,w.dz*8+(Math.random()-.5)*4,0.6,[0.95,0.98,1],0.6,2)}}}
 // ---- 10. 지진 (싱크홀 + 땅 흔들림) ----
 function earthquake(h){sinkStorm(h);quake={x:h.x,z:h.z,t:0,dur:3.2,acc:0};cam.shake=Math.max(cam.shake,8);toast('🫨 지진! 일대가 흔들리며 땅이 꺼져요',1800)}
 // ---- 필살기: 태양 조각 → 밤 → 인류가 인공 태양 → 낮 ----
@@ -1813,9 +2204,9 @@ function drawSun(m,mg){if(SUNF){const s=SUNF;pushShape(mg,SPHERE,s.cx,s.cy,s.cz,
     for(let k=0;k<8;k++){const a=k*0.785+ARTSUN.t;pushShape(mg,CUBE,cam.tx-300+Math.cos(a)*40,y+Math.sin(a)*40,cam.tz-300,10,3,3,a,[0.6,0.8,1],1)}}}
 function artificialSunrise(){DAY.sun=false;ARTSUN={t:0};toast('☀ 인류가 인공 태양을 개발했어요! 다시 낮이 밝아요',3600)}
 
-function updateEarth(dt){updateAcid(dt);updateWaves(dt);updateSun(dt)}
-function drawEarth(m,mg){drawAcid(m,mg);drawWaves(m,mg);drawSun(m,mg);if(EARTH()){drawTornado(m,mg);for(const e of EXTR)if(e.volc)drawVolcano(m,mg,e)}}
-function clearEarth(){ACID=[];WAVES=[];SUNF=null}
+function updateEarth(dt){updateAcid(dt);updateWaves(dt);updateSun(dt);updateEarth2(dt)}
+function drawEarth(m,mg){drawAcid(m,mg);drawWaves(m,mg);drawSun(m,mg);drawEarth2(m,mg);if(EARTH()){drawTornado(m,mg);for(const e of EXTR)if(e.volc)drawVolcano(m,mg,e)}}
+function clearEarth(){ACID=[];WAVES=[];SUNF=null;clearEarth2()}
 
 
 // ---------- 레이 피킹 ----------
@@ -1864,7 +2255,7 @@ function pinTap(L){const now=performance.now();
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 function cancelHolds(){if(drag){if(drag.grab)releaseGrab();if(drag.sgrab)secGrabRelease();if(drag.sext)secExtRelease()}}
 // 선 긋기 중에는 버튼을 누르지 않고 움직여도 미리보기 선이 따라옴
-canvas.addEventListener('pointermove',e=>{if(gesture&&(e.pointerType==='mouse'||!ptrs.size)){gesture.cur={x:e.clientX,y:e.clientY}}});
+canvas.addEventListener('pointermove',e=>{if(gesture&&(e.pointerType==='mouse'||ptrs.size<=1)){gesture.cur={x:e.clientX,y:e.clientY}}});
 canvas.addEventListener('pointerdown',e=>{
   canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});audioInit();
   if(ptrs.size===2){firing=false;clearHold(drag);cancelHolds();const [a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,lx:(a.x+b.x)/2,ly:(a.y+b.y)/2,dist:cam.dist,theta:cam.theta,phi:cam.phi};drag=null;return}
@@ -1923,7 +2314,7 @@ function endPtr(e){
   if(click&&drag.btn===0){const h=pick(mx,my);
     if(pickHQ){pickHQ=false;selectWeapon(weapon);if(h&&h.b){setHQ(h.b,true);toast('사옥으로 지정했어요 (이 브라우저에 저장)')}else{const g=rayGround(mx,my,0),nb=g&&hqSynth(g[0],g[1]);if(nb){setHQ(nb,true);toast('🏗 여기에 사옥을 세웠어요 (이 브라우저에 저장)',3000)}else toast('건물이나 빈 땅을 눌러주세요')}}
     else if(h&&ultArmed){snapshot();STOP.grace=performance.now()+8000;if(CH&&CH.on)CH.ultUsed=true;ULTIMATE.fire(h);if(EARTH())SUN_UNTIL=performance.now()+SUN_CD*1000;else ULT=0;ultArmed=false;statTool('nuke');selectWeapon(weapon);bossTool('nuke',h.x,h.z)}
-    else if(h&&!holdOf()){const w=WEAPONS[weapon];if(!w.nosnap)snapshot();w.fire(h);if(w.id!=='blast')statTool(w.id);bossTool(w.id,h.x,h.z)}}
+    else if(h&&!holdOf()){const w=WL()[weapon];if(!w.nosnap)snapshot();w.fire(h);if(w.id!=='blast')statTool(w.id);bossTool(w.bid||w.id,h.x,h.z)}}
   drag=null;
 }
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);
@@ -3564,20 +3955,30 @@ async function sendPhoto(){const u=rankUrl(),say=t=>{$('#rqMsg2').textContent=t}
 const CH_SEC=180,CH_TARGET_W=45,CH_TARGET_H=90;
 let DAILY=null,CH=null;   // DAILY: 서버가 준 오늘 정보 / CH: 진행 중인 챌린지
 function kstDay(){return new Date(Date.now()+9*3600e3).toISOString().slice(0,10)}
-async function loadDaily(force){const u=rankUrl();if(!u)return null;const c=lsGet('smasharch_daily');
-  if(!force&&c&&c.d&&c.d.date===kstDay()&&Date.now()-c.t<300000){DAILY=c.d;dailyCard();return DAILY}
-  try{const r=await fetchT(u+(u.includes('?')?'&':'?')+'action=daily',{},12000);if(r&&r.ok){DAILY=r;lsSet('smasharch_daily',{t:Date.now(),d:r});dailyCard();weatherFromDaily()}}catch(e){}
-  return DAILY}
-function dailyCard(){const el=$('#dailyCard');if(!el)return;const d=DAILY;if(!d||!d.name){el.style.display='none';return}el.style.display='';
+let DAILY_ERR='';
+async function loadDaily(force){const u=rankUrl();
+  if(!u){DAILY_ERR='서버 주소가 설정되지 않았어요 (config.js 의 API_URL 확인)';dailyCard();return null}
+  const c=lsGet('smasharch_daily');
+  if(!force&&c&&c.d&&c.d.date===kstDay()&&Date.now()-c.t<300000){DAILY=c.d;DAILY_ERR='';dailyCard();return DAILY}
+  try{const r=await fetchT(u+(u.includes('?')?'&':'?')+'action=daily',{},12000);
+    if(r&&r.ok){DAILY=r;DAILY_ERR='';lsSet('smasharch_daily',{t:Date.now(),d:r});weatherFromDaily()}
+    else DAILY_ERR=r&&r.error==='unknown action'?'서버가 "오늘의 사옥"을 모르는 옛 버전이에요 — Apps Script 에 Api.gs 를 붙여 넣고 새 버전으로 다시 배포해 주세요':(r&&r.error)||'서버 응답이 없어요'}
+  catch(e){DAILY_ERR='서버에 연결하지 못했어요 (인터넷 또는 서버 주소를 확인해 주세요)'}
+  dailyCard();return DAILY}
+function dailyCard(){const el=$('#dailyCard');if(!el)return;const d=DAILY;
+  if(!d||!d.name){if(DAILY_ERR){el.style.display='';el.innerHTML=`<div class="dc-h">🏆 오늘의 사옥 <small>3분 챌린지</small></div><div class="dc-a" style="color:#ffb86b;white-space:normal">${esc(DAILY_ERR)}</div><button class="btn-s" id="dcGo">다시 불러오기</button>`;$('#dcGo').onclick=()=>loadDaily(true);return}
+    el.style.display='none';return}
+  el.style.display='';
   const h=d.hof;el.innerHTML=`<div class="dc-h">🏆 오늘의 사옥 <small>${d.date.slice(5).replace('-','/')} · 3분 챌린지 · 모두 같은 사옥</small></div>
   <div class="dc-n">${esc(d.name)}</div><div class="dc-a">${esc(d.addr||'')}</div>
   ${d.top&&d.top.length?`<div class="dc-t">지금 1위 <b>${esc(d.top[0].nick)}</b> ${fmt(d.top[0].score)}점 · 도전 ${fmt(d.n||d.top.length)}회</div>`:'<div class="dc-t">아직 아무도 도전 안 했어요 — 첫 1위가 돼 보세요</div>'}
   ${h?`<div class="dc-hof">👑 명예의 전당 · 어제 1위 <b>${esc(h.nick)}</b> ${fmt(h.score)}점</div>`:''}
-  <button class="btn-p" id="dcGo">도전하기</button>`;
+  <button class="btn-p" id="dcGo">${EARTH()?'🏗 건축 모드로 바꿔 도전하기':'도전하기'}</button>${EARTH()?'<div class="dc-a" style="margin-top:4px">오늘의 사옥은 건축 모드에서만 도전할 수 있어요</div>':''}`;
   $('#dcGo').onclick=()=>dailyStart()}
 function dailyFirm(){const d=DAILY;if(!d)return null;const i=FKI.get(+d.kid);if(i!=null)return firmFromData(i);
   return{key:'d'+d.kid,dkey:'d'+d.kid,name:d.name,addr:d.addr||'',lat:d.lat,lng:d.lng,kind:d.kind||'',q:addrQueries(d.addr||d.name)}}
-async function dailyStart(){if(!DAILY)await loadDaily(true);const f=dailyFirm();if(!f){toast('오늘의 사옥을 불러오지 못했어요 — 잠시 뒤 다시',2500);return}
+async function dailyStart(){if(CH&&CH.on)return;if(EARTH()){setGM('build',true);toast('🏗 오늘의 사옥은 건축 모드에서만 도전할 수 있어요 — 건축 모드로 바꿔 시작해요',3200)}
+  if(!DAILY)await loadDaily(true);const f=dailyFirm();if(!f){toast('오늘의 사옥을 불러오지 못했어요'+(DAILY_ERR?' — '+DAILY_ERR:' — 잠시 뒤 다시'),4500);return}
   if(MODE==='section')exitSection();CH={pending:true,date:DAILY.date,kid:+DAILY.kid};await loadFirm(f);
   if(!CH||!CH.pending)return;const hq=B.find(b=>b.hq&&b.alive);if(!hq){toast('오늘의 사옥 건물을 찾지 못했어요',3000);CH=null;return}
   chGrow(hq);bossReset();clientReset();CLIENT_USED=true;AD.t=-1e9;newGame();score=0;STATS={t0:0,kills:0,tools:{}};dayReset();clearTools();BASE=takeState();
@@ -3929,7 +4330,17 @@ if($('#setPatch'))$('#setPatch').onclick=openPatch;
 
 $('#btnSection').onclick=()=>enterSection();
 
-$('#btnRank').onclick=openRank;$('#rankSubmit').onclick=submitRank;
+
+// ---- 화면 틀: PC / 모바일 따로 (게임 로직은 공용) ----
+function applyLayout(){let mob=TOUCH;try{const q=new URL(location.href).searchParams.get('ui');if(q==='mob')mob=true;else if(q==='pc')mob=false}catch(e){}
+  document.body.classList.toggle('ui-mob',mob);document.body.classList.toggle('ui-pc',!mob);
+  if(!mob)return;const menu=$('#sysMenu');if(!menu||menu.children.length)return;
+  ['btnGM','btnSection','btnUndo','btnReset','btnRank','btnConq','btnShare','btnSet','btnDonate'].forEach(id=>{const b=$('#'+id);if(b)menu.appendChild(b)});
+  const bm=$('#btnMenu');if(bm)bm.onclick=e=>{e.stopPropagation();menu.classList.toggle('open')};
+  menu.addEventListener('click',()=>setTimeout(()=>menu.classList.remove('open'),50));
+  document.addEventListener('pointerdown',e=>{if(menu.classList.contains('open')&&!menu.contains(e.target)&&e.target!==bm)menu.classList.remove('open')},true)}
+applyLayout();
+$('#btnRank').onclick=openRank;{const bd=$('#btnDaily');if(bd)bd.onclick=()=>{closeModals();dailyStart()}}$('#rankSubmit').onclick=submitRank;
 $('#optRankUrl').value=rankUrl();
 $('#btnRankUrl').onclick=()=>{const v=$('#optRankUrl').value.trim();if(v&&!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(v)){toast('Apps Script 웹앱 주소(…/exec) 형식이 아니에요');return}lsSet('smasharch_rank_url',v);toast(v?'랭킹 서버 주소를 저장했어요':'랭킹 서버 주소를 지웠어요')};
 
@@ -3938,7 +4349,7 @@ function openReport(){
   const alive=B.filter(b=>b.alive).length,tot=B.length,dead=tot-alive;const n=nbStats();
   let k=0;for(let i=0;i<RANKS.length;i++)if(score>=RANKS[i][0])k=i;
   const sec=STATS.t0?Math.round((performance.now()-STATS.t0)/1000):0;
-  const names=EARTH()?Object.fromEntries([...WEAPONS.map((w,i)=>[w.id,E_TOOLS[i][1]]),['nuke','태양 조각']]):Object.fromEntries([...WEAPONS,ULTIMATE].map(w=>[w.id,w.name]));
+  const names=EARTH()?Object.fromEntries([...WEAPONS_E.map((w,i)=>[w.id,E_TOOLS[i][1]]),['nuke','태양 조각']]):Object.fromEntries([...WEAPONS,ULTIMATE].map(w=>[w.id,w.name]));
   const tools=Object.entries(STATS.tools).sort((a,b)=>b[1]-a[1]).map(([id,c])=>`${names[id]||id} ${c}회`).join(' · ')||'-';
   const d=new Date();const date=`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
   const pct=tot?Math.round(dead/tot*100):0;
@@ -3961,7 +4372,7 @@ $('#bossArrow').onclick=bossGo;
 const K=TOUCH?'탭':'클릭';
 const GUIDE_TOOLS=[
   {w:0,img:'crew',name:'철거반',team:'시공',one:'인부 수십 명이 외벽을 타고 올라가 층마다 기둥을 오함마로 부숴요.',
-    steps:[`아래 도구막대에서 <b>1 철거반</b>을 골라요`,`부수고 싶은 건물을 <b>${K}</b> ①`,'인부들이 달려가서 알아서 부숴요. 기다리면 끝!'],tip:'아래층 기둥이 부러지면 위층이 통째로 내려앉아요.'},
+    steps:[`${TOUCH?'왼쪽 도구 레일':'아래 도구막대'}에서 <b>1 철거반</b>을 골라요`,`부수고 싶은 건물을 <b>${K}</b> ①`,'인부들이 달려가서 알아서 부숴요. 기다리면 끝!'],tip:'아래층 기둥이 부러지면 위층이 통째로 내려앉아요.'},
   {w:1,img:'dozer',name:'불도저',team:'시공',one:'선을 그으면 불도저 3대가 나란히 그 길을 밀고 지나가요.',
     steps:[`<b>2 불도저</b>를 골라요`,`출발점(건물 앞 땅)을 <b>${K}</b> ①`,`도착점(건물 뒤쪽)을 한 번 더 <b>${K}</b> ②`],tip:`누르고 끄는 게 아니라 <b>${K} → ${K}</b> 두 번이에요. 같은 곳을 두 번 누르면 취소.`},
   {w:2,img:'crane',name:'쇠공',team:'시공',one:'타워크레인이 세워지고, 쇠공이 그은 선을 따라 휘둘러져요.',
@@ -3969,7 +4380,7 @@ const GUIDE_TOOLS=[
   {w:3,img:'pour',name:'레미콘',team:'시공',one:'옥상에 콘크리트를 계속 부어서, 무게를 못 이긴 위층부터 내려앉아요.',
     steps:[`<b>4 레미콘</b>을 골라요`,`건물 <b>옥상</b>을 ${K} ①`,'레미콘 차가 와서 계속 붓는 걸 지켜봐요'],tip:'높고 가는 건물일수록 빨리 무너져요.'},
   {w:4,img:'blast1',img2:'blast2',name:'다이너마이트',team:'시공',one:'여러 곳에 붙여 두었다가 한 번에 연쇄 폭파해요.',
-    steps:[`<b>5 다이너마이트</b>를 골라요`,`건물 벽 여러 곳을 ${K} ①②③ — 붙이기만 하고 아직 안 터져요`,TOUCH?'오른쪽 아래 <b>[기폭]</b> 버튼을 눌러 쾅!':'<b>Space</b> 키(또는 [기폭] 버튼)를 눌러 쾅!'],tip:'1층 기둥 쪽에 여러 개 붙이면 건물 전체가 무너져요.'},
+    steps:[`<b>5 다이너마이트</b>를 골라요`,`건물 벽 여러 곳을 ${K} ①②③ — 붙이기만 하고 아직 안 터져요`,TOUCH?'아래쪽 <b>[기폭]</b> 버튼을 눌러 쾅!':'<b>Space</b> 키(또는 [기폭] 버튼)를 눌러 쾅!'],tip:'1층 기둥 쪽에 여러 개 붙이면 건물 전체가 무너져요.'},
   {w:5,img:'rebar',name:'철근 빼기',team:'시공',one:'기둥 속 철근을 몰래 빼서 건물이 서서히 약해져요. (순살 구조)',
     steps:[`<b>6 철근 빼기</b>를 골라요`,`건물을 ${K} ①`,'조금 기다리면 기둥이 하나씩 버티지 못하고 꺾여요'],tip:'바로 안 무너져요. 다른 도구랑 같이 쓰면 효과 만점.'},
   {w:6,img:'move',name:'MOVE',team:'설계',one:'건물을 통째로 들어 올려 끌고 가서 던져요.',
@@ -3983,26 +4394,26 @@ const GUIDE_TOOLS=[
 ];
 // 재난 모드 도구 설명 (사진 대신 큰 그림 글자)
 const E_GUIDE=[
-  {w:0,emo:'🐜',name:'흰개미 떼',team:'동물의 분노',one:'흰개미 수백 마리가 외벽을 타고 올라가 기둥을 속부터 갉아먹어요.',
-    steps:[`<b>1 흰개미 떼</b>를 골라요`,`부수고 싶은 건물을 <b>${K}</b>`,'흰개미들이 몰려가 알아서 갉아먹어요'],tip:'아래층 기둥이 먹히면 위층이 통째로 내려앉아요.'},
-  {w:1,emo:'🐘',name:'코끼리 떼',team:'동물의 분노',one:'선을 그으면 코끼리 3마리가 나란히 그 길로 돌진해요.',
-    steps:[`<b>2 코끼리 떼</b>를 골라요`,`출발점(건물 앞 땅)을 <b>${K}</b> ①`,`도착점(건물 뒤쪽)을 한 번 더 <b>${K}</b> ②`],tip:`누르고 끄는 게 아니라 <b>${K} → ${K}</b> 두 번이에요.`},
-  {w:2,emo:'🪲',name:'쇠똥구리',team:'동물의 분노',one:'쇠똥구리가 거대한 똥공을 굴려 그은 선을 따라 갔다가 되돌아와요.',
-    steps:[`<b>3 쇠똥구리</b>를 골라요`,`건물 한쪽 옆 땅을 <b>${K}</b> ①`,`반대쪽 옆 땅을 <b>${K}</b> ② — 그 사이를 똥공이 굴러가요`],tip:'땅에서 굴러가서 저층을 부숴요. 건물 여러 채를 한 줄로 꿰면 효과 만점.'},
-  {w:3,emo:'🕊️',name:'비둘기 떼',team:'동물의 분노',one:'수천 마리 비둘기가 옥상에 내려앉아, 무게를 못 이긴 위층부터 내려앉아요.',
-    steps:[`<b>4 비둘기 떼</b>를 골라요`,`건물 <b>옥상</b>을 ${K}`,'비둘기가 계속 몰려드는 걸 지켜봐요 (구구구)'],tip:'높고 가는 건물일수록 빨리 무너져요.'},
-  {w:4,emo:'🕳️',name:'두더지 굴',team:'동물의 분노',one:'건물 밑 여러 곳에 굴을 파 두었다가 한 번에 땅이 꺼져요.',
-    steps:[`<b>5 두더지 굴</b>을 골라요`,`건물 벽 아래를 여러 번 ${K} ①②③ — 굴만 파고 아직 안 꺼져요`,TOUCH?'오른쪽 아래 <b>[와르르!]</b> 버튼을 눌러요':'<b>Space</b> 키(또는 [와르르!] 버튼)를 눌러요'],tip:'굴은 12곳까지. 여러 건물에 나눠 파면 한꺼번에 무너져요.'},
-  {w:5,emo:'🌧️',name:'산성비',team:'자연의 분노',one:'누른 곳 일대(반경 약 45m)에 산성비가 내려 건물 철근이 녹슬어요.',
-    steps:[`<b>6 산성비</b>를 골라요`,`건물이 모인 곳을 ${K}`,'조금 기다리면 약해진 건물들이 하나씩 버티지 못해요'],tip:'바로 안 무너져요. 다른 도구랑 같이 쓰면 효과 만점.'},
-  {w:6,emo:'🌪️',name:'토네이도',team:'자연의 분노',one:'회오리가 건물을 통째로 들어 올려 날려 보내요.',
-    steps:[`<b>7 토네이도</b>를 골라요`,TOUCH?'건물을 <b>꾹 누른 채로</b> (살짝 기다리면 들려요)':'건물을 <b>누른 채로</b>',TOUCH?'손가락을 떼지 말고 끌어서 놓으면 날아가요':'마우스를 끌어서 놓으면 날아가요'],tip:'세게 휘둘러 놓을수록 멀리, 세게 떨어져요.'},
-  {w:7,emo:'🌋',name:'화산',team:'자연의 분노',one:'땅속 마그마가 건물을 밀어 올리다가, 결국 기울어져 옆 건물을 덮쳐요.',
-    steps:[`<b>8 화산</b>을 골라요`,`건물을 ${K}`,'용암이 솟고 건물이 올라가다 쓰러져요'],tip:'쓰러지는 쪽에 있는 건물까지 같이 부서져요.'},
-  {w:8,emo:'🌊',name:'쓰나미',team:'자연의 분노',one:'선을 그은 방향으로 폭 90m 파도가 밀려와 저층을 쓸어버려요.',
-    steps:[`<b>9 쓰나미</b>를 골라요`,`파도가 시작할 곳을 ${K} ①`,`밀려갈 방향 끝을 ${K} ②`],tip:'넓게 휩쓸어서 작은 건물은 한 번에 사라져요.'},
-  {w:9,emo:'🫨',name:'지진',team:'자연의 분노',one:'누른 곳 일대가 흔들리며 땅이 여기저기 꺼져요.',
-    steps:[`<b>0 지진</b>을 골라요`,`건물 근처 땅을 ${K}`,'흔들림이 끝날 때까지 주변 건물이 기울고 빠져요'],tip:'한 번에 여러 채가 무너져요. 너무 몰아서 부수면 구청이 공사중지를 걸어요!'},
+  {w:0,emo:'🐜',name:'흰개미 떼',team:'동물의 분노',one:'고른 곳 둘레(반경 약 75m) 가장자리에서 흰개미가 사방으로 몰려와 건물 기둥을 갉아먹어요.',
+    steps:[`<b>1 흰개미 떼</b>를 골라요`,`건물이 모인 곳을 <b>${K}</b>`,'흰개미들이 몰려가 알아서 갉아먹어요'],tip:'아래층 기둥이 먹히면 위층이 통째로 내려앉아요.'},
+  {w:1,emo:'🐘',name:'동물 대군',team:'동물의 분노',one:'코끼리·코뿔소·곰·멧돼지·늑대가 폭 90m 대군으로 몰려가요. 한 건물이 부딪히면 이웃 건물이 도미노처럼 줄줄이 무너져요.',
+    steps:[`<b>2 동물 대군</b>을 골라요`,`출발점(건물 앞 땅)을 <b>${K}</b> ①`,`도착점(건물 뒤쪽)을 한 번 더 <b>${K}</b> ②`],tip:`누르고 끄는 게 아니라 <b>${K} → ${K}</b> 두 번이에요. 동물은 아주 빨라요.`},
+  {w:2,emo:'🐦',name:'새 떼 운석',team:'동물의 분노',one:'새 떼가 하늘을 덮고 돌을 물고 와서, 운석 조각처럼 일대(반경 약 100m)에 우수수 떨어뜨려요.',
+    steps:[`<b>3 새 떼 운석</b>을 골라요`,`떨어뜨릴 곳을 <b>${K}</b>`,'하늘을 보세요 — 돌이 떨어지기 시작해요'],tip:'작은 건물은 한 방, 큰 건물은 윗부분부터 무너져요.'},
+  {w:3,emo:'⚡',name:'벼락',team:'자연의 분노',one:'일대(반경 약 110m)에 번개가 여기저기 흩어져 내리쳐요.',
+    steps:[`<b>4 벼락</b>을 골라요`,`건물이 모인 곳을 <b>${K}</b>`,'번개가 군데군데 연달아 쳐요'],tip:'높은 건물에 더 잘 맞아요.'},
+  {w:4,emo:'🌧️',name:'산성비',team:'자연의 분노',one:'아주 넓은 일대(반경 약 140m)에 산성비가 내려 건물 철근이 녹슬어요.',
+    steps:[`<b>5 산성비</b>를 골라요`,`동네 한가운데를 <b>${K}</b>`,'조금 기다리면 약해진 건물들이 하나씩 버티지 못해요'],tip:'바로 안 무너져요. 다른 도구와 함께 쓰면 효과 만점.'},
+  {w:5,emo:'🌀',name:'태풍',team:'자연의 분노',one:'고른 곳 일대(반경 약 105m)가 태풍에 휘말려 잔해가 공중으로 말려 올라가다가, 사방 아무 데로 날아가 버려요.',
+    steps:[`<b>6 태풍</b>을 골라요`,`건물이 모인 곳을 <b>${K}</b>`,'소용돌이가 커지다가 한꺼번에 흩어져 날려요'],tip:'날아간 잔해가 바깥 건물까지 부숴요.'},
+  {w:6,emo:'🌊',name:'쓰나미',team:'자연의 분노',one:'선을 그은 방향으로 폭 160m 거대한 파도가 빠르게 밀려와, 닿는 순간 건물이 무너져요.',
+    steps:[`<b>7 쓰나미</b>를 골라요`,`파도가 시작할 곳을 <b>${K}</b> ①`,`밀려갈 방향 끝을 <b>${K}</b> ②`],tip:'길게 그을수록 멀리 가요.'},
+  {w:7,emo:'🫨',name:'지진',team:'자연의 분노',one:'일대(반경 약 120m)가 갈라지고 땅이 꺼지면서 건물이 주저앉아요.',
+    steps:[`<b>8 지진</b>을 골라요`,`건물이 모인 곳을 <b>${K}</b>`,'균열이 번지고 땅이 푹푹 꺼져요'],tip:'한가운데는 넓게 내려앉아요.'},
+  {w:8,emo:'🌋',name:'화산',team:'자연의 분노',one:'일대(반경 약 105m) 땅이 부풀어 오르며 건물이 들려 쓰러지고, 용암이 흘러내려요.',
+    steps:[`<b>9 화산</b>을 골라요`,`건물이 모인 곳을 <b>${K}</b>`,'땅이 솟고 용암이 사방으로 흘러요'],tip:'용암에 닿은 건물은 버티지 못해요.'},
+  {w:9,emo:'🛰️',name:'인공위성',team:'자연의 분노',one:'붉은 경고 고리가 뜬 뒤 불타는 인공위성이 떨어져, 일대(반경 약 130m)에 거대한 구덩이와 충격파를 만들어요.',
+    steps:[`<b>0 인공위성</b>을 골라요`,`떨어뜨릴 곳을 <b>${K}</b>`,'붉은 고리가 커지다가 잠시 뒤 쾅! — 파편이 주변에 또 떨어져요'],tip:'가운데는 전부 사라지고, 가장자리는 충격파로 무너져요.'}
 ];
 const GUIDE_TABS=[['start','처음 시작'],['tools','도구 사용법'],['section','단면 모드'],['events','이벤트'],['score','점수·공유'],['patch','업데이트']];
 function gStart(){const pc=!TOUCH;
@@ -4011,9 +4422,10 @@ function gStart(){const pc=!TOUCH;
   <div class="g-step"><i>2</i><div><b>화면 움직이기</b>${pc?`
     <div class="g-ctl"><span><em>🖱 왼쪽 드래그</em>화면 돌리기</span><span><em>🖱 오른쪽 드래그<small>(또는 Shift+드래그)</small></em>옆으로 이동</span><span><em>🖱 휠</em>확대 · 축소</span><span><em>⌨ W A S D</em>앞뒤좌우 이동</span></div>`:`
     <div class="g-ctl"><span><em>☝ 한 손가락으로 밀기</em>화면 돌리기</span><span><em>✌ 두 손가락 벌리기·오므리기</em>확대 · 축소</span><span><em>✌ 두 손가락 같이 밀기</em>옆으로 이동</span></div>`}</div></div>
-  <div class="g-step"><i>3</i><div><b>도구 고르고 건물 누르기</b><p>아래 도구막대에서 도구를 고르고${pc?' (숫자키 1~0도 돼요)':''}, 건물을 ${K}하면 부서져요.
-    <br>⚠ <b>불도저·쇠공·TRIM</b>은 <u>${K} 한 번 → 끝점에 한 번 더 ${K}</u> 해서 선을 그어요. 누르고 끄는 게 아니에요!</p></div></div>
-  <div class="g-step"><i>4</i><div><b>잘못했으면</b><p><kbd>되돌리기</kbd>${pc?'(Ctrl+Z)':''}로 한 단계 전으로, <kbd>전부 복구</kbd>로 처음 상태로 돌아가요.</p></div></div>
+  <div class="g-step"><i>3</i><div><b>도구 고르고 건물 누르기</b><p>${pc?'아래 도구막대':'왼쪽 도구 레일'}에서 도구를 고르고${pc?' (숫자키 1~0도 돼요)':''}, 건물을 ${K}하면 부서져요.
+    <br>⚠ <b>불도저·쇠공·TRIM</b>(재난 모드는 <b>동물 대군·쓰나미</b>)은 <u>${K} 한 번 → 끝점에 한 번 더 ${K}</u> 해서 선을 그어요. 누르고 끄는 게 아니에요!${pc?'':' 첫 탭 뒤에 점선이 보이고, 손가락을 끌면 끝점 쪽으로 따라와요.'}</p></div></div>
+  <div class="g-step"><i>4</i><div><b>잘못했으면</b><p>${pc?'':'위쪽 <kbd>☰ 메뉴</kbd>에서 '}<kbd>되돌리기</kbd>${pc?'(Ctrl+Z)':''}로 한 단계 전으로, <kbd>전부 복구</kbd>로 처음 상태로 돌아가요.</p></div></div>
+  <div class="g-step"><i>5</i><div><b>🏆 오늘의 사옥</b><p>위쪽 <kbd>🏆</kbd> 버튼으로 언제든 도전해요 (건축 모드에서만 참여). ${pc?'':'랭킹·정복·공유·설정은 <kbd>☰ 메뉴</kbd>에 있어요.'}</p></div></div>
   </div>
   <div class="g-cta"><button class="btn-p" id="gMission">🎯 따라하기로 하나씩 배우기</button><button class="btn-s" data-gtab="tools">도구 사용법 보기 →</button></div>`}
 function gTools(){const e=EARTH();return `<div class="g-mode"><span>${e?'🌍 지금은 <b>재난 모드</b> 도구예요':'🏗 지금은 <b>건축 모드</b> 도구예요'}</span><button class="btn-s" id="gSwapMode">${e?'🏗 건축 모드로 바꾸기':'🌍 재난 모드로 바꾸기'}</button></div><div class="g-tools">`+(e?E_GUIDE:GUIDE_TOOLS).map(t=>`<div class="g-tool">
@@ -4024,14 +4436,14 @@ function gTools(){const e=EARTH();return `<div class="g-mode"><span>${e?'🌍 �
   ${e?`<div class="g-tool g-ult"><div class="g-txt"><div class="g-name"><kbd>Q</kbd> ☀ 태양 조각</div><p class="g-one">게이지 없이 <b>30초마다</b> 쓸 수 있어요(범위 3배). ${TOUCH?'오른쪽 아래 원을 누르고':'Q 키를 누르고'} 아무 곳이나 ${K}하면 태양 조각이 떨어져요. 세상이 캄캄해지고(불 켜진 건물 점수 ×2), 밤이 끝나면 인류가 인공 태양을 띄워 다시 낮이 돼요.</p>`:`<div class="g-tool g-ult"><div class="g-txt"><div class="g-name"><kbd>Q</kbd> 필살기</div><p class="g-one">부술수록 오른쪽 아래 원형 게이지가 차요. 가득 차면 ${TOUCH?'원을 누르고':'Q 키를 누르고'} 아무 곳이나 ${K}하면 일대가 한 번에 날아가요.</p>`}</div></div></div>`}
 function gSection(){return `<div class="g-tool"><div class="g-img"><img loading="lazy" src="img/guide/section.jpg" alt="단면 모드"></div><div class="g-txt">
   <div class="g-name">🔪 단면 모드 — 우리 층만 정밀 철거</div><p class="g-one">사옥을 잘라서 층별 단면으로 보여줘요. 기둥·코어·슬래브를 하나하나 부술 수 있어요.</p>
-  <ol><li>아래 <kbd>단면</kbd> 버튼${TOUCH?'':' (또는 C 키)'}을 눌러요. 동네 지도의 파란 사무소 이름표를 ${TOUCH?'두 번 탭':'클릭'}해도 그 건물 단면으로 들어가요</li>
+  <ol><li>${TOUCH?'위쪽 <kbd>☰ 메뉴</kbd>의':'아래'} <kbd>단면</kbd> 버튼${TOUCH?'':' (또는 C 키)'}을 눌러요. 동네 지도의 파란 사무소 이름표를 ${TOUCH?'두 번 탭':'클릭'}해도 그 건물 단면으로 들어가요</li>
   <li>도구는 동네와 같아요. MOVE는 층을 통째로 빼서 던지고, EXTRUDE는 위로 끌어 올려 증축해요</li>
   <li>${TOUCH?'위쪽 [확대해서 보기]':'F 키'}로 우리 층을 확대하고, <kbd>동네로</kbd> 버튼으로 돌아가요</li></ol>
   <p class="g-tip">💡 한 층의 기둥이 절반 넘게 부러지면 그 층이 주저앉고, 위층이 연달아 무너져요. 적은 타격으로 완전 붕괴시키면 '구조 등급' 보너스!</p></div></div>`}
 function gEvents(){return `<div class="g-ev">
-  <div><b>🏆 오늘의 사옥</b><p>매일 하나, 모두 같은 사옥에서 3분 대결. 회사 고르기 창 맨 위 [도전하기]. 사옥은 크게 키워지고 무너지면 다시 솟아요. 같은 도구를 3번 넘게 연달아 쓰면 점수가 줄고, 5종 이상 쓰면 ×1.1 · 8종 이상 ×1.2. 필살기는 한 번만. 하루 1위는 다음 날 하늘 광고 타워에 👑 명예의 전당으로 걸려요.</p></div>
+  <div><b>🏆 오늘의 사옥</b><p>매일 하나, 모두 같은 사옥에서 3분 대결 (건축 모드에서만 참여). 위쪽 <b>🏆</b> 버튼이나 회사 고르기 창 맨 위 [도전하기]. 사옥은 크게 키워지고 무너지면 다시 솟아요. 같은 도구를 3번 넘게 연달아 쓰면 점수가 줄고, 5종 이상 쓰면 ×1.1 · 8종 이상 ×1.2. 필살기는 한 번만. 하루 1위는 다음 날 하늘 광고 타워에 👑 명예의 전당으로 걸려요.</p></div>
   <div><b>🌨 날씨</b><p>계절 따라 눈·비·벚꽃·단풍이 내려요. 설정에서 끌 수 있어요.</p></div>
-  <div><b>🌍 재난 모드</b><p>회사 고르기 창 맨 위나 도구막대의 [🌍 재난 모드]로 바꿔요. 같은 동네에서 도구가 동물의 분노·자연의 분노로 바뀌어요. 랭킹은 모드별로 따로예요.</p></div>
+  <div><b>🌍 재난 모드</b><p>회사 고르기 창 맨 위나 ${TOUCH?'☰ 메뉴':'도구막대'}의 [🌍 재난 모드]로 바꿔요. 같은 동네에서 도구가 동물의 분노·자연의 분노로 바뀌어요. 랭킹은 모드별로 따로예요.</p></div>
   <div><b>👔 사장님</b><p>옥상에서 잔소리해요. 사장님을 ${K}하면 기절 + 보너스. 사옥이 무너지면 근처 건축사무소로 도망가요 — 화면 가장자리 화살표를 누르면 따라가요. 더 도망칠 곳이 없으면 검거! (대학교는 총장님)</p></div>
   <div><b>😤 발주처 난입</b><p>사옥이 꽤 부서지면 검은 차를 타고 와서 빨간 임시 철골·빨간펜 테이프·매스·타워를 갖다 놓아요. 전부 부수면 점수! 건물이 무너지면 한 번은 새로 지어요.</p></div>
   <div><b>📢 부동산 호황</b><p>사장님을 검거한 뒤 점수를 더 모으면 사장님이 비행선을 타고 돌아와 사옥을 새로 지어요. 비행선 현수막엔 최근 7일 가장 많이 무너진 사옥 1위!</p></div>
@@ -4078,11 +4490,11 @@ const MISSIONS_B=[
 const MISSIONS_E=[
   {t:TOUCH?'한 손가락으로 화면을 밀어 돌려보기':'빈 곳을 드래그해서 화면 돌려보기',ok:()=>MS.rot>0.6},
   {t:TOUCH?'두 손가락으로 확대·축소해 보기':'마우스 휠로 확대·축소해 보기',ok:()=>MS.zoom>0.25},
-  {t:`<b>1 흰개미 떼</b>를 고르고 건물을 ${K}`,w:0,ok:()=>(STATS.tools.crew||0)>0},
-  {t:`<b>2 코끼리 떼</b>: 땅을 ${K} → 건물 너머를 한 번 더 ${K}`,w:1,ok:()=>(STATS.tools.dozer||0)>0},
-  {t:`<b>5 두더지 굴</b>을 건물 밑에 파고 ${TOUCH?'[와르르!]':'Space'}로 꺼뜨리기`,w:4,ok:()=>(STATS.tools.blast||0)>0},
+  {t:`<b>1 흰개미 떼</b>를 고르고 건물 근처를 ${K}`,w:0,ok:()=>(STATS.tools.termite||0)>0},
+  {t:`<b>2 동물 대군</b>: 땅을 ${K} → 몰려갈 방향을 한 번 더 ${K}`,w:1,ok:()=>(STATS.tools.herd||0)>0},
   {t:`옥상의 <b>사장님</b>을 ${K}해서 기절시키기`,ok:()=>MS.boss>0},
-  {t:`<b>9 쓰나미</b>: 땅을 ${K} → 파도가 갈 방향을 한 번 더 ${K}`,w:8,ok:()=>(STATS.tools.trim||0)>0},
+  {t:`<b>7 쓰나미</b>: 땅을 ${K} → 파도가 갈 방향을 한 번 더 ${K}`,w:6,ok:()=>(STATS.tools.tsunami||0)>0},
+  {t:`<b>9 화산</b>을 ${K}해서 땅을 솟구치게 하기`,w:8,ok:()=>(STATS.tools.volcano||0)>0},
 ];
 let MS=null;
 function missionStart(){const list=EARTH()?MISSIONS_E:MISSIONS_B;MS={list,i:0,rot:0,zoom:0,boss:0,th:cam.theta,ds:cam.dist,done:new Array(list.length).fill(false)};missionUI();toast('🎯 왼쪽 목록을 하나씩 해보세요. 해내면 자동으로 체크돼요',3500)}

@@ -496,6 +496,8 @@ details.fold .client-in{margin:8px 0 2px}details.fold.cast{margin:0 0 8px;backgr
 #geoNote .gn-x{flex:0 0 auto;background:transparent;border:0;color:#bbb;font-size:18px;padding:0 4px}
 @media (pointer:coarse) and (max-height:500px){#geoNote{top:auto;bottom:calc(70px + env(safe-area-inset-bottom));font-size:11px}#geoNote .gn-pick{font-size:11px;padding:5px 8px}}
 /* 광고 타워 현수막 */
+#btnDaily{background:#b8860b!important;color:#fff!important;border-color:#e0b23a!important}#btnDaily:hover{filter:brightness(1.12)}
+@media (pointer:coarse),(max-width:1500px){#btnDaily .bd-t{display:none}#btnDaily{padding:3px 8px}}
 #dailyCard{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,#fff6d6,#ffe9a8);border:2px solid #d9a400;color:#3a2a00}
 #dailyCard .dc-h{font-weight:800;font-size:14px}#dailyCard .dc-h small{font-weight:500;color:#7a5c00;font-size:11px;margin-left:4px}
 #dailyCard .dc-n{font-size:17px;font-weight:800;margin-top:4px}#dailyCard .dc-a{font-size:11.5px;color:#6b5a2a}
@@ -527,6 +529,27 @@ body.earth #ult{--ult:#ffb020}
 .g-emo{display:flex;align-items:center;justify-content:center;height:100%;min-height:110px;font-size:64px;background:linear-gradient(135deg,#1d3a2c,#14251d);border-radius:8px}.g-mode{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;font-size:13px;padding:8px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}.g-mode .btn-s{padding:5px 10px;font-size:12px;white-space:nowrap}
 .w-new{margin:10px 0 4px!important;padding:9px 11px;border-radius:8px;background:#163828;border:1px solid #2fb58a;color:#d8ffe9;font-size:13px!important;line-height:1.5}
 </style>
+<style id="uiLayout">
+/* ===== 화면 틀 분리: PC(body.ui-pc) = 하단 도구막대 / 모바일(body.ui-mob) = 왼쪽 도구 레일 + ☰ 메뉴 ===== */
+#btnMenu,#sysMenu{display:none}
+body.ui-mob #btnMenu{display:inline-block}
+body.ui-mob #toolbar{left:calc(6px + env(safe-area-inset-left))!important;top:46px!important;bottom:auto!important;right:auto!important;transform:none!important;width:auto!important;max-width:none!important;height:auto;max-height:calc(100vh - 54px);max-height:calc(100dvh - 54px);display:grid!important;grid-template-columns:repeat(2,46px);grid-auto-rows:46px;gap:4px!important;padding:5px!important;overflow-y:auto;overflow-x:hidden;align-content:start;touch-action:pan-y;z-index:6}
+body.ui-mob #toolbar .grp{display:contents!important;padding:0!important}
+body.ui-mob #toolbar .sep,body.ui-mob .glbl,body.ui-mob .tool .num{display:none!important}
+body.ui-mob .tool,body.ui-mob .tool.sm,body.ui-mob .tool[data-w]{width:46px!important;min-width:46px!important;height:46px!important;font-size:8.5px!important;letter-spacing:-.3px;gap:1px;border-radius:6px}
+body.ui-mob .tool svg{width:17px;height:17px}
+body.ui-mob .tool .emo{font-size:17px;margin:0}
+body.ui-mob #sysMenu{position:fixed;left:calc(112px + env(safe-area-inset-left));top:46px;z-index:8;grid-template-columns:repeat(3,54px);grid-auto-rows:46px;gap:4px;padding:6px;border-radius:10px}
+body.ui-mob #sysMenu.open{display:grid}
+body.ui-mob #sysMenu .tool,body.ui-mob #sysMenu .tool.sm{width:54px!important;min-width:54px!important}
+body.ui-mob #mission{left:calc(112px + env(safe-area-inset-left))!important;top:auto!important;bottom:8px!important;transform:none!important;width:min(240px,34vw)}
+body.ui-mob #combo{left:calc(112px + env(safe-area-inset-left))!important;top:50px!important}
+body.ui-mob #hint{bottom:6px!important;max-width:calc(100vw - 230px)}
+body.ui-mob #credit{left:calc(112px + env(safe-area-inset-left))!important;top:auto!important;bottom:2px!important}
+body.ui-mob #ult{right:calc(10px + env(safe-area-inset-right))!important;bottom:calc(10px + env(safe-area-inset-bottom))!important}
+body.ui-mob #btnDet{bottom:calc(14px + env(safe-area-inset-bottom))!important;left:55%!important}
+body.ui-pc #toolbar{touch-action:auto}
+</style>
 </head>
 <body>
 <canvas id="gl"></canvas>
@@ -553,7 +576,7 @@ body.earth #ult{--ult:#ffb020}
 <button id="bossArrow" style="display:none"><i></i>사장님</button>
 <button id="btnDet" style="display:none">기폭! (Space)<b>0</b></button>
 
-<div id="brand" class="panel"><b>SMASH <span>ARCH</span></b><button class="btn-s" id="btnFirm">⌂ 다른 회사</button><button class="btn-s" id="btnHelp" title="게임 가이드 · 조작법">?</button><button class="btn-s" id="btnMini" title="간단 화면 (H)">UI</button><button class="btn-s" id="btnFS" title="전체 화면">⛶</button></div>
+<div id="brand" class="panel"><b>SMASH <span>ARCH</span></b><button class="btn-s" id="btnFirm">⌂ 다른 회사</button><button class="btn-s" id="btnMenu" title="메뉴">☰</button><button class="btn-s" id="btnDaily" title="오늘의 사옥 3분 챌린지 (건축 모드)">🏆<span class="bd-t"> 오늘의 사옥</span></button><button class="btn-s" id="btnHelp" title="게임 가이드 · 조작법">?</button><button class="btn-s" id="btnMini" title="간단 화면 (H)">UI</button><button class="btn-s" id="btnFS" title="전체 화면">⛶</button></div>
 
 <div id="hudTop" class="panel">
   <div style="min-width:0">
@@ -598,6 +621,7 @@ body.earth #ult{--ult:#ffb020}
   <button class="tool sm" id="btnSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>설정</button>
   <button class="tool sm" id="btnDonate" title="개발자 커피 후원"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg>후원</button>
 </div>
+<div id="sysMenu" class="panel"></div>
 <div id="credit">건물·도로 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap 기여자</a> · 건물 모양은 단순화된 일반 재질 · 사무소 목록 © 공공데이터포털 · 회사와 관계없는 비공식 팬 게임 · 원작 아이디어 SMASH HYU (@Hong_Iron_DEV)</div>
 
 <div class="modal" id="mConq"><div class="card conq">
@@ -638,7 +662,7 @@ body.earth #ult{--ult:#ffb020}
 <div class="modal" id="mWelcome"><div class="card welcome">
   <h2>💥 SMASH ARCH에 오신 걸 환영해요</h2>
   <p>실제 지도로 만든 우리 회사 동네를 부수는 게임이에요.<br>처음이라면 <b>따라하기</b>로 1분만 배워 보세요. 하나씩 알려드려요.</p>
-  <p class="w-new">🏆 <b>NEW 오늘의 사옥</b> — 매일 하나, 모두 같은 사옥에서 3분 대결! 1위는 다음 날 하늘 현수막에 이름이 걸려요. 🌍 재난 모드도 있어요.</p>
+  <p class="w-new">🏆 <b>NEW 오늘의 사옥</b> — 매일 하나, 모두 같은 사옥에서 3분 대결! 1위는 다음 날 하늘 현수막에 이름이 걸려요. (재난 모드는 참여 불가)</p>
   <button class="btn-p" id="wMission">🎯 따라하기로 배우기 <small>(추천 · 1분)</small></button>
   <button class="btn-s" id="wGuide">📘 사진으로 된 가이드 먼저 보기</button>
   <button class="btn-s" id="wSkip">바로 시작할게요</button>
@@ -831,15 +855,23 @@ body.earth #ult{--ult:#ffb020}
 })();
 </script>
 <div class="modal" id="mPatch"><div class="card patch">
-  <div class="small" style="margin:0 0 4px">업데이트 · 2026.11.06</div>
-  <h2>🏆 오늘의 사옥 챌린지</h2>
+  <div class="small" style="margin:0 0 4px">업데이트 · 2026.11.07</div>
+  <h2>🌍 재난 도구 전면 개편</h2>
   <ul>
-    <li><b>매일 사옥 하나, 모두 같은 곳에서 3분 대결!</b> 회사 고르기 창 맨 위 [도전하기]를 누르세요. 오늘의 사옥은 크게 키워져 있고(작은 사옥은 많이, 큰 사옥은 조금), 무너지면 바로 다시 솟아요.</li>
-    <li><b>도구는 골고루</b> — 같은 도구를 3번 넘게 연달아 쓰면 점수가 조금씩 줄어요(다른 도구를 쓰면 회복). 5종 이상 쓰면 최종 점수 ×1.1, 8종 이상 ×1.2. 필살기는 한 번만.</li>
-    <li><b>👑 명예의 전당</b> — 하루 1위는 다음 날 하늘 광고 타워 현수막에 이름이 걸려요.</li>
-    <li><b>🌨 날씨</b> — 계절 따라 눈·비·벚꽃·단풍이 내려요. 설정에서 끌 수 있어요.</li>
-    <li><b>📲 앱으로 설치</b> — 설정의 [앱으로 설치]를 누르면 홈 화면·바탕화면에 아이콘이 생기고 전체 화면으로 열려요. (아이폰은 공유 → 홈 화면에 추가)</li>
+    <li><b>이제 재난 도구는 전부 범위 공격!</b> 🐜 흰개미 떼 · 🐘 동물 대군 · 🐦 새 떼 운석 · ⚡ 벼락 · 🌧️ 산성비 · 🌀 태풍 · 🌊 쓰나미 · 🫨 지진 · 🌋 화산 · 🛰️ 인공위성 (숫자키 1~0). 쇠똥구리·두더지 굴·비둘기·토네이도는 없어졌어요.</li>
+    <li><b>동물 대군</b>은 여러 동물이 폭 90m로 훨씬 빠르게 몰려가고, 부딪힌 건물에서 이웃으로 도미노처럼 무너져요. <b>새 떼 운석</b>은 새들이 돌을 떨어뜨려요.</li>
+    <li><b>태풍</b>은 일대를 빨아올렸다가 사방으로 날려요. <b>쓰나미</b>는 더 빠르고 더 커졌고, <b>지진</b>은 땅이 갈라져 꺼지고, <b>화산</b>은 일대 땅이 솟고 용암이 흘러요.</li>
+    <li><b>🏆 오늘의 사옥은 건축 모드에서만</b> 참여할 수 있어요. 재난 모드에서 도전하면 건축 모드로 바뀌어요. 불러오지 못하면 이유와 [다시 불러오기] 버튼이 떠요.</li>
+    <li><b>🛰️ 인공위성 낙하</b> — 붉은 경고 고리가 뜬 뒤 불타는 위성이 떨어져 거대한 구덩이와 충격파를 만들어요.</li>
+    <li><b>🖥 PC / 📱 모바일 화면 분리</b> — PC는 아래 도구막대, 휴대폰은 왼쪽 도구 레일 + ☰ 메뉴로 따로 설계했어요. 🏆 오늘의 사옥 버튼은 항상 위쪽에 있어요.</li>
+    <li><b>📱 모바일 성능</b> — 효과가 너무 많으면 자동으로 줄여서 끊김을 막아요.</li>
   </ul>
+  <details class="fold"><summary>11.06 업데이트 보기 <small>(🏆 오늘의 사옥)</small></summary>
+  <ul>
+    <li><b>매일 사옥 하나, 모두 같은 곳에서 3분 대결!</b> 도구는 골고루 쓰면 점수 보너스, 하루 1위는 다음 날 하늘 광고 타워 현수막에 이름이 걸려요.</li>
+    <li><b>🌨 날씨</b>와 <b>📲 앱으로 설치</b>(설정)도 이때 들어왔어요.</li>
+  </ul>
+  </details>
   <details class="fold"><summary>11.05 업데이트 보기 <small>(🌍 재난 모드)</small></summary>
   <ul>
     <li><b>건축을 너무 많이 해서 지구가 화났어요!</b> 이번엔 동물과 자연이 사옥을 부숴요. 회사 고르기 창 맨 위나 도구막대의 [🌍 재난 모드]로 바꾸면 같은 동네에서 도구만 바뀌어요.</li>
