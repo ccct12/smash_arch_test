@@ -902,21 +902,23 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
 })();
 </script>
 <div class="modal" id="mPatch"><div class="card patch">
-  <div class="small" style="margin:0 0 2px">업데이트 · 2026.11.07</div>
+  <div class="small" style="margin:0 0 2px">업데이트 · 2026.11.05</div>
   <h2>🌍 재난 도구 전면 개편</h2>
   <ul>
     <li><b>재난 도구 10종</b>(숫자 1~0) — 🐜 흰개미 · 🐘 동물 대군 · 🐦 새 떼 운석 · ⚡ 하늘 레이저 · 🔥 산성 화재 · 🌀 태풍 · 🌊 쓰나미 · 🫨 지진 · 🌋 화산 · 🛰️ 인공위성</li>
     <li><b>선 긋기 도구</b> — 동물 대군 · 태풍 · 쓰나미는 탭 두 번(시작→끝)</li>
+    <li><b>🛡 지구 방어군</b> — 재난 모드엔 구청 대신 방어 헬기! 20동 넘게 몰아서 부수면 3초간 불길 번짐을 막아요(도구는 계속 써요)</li>
+    <li><b>🏘 부동산 호황</b> — 재난 모드는 필요 점수가 10배(100만 점부터)</li>
     <li><b>🏆 오늘의 사옥</b>은 건축 모드에서만 · 위쪽 🏆 버튼으로 바로 도전</li>
     <li><b>📱 화면 분리</b> — 휴대폰은 왼쪽 도구 레일 + ☰ 메뉴 · 👔 사장님이 옮겨 다닐 때마다 옷·헤어 변신</li>
   </ul>
-  <details class="fold"><summary>11.06 업데이트 보기 <small>(🏆 오늘의 사옥)</small></summary>
+  <details class="fold"><summary>이전 업데이트 보기 <small>(🏆 오늘의 사옥)</small></summary>
   <ul>
     <li><b>매일 사옥 하나, 모두 같은 곳에서 3분 대결!</b> 도구는 골고루 쓰면 점수 보너스, 하루 1위는 다음 날 하늘 광고 타워 현수막에 이름이 걸려요.</li>
     <li><b>🌨 날씨</b>와 <b>📲 앱으로 설치</b>(설정)도 이때 들어왔어요.</li>
   </ul>
   </details>
-  <details class="fold"><summary>11.05 업데이트 보기 <small>(🌍 재난 모드)</small></summary>
+  <details class="fold"><summary>이전 업데이트 보기 <small>(🌍 재난 모드 첫 공개)</small></summary>
   <ul>
     <li><b>건축을 너무 많이 해서 지구가 화났어요!</b> 이번엔 동물과 자연이 사옥을 부숴요. 회사 고르기 창 맨 위나 도구막대의 [🌍 재난 모드]로 바꾸면 같은 동네에서 도구만 바뀌어요.</li>
     <li><b>동물의 분노</b> — 🐜 흰개미 떼 · 🐘 코끼리 떼 · 🪲 쇠똥구리(거대 똥공) · 🕊️ 비둘기 떼 · 🕳️ 두더지 굴</li>
@@ -972,7 +974,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
   function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
   function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
-  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261107c';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261105a';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
     s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
   var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
   var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));

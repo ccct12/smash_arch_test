@@ -41,7 +41,7 @@ function addrQueries(addr){
 
 // ---------- 설정 ----------
 const FLOOR_Y = -60, BOTTOM_Y = -75;
-const GAME_VER='2026.11.07';
+const GAME_VER='2026.11.05b';
 const NOTICE_MAJOR=true;   // true = 큰 업데이트: '업데이트 소식 끄기'와 상관없이, 처음 온 사람에게도 한 번 띄움   // 패치 노트 버전 — 바꾸면 재방문자에게 업데이트 창이 한 번 뜸 (index.html #mPatch 내용도 같이 수정)
 const opts = {sound:true, labels:true, debris:true, shadows:true, pins:true, mini:false, shake:false, night:true, patch:true, weather:true, suit:'navy'};
 try{ const s = JSON.parse(localStorage.getItem('smasharch_opts')||'null'); if(s) Object.assign(opts,s);}catch(e){}
@@ -1988,7 +1988,8 @@ function spawnAcid(h){
 function updateAcid(dt){for(let i=ACID.length-1;i>=0;i--){const f=ACID[i];f.t+=dt;let live=0;
   for(const e of f.list){const b=e.b;if(e.dead)continue;
     if(!b.alive){e.dead=true;b._fire=0;continue}
-    live++;e.t+=dt;e.heat+=dt;
+    live++;if(performance.now()<DEFEND.until)continue;   // 지구 방어군이 불길을 잡는 동안 번짐·피해 정지
+    e.t+=dt;e.heat+=dt;
     if(e.heat>0.5){e.heat=0;const d=b.det||ensureDet(b),fl=Math.floor(Math.random()*Math.min(d.F,8));if(d.fl[fl])structDamage(b,b.cx+eRnd(-5,5),b.base+d.fy[fl]+d.fh*0.5,b.cz+eRnd(-5,5),Math.sqrt(b.area)*0.7,2.1,{floors:[fl]})}
     if(!e.w&&e.t>4.5&&b.alive){e.w=true;const d=b.det||ensureDet(b);for(let k=0;k<d.hp.length;k++)d.hp[k]=Math.min(d.hp[k],d.hp0*(0.3+Math.random()*0.12));d.weak=1;d.weakT=-0.3;d.dirty=true}
     if(e.t>20){e.dead=true;b._fire=0;continue}
@@ -2200,12 +2201,31 @@ function drawSats(m,mg){for(const s of SATS){
       pushShape(m,CUBE,p[0],p[1],p[2],22,0.5,5.5,r,[0.15,0.3,0.7],0);
       pushShape(mg,SPHERE,p[0]-s.dx*3,p[1]+3,p[2]-s.dz*3,9,9,9,0,[1,0.5,0.12],1)}}}}
 
+
+// =====================================================================
+//  지구 방어군 — 재난 모드의 '구청 공사중지' 대신: 짧은 시간에 20동 넘게 부수면 방어 헬기가 와서 3초간 불길 번짐을 막음 (도구는 계속 사용 가능)
+// =====================================================================
+let DEF=[];const DEFEND={until:0};
+function defenseArrive(x,z){DEFEND.until=performance.now()+3200;DEF.push({x,z,t:0,T:3.6,g:groundAt(x,z)});
+  toast('🛡 지구 방어군 출동! 3초간 불길 번짐을 막아요 (도구는 계속 써도 돼요)',2800);sfx(10,0.6);flashScreen(0.15,'#bfe3ff');if(BOSS&&BOSS.state==='idle')bossSay('지구 방어군이다! 다들 피해!',3)}
+function updateDef(dt){for(let i=DEF.length-1;i>=0;i--){const d=DEF[i];d.t+=dt;
+  if(d.t<d.T-0.4)for(let q=0;q<3;q++){const a=performance.now()/1000*1.4+q*2.09;fxSp(d.x+Math.cos(a)*40,d.g+60,d.z+Math.sin(a)*40,0,-30,0,eRnd(0.6,1.2),[0.6,0.8,1],1,1)}
+  if(d.t>d.T)DEF.splice(i,1)}}
+function drawDef(m,mg){const now=performance.now()/1000;
+  for(const d of DEF){const k=Math.min(1,d.t/0.5)*(d.t>d.T-0.5?Math.max(0,(d.T-d.t)/0.5):1);if(k<=0.01)continue;
+    for(let q=0;q<3;q++){if(!fxOK(6))return;const a=now*1.4+q*2.09,px=d.x+Math.cos(a)*40,pz=d.z+Math.sin(a)*40,py=d.g+70+Math.sin(now*2+q)*3;
+      pushShape(m,CUBE,px,py,pz,8,3.4,3.4,-a-1.57,[0.2,0.3,0.45],0);
+      pushShape(m,CUBE,px-Math.sin(a)*5,py+0.4,pz+Math.cos(a)*5,6,1,1,-a-1.57,[0.2,0.3,0.45],0);
+      pushShape(m,CUBE,px,py+2.3,pz,14,0.3,0.9,now*28+q,[0.85,0.85,0.9],0);
+      pushShape(mg,CUBE,px,(py+d.g)/2,pz,2.4*k,py-d.g,2.4*k,0,[0.65,0.85,1],1);
+      pushShape(mg,SPHERE,px,py,pz,1.6,1.6,1.6,0,[1,0.3,0.25],1)}}}
+
 // ---- 묶음: 갱신·그리기·정리 ----
 function updateEarth2(dt){
   if(MODE!=='city'){clearEarth2();return}
-  updateHerds(dt);updateFlocks(dt);updateBolts(dt);updateTyphoons(dt);updateQuakes(dt);updateVolcs(dt);updateSats(dt)}
-function drawEarth2(m,mg){drawHerds(m,mg);drawFlocks(m,mg);drawBolts(m,mg);drawTyphoons(m,mg);drawQuakes(m,mg);drawVolcs(m,mg);drawSats(m,mg);drawHover(m,mg)}
-function clearEarth2(){HERDS=[];FLOCKS=[];ROCKS=[];BOLTS=[];TYPH=[];QUAKES=[];VOLCS=[];SATS=[]}
+  updateHerds(dt);updateFlocks(dt);updateBolts(dt);updateTyphoons(dt);updateQuakes(dt);updateVolcs(dt);updateSats(dt);updateDef(dt)}
+function drawEarth2(m,mg){drawHerds(m,mg);drawFlocks(m,mg);drawBolts(m,mg);drawTyphoons(m,mg);drawQuakes(m,mg);drawVolcs(m,mg);drawSats(m,mg);drawDef(m,mg);drawHover(m,mg)}
+function clearEarth2(){HERDS=[];FLOCKS=[];ROCKS=[];BOLTS=[];TYPH=[];QUAKES=[];VOLCS=[];SATS=[];DEF=[]}
 // <<EARTH_V2_END>>
 
 // ---- 7. 토네이도 (MOVE 로 든 건물 아래 깔때기) ----
@@ -3431,7 +3451,8 @@ let STOP={log:[],until:0,immune:0,grace:0,x:0,z:0,nag:0};
 function stopOn(){return MODE==='city'&&(performance.now()<STOP.until||!!(CH&&CH.over))}
 function stopNote(b){if(MODE!=='city'||!b)return;const now=performance.now();if(now<STOP.grace||now<STOP.until)return;
   STOP.log.push({t:now,x:b.cx,z:b.cz});while(STOP.log.length&&now-STOP.log[0].t>STOP_WIN*1000)STOP.log.shift();
-  if(STOP.log.length>=STOP_N&&now>STOP.immune){let x=0,z=0;for(const k of STOP.log){x+=k.x;z+=k.z}STOP.x=x/STOP.log.length;STOP.z=z/STOP.log.length;STOP.log=[];
+  if(STOP.log.length>=(EARTH()?STOP_N*2:STOP_N)&&now>STOP.immune){let x=0,z=0;for(const k of STOP.log){x+=k.x;z+=k.z}STOP.x=x/STOP.log.length;STOP.z=z/STOP.log.length;STOP.log=[];
+    if(EARTH()){STOP.immune=now+STOP_IMMUNE*1000;defenseArrive(STOP.x,STOP.z);return}   // 재난 모드는 도구를 막지 않고 방어군만 출동
     STOP.until=now+STOP_SEC*1000;STOP.immune=STOP.until+STOP_IMMUNE*1000;
     if(gesture)gestureCancel();if(ultArmed){ultArmed=false;selectWeapon(weapon)}
     sfx(10,0.5);flashScreen(0.18,'#ffe066');if(BOSS&&BOSS.state==='idle')bossSay('구청에서 나왔다! 다들 손 멈춰!',3)}}
@@ -3457,7 +3478,7 @@ const BOOM_COLS=[[0.72,0.86,0.96],[0.96,0.84,0.55],[0.82,0.95,0.80],[0.95,0.78,0
 let BOOM={n:0,round:0,need:0,ship:null};
 function boomReset(){BOOM={n:0,round:0,need:0,ship:null}}
 function boomLeft(){return Math.max(0,Math.ceil(BOOM.need-score))}
-function boomArm(){try{if(!HOT.d)loadHot()}catch(e){}BOOM.n++;const add=BOOM_BASE*BOOM.n*BOOM.n;BOOM.need=score+add;
+function boomArm(){try{if(!HOT.d)loadHot()}catch(e){}BOOM.n++;const add=BOOM_BASE*(EARTH()?10:1)*BOOM.n*BOOM.n;BOOM.need=score+add;
   setTimeout(()=>{if(BOSS&&BOSS.state==='caught'&&!BOOM.ship)toast(EARTH()?`🌱 ${fmt(add)}점 더 부수면 부동산 호황! 재해로 빈 땅이 많아져서 ${BT()}이 비행선 타고 돌아와요`:`🏗 ${fmt(add)}점 더 부수면 부동산 호황! ${BT()}이 비행선 타고 돌아와요`,4200)},4300)}
 function boomTarget(){const h=BOSS&&BOSS.home;if(h&&B.includes(h))return h;return B.find(x=>x.hq)||null}
 function boomStart(){const b=boomTarget();if(!b){BOOM.need=0;return}
@@ -4497,7 +4518,7 @@ function gEvents(){return `<div class="g-ev">
   <div><b>😤 발주처 난입</b><p>사옥이 꽤 부서지면 검은 차를 타고 와서 빨간 임시 철골·빨간펜 테이프·매스·타워를 갖다 놓아요. 전부 부수면 점수! 건물이 무너지면 한 번은 새로 지어요.</p></div>
   <div><b>📢 부동산 호황</b><p>사장님을 검거한 뒤 점수를 더 모으면 사장님이 비행선을 타고 돌아와 사옥을 새로 지어요. 비행선 현수막엔 최근 7일 가장 많이 무너진 사옥 1위!</p></div>
   <div><b>🌙 야근 모드</b><p>낮 90초 · 밤 60초. 밤에는 <b>불 켜진 건물 점수 ×2</b>, 꺼진 건물 ×0.25. 오른쪽 위에 남은 시간이 보여요.</p></div>
-  <div><b>🚧 구청 공사중지</b><p>몇 초 만에 건물을 10동 넘게 몰아서 부수면 3초 동안 도구를 못 써요. 화면은 움직일 수 있어요.</p></div>
+  <div><b>🚧 구청 공사중지 · 🛡 지구 방어군</b><p>건축 모드: 몇 초 만에 건물을 10동 넘게 몰아서 부수면 3초 동안 도구를 못 써요. 재난 모드: 20동 넘게 몰아서 부수면 방어 헬기가 와서 3초간 불길 번짐을 막아요(도구는 계속 써요).</p></div>
   <div><b>🔥 콤보</b><p>쉬지 않고 계속 부수면 n COMBO — 점수가 최대 ×2.</p></div></div>`}
 function gScore(){return `<div class="g-ev">
   <div><b>📋 철거 공사 일보</b><p>오른쪽 위 <kbd>철거 일보</kbd>: 파괴율·철거 동수·점수·직급(인턴 → ANNIHILATOR). 여기서 랭킹 등록과 공유를 해요.</p></div>
