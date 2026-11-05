@@ -2122,6 +2122,7 @@ $('#customQ').addEventListener('keydown',e=>{if(e.key==='Enter'){const f=$('#sea
 $('#btnShare').onclick=()=>openShare('result');
 $('#btnPickHQ').onclick=()=>{closeModals();pickHQ=true;$('#hint').textContent='사옥 건물(또는 빈 땅)을 눌러주세요';toast('사옥으로 쓸 건물을 눌러주세요. 건물이 없으면 빈 땅을 누르면 새로 세워요',4000)};
 for(const k of ['Sound','Labels','Debris','Shadows','Pins','Mini','Shake','Night','Patch','Weather']){const el=$('#opt'+k);if(!el)continue;const key=k.toLowerCase();el.checked=!!opts[key];el.onchange=()=>{opts[key]=el.checked;lsSet('smasharch_opts',opts);if(key==='sound'&&!el.checked)humStop();if(key==='mini')applyMini();if(key==='night'){if(!el.checked&&DAY.night)dayStart();DAY.t=0}}}
+const bosSel=$('#optBossSuit');if(bosSel){bosSel.value=String(lsGet('smasharch_bosscust')||0);bosSel.onchange=()=>lsSet('smasharch_bosscust',+bosSel.value)}
 // ---- 간단 화면: H 키 · 왼쪽 위 [UI] 버튼 · 설정 체크 ----
 function applyMini(){document.body.classList.toggle('mini',!!opts.mini);const el=$('#optMini');if(el)el.checked=!!opts.mini;setTimeout(layoutHUD,0)}
 function toggleMini(){opts.mini=!opts.mini;lsSet('smasharch_opts',opts);applyMini();toast(opts.mini?'간단 화면 — 필요한 버튼만 남겼어요 (랭킹·정복·공유는 설정 안에)':'기본 화면으로 돌아왔어요',2200)}
