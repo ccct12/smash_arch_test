@@ -614,7 +614,7 @@ function updateDebris(dt){
     if(D.y[i]-D.s[i]*0.5<g){
       if(D.glow[i]){D.used[i]=0;continue}
       if(g<-300){if(D.y[i]<-200)D.used[i]=0;}
-      else{D.y[i]=g+D.s[i]*0.35;D.vy[i]*=-0.25;D.vx[i]*=0.5;D.vz[i]*=0.5;
+      else{const stack=MODE==='city'?Math.min(4.5,(i%7)*0.45):0;D.y[i]=g+D.s[i]*0.35+stack;D.vy[i]*=-0.25;D.vx[i]*=0.55;D.vz[i]*=0.55;
         if(Math.abs(D.vy[i])<2.5&&Math.hypot(D.vx[i],D.vz[i])<2){D.rest[i]=1;rubDirty=true;continue}}
     }
     const c=[D.c[i*3],D.c[i*3+1],D.c[i*3+2]];
