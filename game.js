@@ -1566,13 +1566,22 @@ function gestureStart(mx,my){const id=WL()[weapon].id;
   if(id==='sink'&&sinkLeft()>0){toast(`싱크홀 재충전 중 — ${Math.ceil(sinkLeft())}초 남았어요`,1400);return false}
   if(MODE==='section'){const p=secPlane(mx,my);if(!p||Math.abs(p.x)>SEC.W/2+30||p.y>secTop()+35||p.y<SEC.st[0].y0-3)return false;gesture={kind:id,A:p,cur:{x:mx,y:my}}}
   else{const h=pick(mx,my);if(!h)return false;gesture={kind:id,A:{x:h.x,y:h.y,z:h.z},wa:h,cur:{x:mx,y:my}}}
-  if(TOUCH&&gesture&&MODE!=='section'){const sa=project(gesture.A.x,gesture.A.y,gesture.A.z);if(sa){let dx=innerWidth/2-sa[0],dy=innerHeight/2-sa[1],l=Math.hypot(dx,dy);if(l<80){dx=1;dy=0;l=1}const L=l<2?120:Math.min(150,l);gesture.cur={x:sa[0]+dx/l*L,y:sa[1]+dy/l*L}}}   // 터치는 마우스처럼 따라오는 커서가 없어서, 점선을 미리 보여줌
-  $('#hint').textContent=`${(EARTH()?{herd:'동물 대군',tsunami:'쓰나미',typhoon:'태풍'}:GKIND)[id]}: 끝점을 ${TOUCH?'탭':'클릭'}하세요 · 드래그로 화면을 돌려도 시작점은 그대로예요${TOUCH?' · 같은 곳을 다시 탭하면 취소':' · Esc/우클릭 취소'}`;if(TOUCH)$('#hint').classList.add('flash');sfx(2,0.08);return true}
+  $('#hint').textContent=`${(EARTH()?{herd:'동물 대군',tsunami:'쓰나미',typhoon:'태풍'}:GKIND)[id]}: 끝점을 ${TOUCH?'탭':'클릭'}하세요 · 드래그로 화면을 돌려도 시작점은 그대로예요${TOUCH?' · 탭하면 바로 발동 · 시작점을 다시 탭하면 취소':' · Esc/우클릭 취소'}`;if(TOUCH)$('#hint').classList.add('flash');sfx(2,0.08);return true}
+function gestureTouchTap(mx,my){const g=gesture;if(!g)return;const sa=project(g.A.x,g.A.y,g.A.z);
+  if(sa&&Math.hypot(mx-sa[0],my-sa[1])<12){gestureEnd(mx,my);return}   // 시작점을 다시 탭하면 취소
+  if(g.B)return;   // 이미 끝점을 정해 곧 발동하는 중
+  let hb=pick(mx,my);if(!hb){const q=rayGround(mx,my,groundAt(g.A.x,g.A.z));if(q)hb={x:q[0],y:groundAt(q[0],q[1]),z:q[1]}}
+  if(!hb){return}g.B={x:hb.x,y:hb.y!=null?hb.y:groundAt(hb.x,hb.z),z:hb.z};sfx(2,0.08);
+  setTimeout(()=>{if(gesture===g)gestureConfirm()},280)}   // 끝점과 선을 잠깐 보여준 뒤 바로 발동
+function gestureConfirm(){const g=gesture;if(!g||!g.B)return;const sb=project(g.B.x,g.B.y,g.B.z);if(!sb){toast('끝점이 화면 밖이에요 — 다시 탭해 주세요',1600);return}gestureEnd(sb[0],sb[1])}
 function gestureCancel(){if(!gesture)return;gesture=null;drawGesture();selectWeapon(weapon)}
-function drawGesture(){const svg=$('#gest');if(!svg)return;
+function drawGesture(){const svg=$('#gest');if(!svg)return;const bar=$('#gesBar');if(bar)bar.style.display='none';
   if(!gesture){svg.style.display='none';return}
   const a=project(gesture.A.x,gesture.A.y,gesture.A.z);if(!a){svg.style.display='none';return}
-  const b=gesture.cur,l=svg.querySelector('line'),c=svg.querySelector('circle');
+  let b=gesture.cur;const l=svg.querySelector('line'),c=svg.querySelector('circle'),cb=svg.querySelector('#gestB');
+  if(TOUCH&&MODE!=='section'){if(gesture.B){const sb=project(gesture.B.x,gesture.B.y,gesture.B.z);if(sb)b={x:sb[0],y:sb[1]}}
+    l.style.display=gesture.B?'':'none';if(cb){cb.style.display=gesture.B?'':'none';cb.setAttribute('cx',b.x);cb.setAttribute('cy',b.y)}}
+  else{l.style.display='';if(cb)cb.style.display='none'}
   svg.style.display='';l.setAttribute('x1',a[0]);l.setAttribute('y1',a[1]);l.setAttribute('x2',b.x);l.setAttribute('y2',b.y);
   if(c){c.setAttribute('cx',a[0]);c.setAttribute('cy',a[1])}
   svg.setAttribute('class',({herd:'dozer',tsunami:'trim',typhoon:'trim'})[gesture.kind]||gesture.kind)}
@@ -2325,7 +2334,7 @@ function endPtr(e){
   // 구청 공사중지 중에는 도구를 못 씀 (화면 이동·회전은 됨)
   if(click&&drag.btn===0&&!pickHQ&&stopOn()){stopNag();drag=null;return}
   // 선 긋기 도구: 클릭 = 시작점 / 끝점, 드래그 = 화면 회전
-  if(click&&drag.btn===0&&!ultArmed&&!pickHQ&&holdOf()==='line'){if(gesture)gestureEnd(mx,my);else gestureStart(mx,my);drag=null;return}
+  if(click&&drag.btn===0&&!ultArmed&&!pickHQ&&holdOf()==='line'){if(gesture){if(TOUCH&&MODE!=='section')gestureTouchTap(mx,my);else gestureEnd(mx,my)}else gestureStart(mx,my);drag=null;return}
   if(click&&drag.btn===0&&bossClick(mx,my)){drag=null;return}
   if(click&&drag.btn===0&&TOUCH&&MODE==='city'&&!ultArmed&&!pickHQ){const L=pinAt(mx,my);if(L){pinTap(L);drag=null;return}}
   if(MODE==='section'){if(click&&drag.btn===0){const h=secPick(mx,my);
@@ -4404,7 +4413,7 @@ $('#btnReport').onclick=openReport;
 $('#repShare').onclick=()=>{closeModals();openShare('result')};
 $('#repRank').onclick=()=>{closeModals();openRank()};
 $('#ult').onclick=armUlt;
-$('#btnDet').onclick=detonate;
+$('#btnDet').onclick=detonate;{const ok=$('#gesOk'),no=$('#gesNo');if(ok)ok.onclick=gestureConfirm;if(no)no.onclick=gestureCancel}
 $('#bossArrow').onclick=bossGo;
 
 // ---------- 게임 가이드 (? 버튼) · 처음 온 사람 환영 · 따라하기 미션 ----------
