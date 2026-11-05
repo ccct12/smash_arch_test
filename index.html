@@ -173,6 +173,10 @@ table.rep td{text-align:right;padding:7px 6px;border-bottom:1px solid #ddd}
 .row input{flex:1;min-width:0;background:#0e0f11;border:1px solid var(--line);border-radius:6px;color:#fff;padding:8px 10px;font:inherit;font-size:13px;-webkit-user-select:text;user-select:text}
 .btn-p{background:var(--accent);color:#fff;border-radius:6px;padding:8px 14px;font-weight:700;font-size:13px}
 .card label.opt{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.suit-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.suit-row button{width:32px;height:32px;padding:0;border-radius:50%;border:2px solid rgba(255,255,255,.25);position:relative;cursor:pointer}
+.suit-row button i{position:absolute;left:50%;top:22%;width:5px;height:56%;transform:translateX(-50%);border-radius:1px}
+.suit-row button.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
 .card .close{float:right;color:var(--muted);font-size:20px;line-height:1}
 #loading{position:fixed;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;background:rgba(230,233,235,.7);pointer-events:none;opacity:0;transition:opacity .2s}
 #loading.on{opacity:1;pointer-events:auto}
@@ -746,6 +750,8 @@ body.earth #ult{--ult:#ffb020}
   <button class="btn-s btn-install" style="width:100%;margin-top:8px">📲 앱으로 설치 (홈 화면·바탕화면에 추가)</button>
   <div class="small" style="margin-top:10px">사장님 이름 · 발주처 이름 (이 브라우저에만 저장)</div>
   <div class="row"><input id="bossName2" class="cn-input" maxlength="12" placeholder="사장님 — 비우면 '사장님'" style="flex:0 0 38%"><input id="clientNames2" class="cn-input" maxlength="80" placeholder="발주처 — 쉼표로 최대 5개"></div>
+  <div class="small" style="margin-top:10px">사장님 정장 색 (이 브라우저에만 저장)</div>
+  <div class="suit-row" id="suitRow"></div>
   <div class="row" id="setLinks" style="margin-top:10px"><button class="btn-s" data-go="btnRank">랭킹</button><button class="btn-s" data-go="btnConq">정복</button><button class="btn-s" data-go="btnShare">공유</button><button class="btn-s" data-go="btnReport">철거 일보</button><button class="btn-s" data-req="문의·버그">📮 문의함</button><button class="btn-s" data-req="사옥 모양">🏢 사옥 모양 고치기</button><button class="btn-s" id="setGuide">📘 가이드</button><button class="btn-s" id="setPatch">📰 업데이트 내역</button></div>
   <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
   <button class="btn-p" id="btnPickHQ" style="width:100%;margin-top:12px">사옥 건물 직접 지정</button>

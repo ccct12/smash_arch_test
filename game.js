@@ -43,7 +43,7 @@ function addrQueries(addr){
 const FLOOR_Y = -60, BOTTOM_Y = -75;
 const GAME_VER='2026.11.06';
 const NOTICE_MAJOR=true;   // true = 큰 업데이트: '업데이트 소식 끄기'와 상관없이, 처음 온 사람에게도 한 번 띄움   // 패치 노트 버전 — 바꾸면 재방문자에게 업데이트 창이 한 번 뜸 (index.html #mPatch 내용도 같이 수정)
-const opts = {sound:true, labels:true, debris:true, shadows:true, pins:true, mini:false, shake:false, night:true, patch:true, weather:true};
+const opts = {sound:true, labels:true, debris:true, shadows:true, pins:true, mini:false, shake:false, night:true, patch:true, weather:true, suit:'navy'};
 try{ const s = JSON.parse(localStorage.getItem('smasharch_opts')||'null'); if(s) Object.assign(opts,s);}catch(e){}
 // ---------- 낮·밤 (야근 모드) ----------
 //  낮 DAY_SEC초 → 밤 NIGHT_SEC초 반복. 밤에는 불 켜진 건물(층) 점수 ×NIGHT_X, 꺼진 건물 ×NIGHT_OFF
@@ -209,7 +209,7 @@ function moveCam(dt){
   cam.tx+=(-st*fz+ct*fx)*sp;cam.tz+=(-ct*fz-st*fx)*sp;
 }
 function updateCam(){
-  const sh=opts.shake?cam.shake:0;   // 화면 흔들림은 설정에서 켤 때만 (멀미 방지)
+  const sh=opts.shake?cam.shake*efx('shake'):0;   // 화면 흔들림은 설정에서 켤 때만 (멀미 방지) · 재난 모드는 더 세게
   const sx=sh?(Math.random()-.5)*sh:0, sz=sh?(Math.random()-.5)*sh:0;
   eye=[cam.tx+cam.dist*Math.sin(cam.phi)*Math.sin(cam.theta)+sx, cam.ty+cam.dist*Math.cos(cam.phi), cam.tz+cam.dist*Math.sin(cam.phi)*Math.cos(cam.theta)+sz];
   VP=mul(persp(FOV,canvas.width/canvas.height,2,6000),lookAt(eye,[cam.tx+sx,cam.ty,cam.tz+sz],[0,1,0]));
@@ -1214,7 +1214,7 @@ function drawStamp(m,s){
   pushShape(m,SPHERE,s.x,s.y+4+s.R*1.8,s.z,s.R*0.45,s.R*0.4,s.R*0.45,0,dk,0);
 }
 // ---------- 공통 ----------
-function boom3(x,y,z,size){const n=Math.min(40,Math.floor(size*2.5));
+function boom3(x,y,z,size){const fx=efx('parts'),n=Math.min(40*fx,Math.floor(size*2.5*fx));
   for(let k=0;k<n;k++){const a=Math.random()*Math.PI*2,s=Math.random()*size*0.6;spawn(x,y,z,Math.cos(a)*s,2+Math.random()*size*0.6,Math.sin(a)*s,0.6+Math.random()*size*0.08,Math.random()<0.5?[0.8,0.78,0.74]:[0.62,0.6,0.57],0.5+Math.random()*0.5,1)}
   sfx(size)}
 function updateTools(dt){bossUpdate(dt);boomUpdate(dt);adUpdate(dt);updateEarth(dt);updateDaily(dt);updateWeather(dt);clientUpdate(dt);updateCranes(dt);updateCrews(dt);updateDozers(dt);updateRebar(dt);updateStamps(dt);updateTools2(dt)}
@@ -1524,10 +1524,10 @@ function armUlt(){if(stopOn()){stopNag();return}if(CH&&CH.on&&CH.ultUsed){toast(
 // =====================================================================
 let HSTOP=0, RINGS=[], LATER=[], BALLS=[];
 function hitStop(s){HSTOP=Math.max(HSTOP,s)}
-function flashScreen(a,col){const f=$('#flash');if(!f)return;f.style.background=col||'#fff';f.style.transition='none';f.style.opacity=a;requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition='opacity 0.9s';f.style.opacity=0}))}
+function flashScreen(a,col){const f=$('#flash');if(!f)return;a=Math.min(0.95,a*efx('flash'));f.style.background=col||'#fff';f.style.transition='none';f.style.opacity=a;requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition='opacity 0.9s';f.style.opacity=0}))}
 function later(t,fn){LATER.push({t,fn,mode:MODE})}
 function updateLater(dt){for(let i=LATER.length-1;i>=0;i--){const L=LATER[i];if(L.mode!==MODE){LATER.splice(i,1);continue}L.t-=dt;if(L.t<=0){LATER.splice(i,1);try{L.fn()}catch(e){console.error(e)}}}}
-function ring(x,y,z,max,col){RINGS.push({x,y,z,r:1,max,col:col||[1,0.88,0.65]})}
+function ring(x,y,z,max,col){RINGS.push({x,y,z,r:1,max:max*efx('ring'),col:col||[1,0.88,0.65]})}
 function updateRings(dt){for(let i=BALLS.length-1;i>=0;i--){BALLS[i].t+=dt;if(BALLS[i].t>BALLS[i].dur)BALLS.splice(i,1)}for(let i=RINGS.length-1;i>=0;i--){const r=RINGS[i];r.r+=Math.max(25,r.max*1.6)*dt;if(r.r>r.max)RINGS.splice(i,1)}}
 function clearFx(){RINGS=[];LATER=[];BALLS=[];HSTOP=0}
 function drawFxCommon(m,mg){
@@ -1679,6 +1679,10 @@ function flashHint(){const h=$('#hint');if(!h)return;h.classList.add('flash');cl
 // =====================================================================
 let GM=(()=>{try{const q=new URL(location.href).searchParams.get('mode');if(q==='earth'||q==='build')return q}catch(e){}return lsGet('smasharch_gmode')==='earth'?'earth':'build'})();
 function EARTH(){return GM==='earth'}
+// 재난 모드 연출 배율 — 보이는 효과만 키움 (충격파 고리 크기·화면 플래시·폭발 파편 수·화면 흔들림).
+//   실제 파괴 범위·점수는 그대로: 오늘의 사옥 순위는 건축·재난 모드가 한 표에서 겨뤄서 공정성 유지
+const E_FX={ring:1.6,flash:1.6,parts:2,shake:1.6};
+function efx(k){return EARTH()?E_FX[k]:1}
 const E_TOOLS=[['🐜','흰개미 떼'],['🐘','코끼리 떼'],['🪲','쇠똥구리'],['🕊️','비둘기 떼'],['🕳️','두더지 굴'],['🌧️','산성비'],['🌪️','토네이도'],['🌋','화산'],['🌊','쓰나미'],['🫨','지진']];
 const E_HINTS=['클릭: 흰개미 떼 — 건물 기둥을 속부터 갉아먹어요','클릭 → 클릭으로 선 긋기: 코끼리 떼 — 그 방향으로 우르르 돌진','클릭 → 클릭으로 선 긋기: 쇠똥구리 — 거대한 똥공을 굴려 지나간 자리를 쓸어버려요',
   '클릭: 비둘기 떼 — 옥상에 수천 마리가 내려앉아 무게로 위층부터 내려앉아요','클릭: 두더지 굴 파기(최대 12곳) → Space 또는 [와르르!]로 한꺼번에 꺼짐','클릭: 산성비 — 누른 곳 일대 건물 철근이 녹슬어 서서히 약해져요',
@@ -2847,7 +2851,14 @@ const BOSS_LINES_DEF={
 };
 const pickL=a=>a[Math.floor(Math.random()*a.length)];
 let BOSS=null,CAMGO=null;
-const SUIT=[0.16,0.19,0.30],SUIT_D=[0.11,0.13,0.21],SKIN=[0.95,0.78,0.62],HAIR=[0.55,0.55,0.57];
+// 사장님 정장 색 — 설정 창에서 고르고 opts.suit 로 이 브라우저에 저장. [이름, 정장 색, 넥타이 색] · 바지는 정장 색을 어둡게
+const SUITS={navy:['네이비',[0.16,0.19,0.30],[0.8,0.1,0.1]],black:['블랙',[0.07,0.07,0.08],[0.8,0.1,0.1]],red:['레드',[0.62,0.10,0.10],[0.08,0.08,0.1]],
+  beige:['베이지',[0.76,0.66,0.50],[0.15,0.2,0.4]],gray:['그레이',[0.42,0.43,0.46],[0.8,0.1,0.1]],white:['화이트',[0.92,0.92,0.9],[0.08,0.08,0.1]],
+  pink:['핑크',[0.93,0.55,0.68],[0.15,0.2,0.4]],gold:['골드',[0.85,0.68,0.2],[0.6,0.05,0.1]]};
+let SUIT,SUIT_D,TIE;
+function setSuit(k){if(!SUITS[k])k='navy';const s=SUITS[k];opts.suit=k;SUIT=s[1];SUIT_D=s[1].map(v=>v*0.68);TIE=s[2]}
+setSuit(opts.suit);
+const SKIN=[0.95,0.78,0.62],HAIR=[0.55,0.55,0.57];
 function bTop(b){return b.base+Math.max(0,b.h)}
 function bossReset(){BOSS=null;CAMGO=null;drawBossUI()}
 function bossSpawn(){const b=B.find(x=>x.hq&&x.alive);if(!b){BOSS=null;return}
@@ -2937,7 +2948,7 @@ function drawBoss(m,mg){if(!bossHere())return;const p=bossPos();if(MODE==='secti
     P(0.13+lg*0.3,0.04,0.05,0.19,0.08,0.3,[0.08,0.08,0.08]);P(-0.13-lg*0.3,0.04,0.05,0.19,0.08,0.3,[0.08,0.08,0.08])}
   const by=(sit?-0.5:0)+bob;
   P(0,1.18+by,0,0.66,0.78,0.42,SUIT);P(0,1.1+by,0.12,0.36,0.34,0.3,SUIT,SPHERE);   // 몸통 · 배
-  P(0,1.4+by,0.215,0.18,0.3,0.02,[0.97,0.97,0.96]);P(0,1.35+by,0.23,0.07,0.3,0.02,[0.8,0.1,0.1]);   // 셔츠 · 넥타이
+  P(0,1.4+by,0.215,0.18,0.3,0.02,[0.97,0.97,0.96]);P(0,1.35+by,0.23,0.07,0.3,0.02,TIE);   // 셔츠 · 넥타이
   // 팔: 말할 때는 손가락질, 맞으면 만세, 점프하면 위로
   const up=jump||BOSS.flinch>0||BOSS.stun>0;const wave=talk&&!up?Math.sin(now*9)*0.12:0;
   if(up){P(0.42,1.75+by,0,0.14,0.55,0.14,SUIT);P(-0.42,1.75+by,0,0.14,0.55,0.14,SUIT);P(0.42,2.05+by,0,0.12,0.12,0.12,SKIN);P(-0.42,2.05+by,0,0.12,0.12,0.12,SKIN)}
@@ -3007,8 +3018,8 @@ function boomArm(){try{if(!HOT.d)loadHot()}catch(e){}BOOM.n++;const add=BOOM_BAS
 function boomTarget(){const h=BOSS&&BOSS.home;if(h&&B.includes(h))return h;return B.find(x=>x.hq)||null}
 function boomStart(){const b=boomTarget();if(!b){BOOM.need=0;return}
   const a=Math.random()*Math.PI*2,R=900,ty=b.base+Math.max(b.h0*1.2+6,30)+70;
-  BOOM.ship={b,t:0,phase:'in',T:6,x0:b.cx+Math.cos(a)*R,z0:b.cz+Math.sin(a)*R,x:b.cx+Math.cos(a)*R,y:ty+60,z:b.cz+Math.sin(a)*R,ty,dx:-Math.cos(a),dz:-Math.sin(a),follow:true};
-  boomBanner();sfx(10,0.8);try{if(!HOT.d)loadHot()}catch(e){}const ht=shipTop();toast((EARTH()?`📢 부동산 호황! 재해로 빈 땅이 많아졌어요 — ${BT()}: "오히려 좋아!"`:`📢 부동산 호황! ${BT()}이 비행선을 타고 오고 있어요`)+(ht?` · 현수막: 최다 철거 1위 ${ht.name}`:''),3600)}
+  BOOM.ship={b,t:0,phase:'in',T:6,x0:b.cx+Math.cos(a)*R,z0:b.cz+Math.sin(a)*R,x:b.cx+Math.cos(a)*R,y:ty+60,z:b.cz+Math.sin(a)*R,ty,dx:-Math.cos(a),dz:-Math.sin(a),follow:true,born:performance.now()};
+  boomBanner();sfx(10,0.8);try{if(!HOT.d)loadHot()}catch(e){}const ht=shipTop(0);toast((EARTH()?`📢 부동산 호황! 재해로 빈 땅이 많아졌어요 — ${BT()}: "오히려 좋아!"`:`📢 부동산 호황! ${BT()}이 비행선을 타고 오고 있어요`)+(ht?` · 현수막: 최다 철거 1위 ${ht.name}`:''),3600)}
 function boomBanner(){const el=$('#clientBanner');if(!el)return;
   el.innerHTML=EARTH()?`<b>📢 부동산 호황!</b><span>${BOOM.round+1}차 호황</span><p>재해로 지을 땅이 많아졌어요. ${esc(BT())}: "오히려 좋아!"<br>비행선을 타고 돌아와 사옥을 새로 지어요. <em>다시 부수세요!</em></p>`:`<b>📢 부동산 호황!</b><span>${BOOM.round+1}차 호황</span><p>${esc(BT())}이 비행선을 타고 돌아와 사옥을 새로 지어요.<br><em>다시 부수세요!</em> 다음 호황은 점수가 더 많이 필요해요</p>`;
   el.classList.remove('on');void el.offsetWidth;el.classList.add('on');clearTimeout(clientBanner._t);clientBanner._t=setTimeout(()=>el.classList.remove('on'),5200)}
@@ -3030,7 +3041,7 @@ function boomUpdate(dt){
       const bonus=20000*BOOM.round;addScore(bonus);hitStop(0.08);sfxBoom(0.8);flashScreen(0.22,'#fff2c2');
       floatText(sh.x,sh.ty+16,sh.z,'🏗 부동산 호황!','count',3);toast(`${BOOM.round}차 부동산 호황! 사옥이 새로 올라갔어요 · +${fmt(bonus)}`,3600)}}
   else if(sh.phase==='drop'){if(sh.t>3){sh.phase='out';sh.t=0}}
-  else{sh.x+=sh.dx*40*sh.t*dt*2;sh.z+=sh.dz*40*sh.t*dt*2;sh.y+=12*dt;if(sh.t>7)BOOM.ship=null}
+  else{sh.x+=sh.dx*40*sh.t*dt*2;sh.z+=sh.dz*40*sh.t*dt*2;sh.y+=12*dt;if(sh.t>7){BOOM.shipK=(BOOM.shipK||0)+shipStep(sh)+1;BOOM.ship=null}}
   if(sh.follow&&sh.phase!=='out'){const k=Math.min(1,dt*1.8);cam.tx+=(sh.x-cam.tx)*k;cam.tz+=(sh.z-cam.tz)*k}}
 // 비행선 그리기
 function drawShip(m,mg){const sh=BOOM.ship;if(!sh||MODE!=='city')return;
@@ -3045,18 +3056,26 @@ function drawShip(m,mg){const sh=BOOM.ship;if(!sh||MODE!=='city')return;
   P(-4,-19,0,0.35,12,0.35,[0.85,0.85,0.8]);P(12,-19,0,0.35,12,0.35,[0.85,0.85,0.8]);   // 현수막 줄 (글자판은 shipUI 가 겹쳐 그림)
   const blink=Math.sin(now*6)>0;P(36,0,0,1.6,1.6,1.6,blink?[1,0.3,0.25]:[0.4,0.1,0.1],SPHERE,blink);P(-34,8,0,1.2,1.2,1.2,[1,0.95,0.6],SPHERE,1);
   if(sh.phase==='in'&&Math.random()<0.5)spawn(sh.x-sh.dx*38,sh.y,sh.z-sh.dz*38,0,0,0,1.5,[1,1,1],0.6,2)}
-// 비행선 현수막: 최근 7일 가장 많이 무너진 사옥 1위 (서버 '일별철거' 집계). 기록이 없으면 기본 문구
-function shipTop(){const h=HOT&&HOT.d&&HOT.d[0];if(!h)return null;const i=keyIdx(h.key),mine=!!(CUR&&CUR.dkey===h.key);
+// 비행선 현수막: 최근 7일 가장 많이 무너진 사옥 1~10위를 SHIP_ROT(ms)마다 돌아가며 보여줌 (서버 '일별철거' 집계). 기록이 없으면 기본 문구
+//   shipTop(0) → 1위 고정, shipTop() → 지금 순서의 랭커. 비행선은 한 번에 ~16초만 떠 있어서,
+//   다음 비행선은 앞 비행선이 마지막으로 보여준 다음 순위부터 이어서 보여줌 (BOOM.shipK)
+const SHIP_ROT=10000,SHIP_MAX=10;
+function shipStep(sh){return sh&&sh.born!=null?Math.floor((performance.now()-sh.born)/SHIP_ROT):0}
+function shipEntry(h,rank){const i=keyIdx(h.key),mine=!!(CUR&&CUR.dkey===h.key);
   let nm=i!=null?FIRMDATA[i][0]:mine?CUR.name:((FIRMS.find(f=>f.dkey===h.key)||{}).name);if(!nm)return null;
-  return{name:String(nm).replace(/\(주\)|㈜|주식회사|\(유\)|유한회사|\(합\)|합자회사/g,'').trim(),kind:i!=null?(FIRMDATA[i][8]||''):(CUR&&mine?CUR.kind||'':''),people:h.people||1,mine}}
+  return{name:String(nm).replace(/\(주\)|㈜|주식회사|\(유\)|유한회사|\(합\)|합자회사/g,'').trim(),kind:i!=null?(FIRMDATA[i][8]||''):(CUR&&mine?CUR.kind||'':''),people:h.people||1,mine,rank}}
+function shipTop(fix){const L=((HOT&&HOT.d)||[]).slice(0,SHIP_MAX).map((h,n)=>shipEntry(h,n+1)).filter(Boolean);if(!L.length)return null;
+  if(fix!=null)return L[Math.min(fix,L.length-1)];
+  const sh=BOOM.ship,k=((BOOM.shipK||0)+shipStep(sh))%L.length,t=L[k];t.total=L.length;return t}
 function shipUI(){let el=$('#shipBan');const sh=BOOM.ship;const on=!!sh&&MODE==='city';
   if(!el){if(!on)return;el=document.createElement('div');el.id='shipBan';document.body.appendChild(el)}
   if(!on){el.style.display='none';return}
   const K=clamp(cam.dist/450,1,2.6),bob=Math.sin(performance.now()/1000*1.6)*1.2,q=project(sh.x+sh.dx*4*K,sh.y+(bob-25)*K,sh.z+sh.dz*4*K);
   if(!q){el.style.display='none';return}
   const t=shipTop();let html;
-  if(t&&t.mine)html=`<small>🎉 축 · 최근 7일 가장 많이 무너진 곳 1위 🎉</small><b>${esc(t.name)}</b><i>바로 여기! 👷 ${t.people}명이 무너뜨림</i>`;
-  else if(t)html=`<small>🔥 최근 7일 가장 많이 무너진 ${t.kind==='u'?'캠퍼스':'사옥'} 1위</small><b>${esc(t.name)}</b><i>👷 ${t.people}명이 무너뜨림</i>`;
+  const pg=t&&t.total>1?` · ${t.rank}/${t.total}`:'';
+  if(t&&t.mine)html=`<small>🎉 축 · 최근 7일 가장 많이 무너진 곳 ${t.rank}위 🎉</small><b>${esc(t.name)}</b><i>바로 여기! 👷 ${t.people}명이 무너뜨림${pg}</i>`;
+  else if(t)html=`<small>🔥 최근 7일 가장 많이 무너진 ${t.kind==='u'?'캠퍼스':'사옥'} ${t.rank}위</small><b>${esc(t.name)}</b><i>👷 ${t.people}명이 무너뜨림${pg}</i>`;
   else html=`<small>📢 부동산 호황</small><b>다음 1위는 우리 회사?</b><i>사옥 무너뜨리면 순위에 올라가요</i>`;
   if(el.dataset.h!==html){el.innerHTML=html;el.dataset.h=html}
   const sc=clamp(1.15-cam.dist/2600,0.55,1);el.style.display='';el.style.left=q[0]+'px';el.style.top=q[1]+'px';el.style.transform=`translate(-50%,0) scale(${sc.toFixed(2)})`;el.classList.toggle('mine',!!(t&&t.mine))}
@@ -3198,6 +3217,13 @@ function clientBanner(name){const el=$('#clientBanner');if(!el)return;
 function bossName(){const v=lsGet('smasharch_boss');return typeof v==='string'?v:''}
 function bossTitle(){return CUR&&CUR.kind==='u'?'총장님':'사장님'}   // 대학교는 총장님
 function BT(){const n=bossName();return n?n+' '+bossTitle():bossTitle()}
+// 설정 창: 사장님 정장 색 고르기
+(function(){const row=$('#suitRow');if(!row)return;const rgb=c=>`rgb(${c.map(v=>Math.round(v*255)).join(',')})`;
+  const mark=()=>row.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===opts.suit));
+  for(const k in SUITS){const [nm,c,t]=SUITS[k];const b=document.createElement('button');b.type='button';b.dataset.k=k;b.title=nm;b.setAttribute('aria-label','정장 '+nm);
+    b.style.background=rgb(c);b.innerHTML=`<i style="background:${rgb(t)}"></i>`;
+    b.onclick=()=>{setSuit(k);lsSet('smasharch_opts',opts);mark();toast(`${BT()} 정장: ${nm}`,1600)};row.appendChild(b)}
+  mark()})();
 (function(){const ins=[$('#bossName'),$('#bossName2')].filter(Boolean);
   const fill=()=>{ins.forEach(el=>{if(document.activeElement!==el)el.value=bossName()})};
   const save=el=>{lsSet('smasharch_boss',el.value.replace(/[<>\u0000-\u001f]/g,'').trim().slice(0,12));fill();castSum()};
