@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>SMASH ARCH — 사옥 부수기 게임 | 건축사사무소·건설사·대학교 1만 1천여 곳</title>
+<meta name="description" content="전국 건축사사무소·건설사·대학교 1만 1천여 곳을 실제 지도 위 3D로 부수는 무료 웹 게임. 불도저·쇠공·다이너마이트, 설계팀 무기 MOVE·EXTRUDE·TRIM, 단면 모드, 밤마다 야근 모드, 사장님이 비행선 타고 돌아오는 부동산 호황까지. 설치·로그인 없음.">
+<meta name="keywords" content="건축사무소 게임, 사옥 부수기, 건물 부수기 게임, 회사 부수기, 대학교 부수기, 캠퍼스 부수기, 건설사, 설계사무소, 건축사사무소, 스트레스 해소 게임, 웹 게임, SMASH ARCH">
+<meta name="robots" content="index,follow">
+<!-- 사이트 주소를 옮기면 아래 주소 4곳(canonical, og:url, og:image, JSON-LD url)과 sitemap.xml 을 같이 바꿔주세요 -->
+<link rel="canonical" href="https://ccct12.github.io/smash-arch/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SMASH ARCH">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:url" content="https://ccct12.github.io/smash-arch/">
+<meta property="og:title" content="SMASH ARCH 🌍 NEW 재난 모드 — 지구가 화났다!">
+<meta property="og:description" content="건축을 너무 많이 해서 동물과 자연이 사옥을 부숴요. 흰개미·코끼리·쇠똥구리·화산·쓰나미·지진·태양 조각! 건축사사무소·건설사·대학교 1만 1천여 곳, 무료·로그인 없음.">
+<meta property="og:image" content="https://ccct12.github.io/smash-arch/og-earth.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SMASH ARCH 재난 모드 — 태양 조각이 떨어지고 화산이 솟는 밤의 도시">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SMASH ARCH 🌍 NEW 재난 모드 — 지구가 화났다!">
+<meta name="twitter:description" content="건축을 너무 많이 해서 동물과 자연이 사옥을 부숴요. 우리 회사·학교 1만 1천여 곳, 무료.">
+<meta name="twitter:image" content="https://ccct12.github.io/smash-arch/og-earth.jpg">
+<!-- 검색 등록 인증: 구글 서치 콘솔 / 네이버 서치어드바이저에서 받은 한 줄로 아래 주석을 바꿔 넣으세요 -->
+<!-- <meta name="google-site-verification" content="여기에_구글_코드"> -->
+<!-- <meta name="naver-site-verification" content="여기에_네이버_코드"> -->
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoGame","name":"SMASH ARCH","alternateName":"사옥 부수기","url":"https://ccct12.github.io/smash-arch/","image":"https://ccct12.github.io/smash-arch/og-earth.jpg","description":"전국 건축사사무소·건설사·대학교 1만 1천여 곳을 실제 지도 위 3D로 부수는 무료 웹 게임","genre":["Action","Casual","Simulation"],"gamePlatform":"Web browser","applicationCategory":"Game","operatingSystem":"Any","inLanguage":"ko","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"KRW"}}</script>
+<!-- 휴대폰: 홈 화면에 추가하면 주소창 없이 가로 전체 화면으로 실행 -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#17191c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SMASH ARCH">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e6e9eb; --panel:#17191c; --panel2:#24272b; --ink:#f3f4f5; --muted:#9aa0a6;
+  --accent:#ff5a1f; --gold:#ffcc1a; --line:#33373c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:"Noto Sans KR",system-ui,sans-serif;color:var(--ink);-webkit-user-select:none;user-select:none;touch-action:none}
+canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+.panel{background:var(--panel);border:1px solid #000;border-radius:8px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+#brand{position:fixed;left:12px;top:12px;display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;z-index:5}
+#brand b{font-family:"Black Han Sans",sans-serif;font-size:20px;letter-spacing:1px}
+#brand b span{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.btn-s{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:13px}
+.btn-s:hover{background:#30343a}
+#hudTop{position:fixed;left:50%;top:12px;transform:translateX(-50%);padding:8px 14px;min-width:300px;max-width:calc(100vw - 24px);z-index:5;display:flex;gap:18px;justify-content:space-between;align-items:center}
+#hudTop .k{font-size:11px;color:var(--muted)}
+#hudTop .v{font-family:ui-monospace,Consolas,monospace;font-size:17px;font-weight:700;white-space:nowrap}
+#firmName{font-weight:900;font-size:14px;max-width:44vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#firmAddr{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:44vw}
+#scoreBox{position:fixed;right:12px;top:12px;z-index:5;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+#rank{display:flex;align-items:center;gap:8px}
+#rankLetter{font-family:"Black Han Sans",sans-serif;font-size:46px;line-height:1;color:var(--gold);-webkit-text-stroke:2px #1a1a1a;text-shadow:3px 3px 0 #1a1a1a}
+#rankTitle{font-family:"Black Han Sans",sans-serif;font-size:14px;color:#1a1a1a;text-align:right}
+body.night #rankTitle{color:#ffe7a6}
+#rankBar{width:150px;height:5px;background:#9a9a9a;border-radius:3px;overflow:hidden}
+#rankBar i{display:block;height:100%;width:0;background:var(--gold)}
+#score{padding:6px 12px;font-family:"Black Han Sans",sans-serif;font-size:26px;letter-spacing:1px}
+#score small{font-size:12px;margin-right:6px;color:#ccc}
+#toolbar{position:fixed;left:calc(50% - 30px);bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;display:flex;gap:4px;padding:6px;max-width:calc(100vw - 16px);overflow-x:auto;scrollbar-width:none}
+#toolbar::-webkit-scrollbar{display:none}
+.tool{position:relative;width:62px;min-width:62px;height:58px;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;line-height:1.1;background:var(--panel2);border:1px solid var(--line);text-align:center}
+.tool:hover{background:#30343a}
+.tool.on{background:var(--accent);border-color:#ff8a5a}
+.tool .num{position:absolute;left:5px;top:3px;font-size:9px;color:#aaa}
+.tool.on .num{color:#fff}
+.tool svg{width:22px;height:22px}
+.sep{width:1px;min-width:1px;background:var(--line);margin:4px 3px}
+.tool.sm{width:54px;min-width:54px}
+.tool:disabled{opacity:.4;cursor:default}
+.tool[data-w="4"]{font-size:9.5px;letter-spacing:-0.3px}
+#credit{position:fixed;left:50%;bottom:calc(2px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;font-size:10.5px;color:#cfd2d5;background:rgba(23,25,28,.82);padding:2px 8px;border-radius:4px;white-space:nowrap;max-width:calc(100vw - 16px);overflow:hidden;text-overflow:ellipsis}
+#credit a{color:#cfd2d5}
+#labels{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+.lbl{position:absolute;transform:translate(-50%,-100%);background:rgba(20,22,25,.88);color:#fff;font-size:11.5px;font-weight:700;padding:2px 6px;border-radius:3px;white-space:nowrap;border:1px solid #000}
+.lbl.hq{background:var(--gold);color:#111;font-size:13.5px;font-weight:900;padding:3px 8px;border:2px solid #111;box-shadow:2px 2px 0 #111}
+#secPanel{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:5;padding:7px 14px;text-align:center;max-width:calc(100vw - 24px)}
+#secPanel .k{font-size:11px;color:var(--muted)}
+#secPanel .v{font-size:15px;font-weight:900;white-space:nowrap}
+#secPanel .grade{display:inline-block;margin-left:8px;background:var(--gold);color:#111;border-radius:4px;padding:0 7px;font-family:"Black Han Sans",sans-serif}
+body.sec #toast{top:136px}
+#btnSection.on{background:#2d6cdf;border-color:#5b8cf0}
+#nbBox{padding:4px 10px;font-size:12px;font-weight:700}
+.lbl.pin{background:#1f4fa8;border-color:#0d2a63;font-size:10.5px;font-weight:700;padding:1px 5px;pointer-events:auto;cursor:pointer;z-index:1}
+.lbl.pin:hover{background:#2d6cdf;z-index:3}
+.lbl.other{background:#1f4fa8;border-color:#0d2a63}
+ol.rk{list-style:none;margin:4px 0 12px}
+ol.rk li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid var(--line);font-size:13px}
+ol.rk li b{width:22px;color:var(--gold);font-family:"Black Han Sans",sans-serif}
+ol.rk li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ol.rk li small{color:var(--muted)}
+ol.rk li em{font-style:normal;color:#ddd;white-space:nowrap}
+ol.rk li.empty{color:var(--muted)}
+.rk-h{font-size:12px;color:var(--muted);margin-top:4px}
+#marks{position:fixed;inset:0;pointer-events:none;z-index:4}
+.mark{position:absolute;font-family:"Black Han Sans",sans-serif;font-size:54px;color:#d81b1b;border:6px solid #d81b1b;border-radius:10px;padding:0 14px;background:rgba(255,255,255,0.15);letter-spacing:6px;white-space:nowrap}
+.grp{display:flex;gap:4px;position:relative;padding-top:12px}
+.glbl{position:absolute;left:2px;top:-1px;font-size:9.5px;color:var(--muted);letter-spacing:1px}
+#ult{position:fixed;right:16px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:6;width:74px;height:74px;border-radius:50%;border:3px solid #111;color:#fff;font-weight:900;font-size:12px;
+  background:radial-gradient(circle at 50% 50%,#24272b 54%,transparent 55%),conic-gradient(var(--accent) var(--p,0%),#3a3d42 0);box-shadow:0 3px 0 rgba(0,0,0,.4)}
+#ult.ready{animation:pulse 1s infinite}#ult.armed{background:radial-gradient(circle at 50% 50%,#d81b1b 54%,transparent 55%),conic-gradient(var(--gold) 100%,#3a3d42 0)}
+@keyframes pulse{50%{transform:scale(1.08)}}
+#cmdbar{position:fixed;left:12px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:5;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;background:rgba(20,22,25,.92);color:#d6f0ff;border:1px solid #000;border-radius:4px;padding:6px 10px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100vw - 24px)}
+#cmdbar.show{opacity:1}
+.cad{position:absolute;font-family:ui-monospace,Consolas,monospace;font-weight:900;font-size:26px;color:#fff;background:#1d4ed8;padding:2px 10px;border-radius:4px;white-space:nowrap}
+.count{position:absolute;font-family:"Black Han Sans",sans-serif;font-size:72px;color:#ff3b1f;-webkit-text-stroke:3px #111}
+.card.report{background:#fbfaf6;color:#111}
+.card.report .close{color:#666}
+.rep-head{text-align:center;border-bottom:2px solid #111;padding-bottom:8px;margin-bottom:10px}
+.rep-head div{font-family:"Black Han Sans",sans-serif;font-size:26px;letter-spacing:4px}
+.rep-head small{color:#555}
+table.rep{width:100%;border-collapse:collapse;font-size:14px}
+table.rep th{text-align:left;font-weight:700;color:#444;padding:7px 6px;border-bottom:1px solid #ddd;width:40%}
+table.rep td{text-align:right;padding:7px 6px;border-bottom:1px solid #ddd}
+.rep-sign{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-top:12px;color:#444;font-size:13px}
+.rep-sign .stamp{border:3px solid #d81b1b;color:#d81b1b;border-radius:50%;width:58px;height:58px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:13px;line-height:1.1;transform:rotate(-12deg)}
+.report .btn-s{color:#111;background:#eee;border-color:#ccc}
+#mTut .tut{max-width:420px}
+@media (max-width:1280px){.tool{width:54px;min-width:54px;font-size:10.5px}.tool.sm{width:48px;min-width:48px}#toolbar{left:50%}#ult{bottom:calc(96px + env(safe-area-inset-bottom));width:64px;height:64px}}
+#hint{max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis}
+#toolbar .grp{padding-top:13px}
+.glbl{top:0;font-weight:700;letter-spacing:.5px}
+#scoreBox{gap:5px}
+#scoreBox>.panel,#scoreBox>.btn-s{min-width:0}
+#nbBox,#tileBox,#btnReport{font-size:11.5px;padding:4px 10px;border-radius:6px}
+#btnReport{background:var(--panel);border:1px solid #000}
+@media (max-width:720px){#nbBox,#tileBox{display:none!important}#hudTop{top:62px!important;left:12px;transform:none;width:calc(100vw - 132px)!important}#rankTitle,#rankBar{display:none}#brand .btn-s{padding:3px 7px;font-size:12px}}
+.boom{position:absolute;font-family:"Black Han Sans",sans-serif;font-size:84px;color:#ffd23a;-webkit-text-stroke:4px #b3120a;text-shadow:0 4px 0 #6d0b05;white-space:nowrap}
+#gest{position:fixed;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
+#gest line{stroke-linecap:round}
+#gest.crane line{stroke:#ffc21a;stroke-width:5;stroke-dasharray:12 7;filter:drop-shadow(0 0 3px #000)}
+#gest.trim line{stroke:#5cc8ff;stroke-width:2.5;stroke-dasharray:14 4 3 4;filter:drop-shadow(0 0 2px #003a66)}
+#btnDet{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom));z-index:6;padding:10px 22px;border-radius:999px;border:2px solid #ffb199;background:#d8261b;color:#fff;font-weight:900;font-size:16px;box-shadow:0 4px 0 #6d0b05,0 0 18px rgba(255,80,40,.6);animation:detp 0.8s infinite}
+#btnDet b{display:inline-block;margin-left:6px;background:#fff;color:#d8261b;border-radius:999px;padding:0 8px}
+@keyframes detp{50%{box-shadow:0 4px 0 #6d0b05,0 0 30px rgba(255,120,40,.95)}}
+#bossUI{position:fixed;z-index:4;pointer-events:none;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:6px}
+#bossUI .bubble{position:relative;max-width:260px;background:#fff;color:#111;font-weight:800;font-size:14px;line-height:1.35;padding:8px 13px;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.35);text-align:center;white-space:normal;word-break:keep-all}
+#bossUI .bubble:after{content:'';position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;border-bottom:0}
+#bossUI .tag{background:#d8261b;color:#fff;font-family:"Black Han Sans",sans-serif;font-size:17px;padding:2px 14px;border-radius:6px;box-shadow:0 2px 0 #6d0b05;letter-spacing:1px}
+#bossArrow{position:fixed;z-index:6;transform:translate(-50%,-50%);display:flex;align-items:center;gap:4px;background:#d8261b;color:#fff;border:2px solid #fff;border-radius:999px;padding:4px 10px 4px 6px;font-weight:900;font-size:12.5px;box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer}
+#bossArrow i{display:inline-block;width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent}
+#bossBox{font-size:11.5px;padding:3px 9px;color:#fff;background:#8f1d16!important}
+#gest.dozer line{stroke:#ff9a1a;stroke-width:6;stroke-dasharray:4 5;filter:drop-shadow(0 0 3px #000)}
+#gest circle{fill:#fff;stroke:#111;stroke-width:2}
+.seo-intro{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:6}
+#toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:9;background:var(--panel);border:1px solid #000;border-radius:6px;padding:8px 14px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:calc(100vw - 24px);text-align:center}
+#toast.show{opacity:1}
+#hint{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;font-size:12px;color:#222;background:rgba(255,255,255,.85);padding:3px 10px;border-radius:12px;white-space:nowrap;pointer-events:none}
+.modal{position:fixed;inset:0;background:rgba(10,12,14,.55);z-index:20;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
+.card{background:var(--panel);border:1px solid #000;border-radius:10px;padding:18px;width:min(460px,100%);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;box-shadow:0 6px 0 rgba(0,0,0,.4)}
+.card h2{font-family:"Black Han Sans",sans-serif;font-size:22px;margin-bottom:4px;font-weight:400}
+.card p.sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+.firm{display:flex;flex-direction:column;align-items:flex-start;width:100%;text-align:left;padding:10px 12px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);margin-bottom:7px}
+.firm:hover{border-color:var(--accent)}
+.firm b{font-size:14.5px}
+.firm span{font-size:12px;color:var(--muted)}
+#searchRes{max-height:260px;overflow:auto;margin-bottom:4px}
+#searchRes .firm{padding:7px 10px;margin-bottom:5px}
+#searchRes .firm b{font-size:13.5px}
+.row{display:flex;gap:6px;margin-top:6px}
+.row input{flex:1;min-width:0;background:#0e0f11;border:1px solid var(--line);border-radius:6px;color:#fff;padding:8px 10px;font:inherit;font-size:13px;-webkit-user-select:text;user-select:text}
+.btn-p{background:var(--accent);color:#fff;border-radius:6px;padding:8px 14px;font-weight:700;font-size:13px}
+.card label.opt{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.card .close{float:right;color:var(--muted);font-size:20px;line-height:1}
+#loading{position:fixed;inset:0;z-index:15;display:flex;align-items:center;justify-content:center;background:rgba(230,233,235,.7);pointer-events:none;opacity:0;transition:opacity .2s}
+#loading.on{opacity:1;pointer-events:auto}
+#loading div{background:var(--panel);padding:14px 20px;border-radius:8px;font-size:14px}
+.small{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+@media (max-width:720px){
+  #hudTop{top:104px;min-width:0;width:calc(100vw - 24px);padding:6px 10px}
+  #hudTop .v{font-size:14px}
+  #scoreBox{top:10px}
+  #rankLetter{font-size:30px}
+  #rankTitle{display:none}
+  #rankBar{width:90px}
+  #score{font-size:18px;padding:5px 8px}
+  #brand{padding:6px 8px 6px 10px}
+  #brand b{font-size:16px}
+  .tool{width:54px;min-width:54px;height:52px;font-size:10.5px}
+  .tool.sm{width:48px;min-width:48px}
+  #hint{bottom:calc(88px + env(safe-area-inset-bottom));font-size:11px}
+  #toast{top:200px}
+  #secPanel{top:150px}
+  body.sec #toast{top:210px}
+  #secPanel .v{font-size:12.5px}
+}
+
+/* ---- 구별 정복 ---- */
+.card.conq{width:min(560px,100%)}
+.seg{display:flex;gap:4px;margin:0 0 8px}.seg button{flex:1;padding:6px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);font-size:12.5px}
+.seg button.on{background:var(--accent);border-color:#ff8a5a;font-weight:700}
+.cq-sum{font-size:13px;margin:6px 0 10px}.cq-sum b{font-family:"Black Han Sans",sans-serif;font-size:22px;color:var(--gold);font-weight:400}.cq-sum small{color:var(--muted)}
+.cq-map{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(5,52px);gap:4px;margin:4px 0 14px}
+.cq-tile{border-radius:6px;border:1px solid #000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff;font-size:12px;line-height:1.1;padding:2px}
+.cq-tile b{font-size:12.5px}.cq-tile small{font-size:10.5px;opacity:.9}.cq-tile:hover{outline:2px solid var(--gold)}
+.cq-tile.full{box-shadow:inset 0 0 0 2px var(--gold)}
+.cq-row{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);font-size:12.5px}
+.cq-row:hover{background:var(--panel2)}.cq-row.sido{font-weight:700}
+.cq-n{width:118px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cq-bar{flex:1;height:8px;background:#2b2e33;border-radius:4px;overflow:hidden}.cq-bar i{display:block;height:100%;background:var(--accent)}
+.cq-row em{font-style:normal;color:#ccc;white-space:nowrap;font-size:11.5px;min-width:96px;text-align:right}
+.cq-sub{padding-left:14px;border-left:2px solid var(--line);margin:2px 0 6px}
+.cq-pick{margin-top:12px;padding:10px 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font-size:13px}.cq-pick small{color:var(--muted)}
+#boot{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+#boot div{background:var(--panel);color:var(--ink);padding:16px 22px;border-radius:8px;font-size:14px;text-align:center;line-height:1.6}
+#boot b{font-family:"Black Han Sans",sans-serif;font-size:26px;font-weight:400}#boot b span{color:var(--accent)}
+@media (max-width:480px){.cq-map{grid-template-rows:repeat(5,44px)}.cq-tile b{font-size:11px}.cq-n{width:84px}.cq-row em{min-width:80px}}
+
+/* ---- 후원 버튼 (설정 · 철거 일보 아래, 눈에 덜 띄게) ---- */
+a.donate{display:block;margin-top:12px;padding:8px 10px;border-radius:6px;border:1px dashed var(--line);color:var(--muted);font-size:12.5px;text-align:center;text-decoration:none}
+a.donate:hover{color:var(--ink);border-color:var(--accent)}
+a.donate small{font-size:11px;opacity:.8}
+.report a.donate{border-color:#ccc;color:#666}
+#btnDonate{color:var(--gold)}
+body.mini #btnDonate{display:none!important}
+/* ---- 콤보 · 싱크홀 · 건설사 핀 · 패치 노트 ---- */
+#combo{position:fixed;left:calc(12px + env(safe-area-inset-left));top:70px;z-index:6;pointer-events:none;opacity:0;transition:opacity .3s;display:flex;flex-direction:column;align-items:flex-start;line-height:1}
+#combo.on{opacity:1}
+#combo b{font-family:"Black Han Sans",sans-serif;font-weight:400;font-size:30px;color:var(--gold);-webkit-text-stroke:1.5px #1a1a1a;text-shadow:2px 2px 0 #1a1a1a}
+#combo small{font-size:11.5px;font-weight:800;color:#1a1a1a;background:rgba(255,255,255,.8);border-radius:4px;padding:1px 6px;margin-top:3px}
+#combo.pop b{animation:cpop .25s ease-out}
+@keyframes cpop{0%{transform:scale(1.5)}100%{transform:scale(1)}}
+.tool.cool{opacity:.55}
+.tool.cool::after{content:attr(data-cd);position:absolute;right:4px;bottom:3px;font-size:10px;font-weight:900;color:var(--gold)}
+#gest.sink line{stroke:#c47a2c;stroke-width:4;stroke-dasharray:3 5;filter:drop-shadow(0 0 3px #000)}
+.lbl.pin.cons{background:#c2410c;border-color:#7c2d12}
+.lbl.pin.cons:hover{background:#ea580c}
+.lbl.pin.gen{background:#0f766e;border-color:#134e4a}
+.lbl.pin.gen:hover{background:#14b8a6}
+.lbl.pin.univ{background:#6d28d9;border-color:#3b0764}
+.lbl.pin.univ:hover{background:#8b5cf6}
+.card.patch ul{margin:6px 0 0 18px;font-size:13px;line-height:1.65;color:#d6d9dc}
+.card.patch li{margin-bottom:5px}
+.client-in{margin:0 0 10px;padding:9px 10px;border-radius:7px;background:#2a1b22;border:1px solid #5a0d24}
+.client-in label{display:block;font-size:12.5px;font-weight:700;margin-bottom:5px;color:#f6c6d2}
+.client-in label small{font-weight:400;color:var(--muted);font-size:11px}
+.cn-row{display:flex;align-items:center;gap:8px;margin-top:5px}.cn-row span{flex:0 0 74px;font-size:12px;font-weight:700;color:#f6c6d2}
+.cn-input{width:100%;background:#0e0f11;border:1px solid var(--line);border-radius:6px;color:#fff;padding:7px 10px;font:inherit;font-size:13px;-webkit-user-select:text;user-select:text}
+/* ---- 발주처 등장 배너 · 그래픽 끊김 안내 ---- */
+#clientBanner{position:fixed;left:50%;top:18%;transform:translate(-50%,-10px) scale(.96);z-index:9;pointer-events:none;opacity:0;transition:opacity .3s,transform .3s;
+  background:linear-gradient(180deg,#3a0d18,#200a10);border:3px solid #d8261b;border-radius:12px;padding:14px 22px 12px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:min(560px,calc(100vw - 24px))}
+#clientBanner.on{opacity:1;transform:translate(-50%,0) scale(1)}
+#clientBanner b{display:block;font-family:"Black Han Sans",sans-serif;font-weight:400;font-size:38px;color:#ffd1dc;-webkit-text-stroke:1px #000;letter-spacing:2px}
+#clientBanner span{display:inline-block;margin:4px 0 8px;background:#f6c6d2;color:#5a0d24;font-weight:900;font-size:15px;border-radius:6px;padding:2px 10px}
+#clientBanner p{font-size:13.5px;line-height:1.6;color:#f3e3e7}
+#clientBanner em{font-style:normal;color:var(--gold);font-weight:900}
+/* ---- 낮·밤(야근 모드) 표시 · 구청 공사중지 ---- */
+#dayBox{font-size:11.5px;padding:3px 9px;color:#5a4300;background:#fff3c4!important;white-space:nowrap}
+#dayBox.night{color:#ffe7a6;background:#1c2340!important;border:1px solid #f2c14e}
+#stopBan{position:fixed;left:50%;top:24%;transform:translateX(-50%);z-index:9;pointer-events:none;padding:7px;border-radius:12px;text-align:center;
+  background:repeating-linear-gradient(45deg,#f5c400 0 14px,#1b1b1b 14px 28px);box-shadow:0 8px 30px rgba(0,0,0,.5);max-width:min(520px,calc(100vw - 24px))}
+#stopBan b,#stopBan small{display:block;background:#1b1b1b;color:#fff;padding:6px 14px}
+#stopBan b{font-family:"Black Han Sans",sans-serif;font-weight:400;font-size:28px;color:#ffd84d;border-radius:8px 8px 0 0}
+#stopBan small{font-size:13px;border-radius:0 0 8px 8px;color:#f1f1f1}
+@media (max-height:500px){#stopBan b{font-size:20px}#stopBan small{font-size:11px}#dayBox{font-size:10px;padding:2px 7px}}
+/* ---- 부동산 호황 비행선 현수막 ---- */
+#shipBan{position:fixed;z-index:4;pointer-events:none;transform-origin:50% 0;text-align:center;background:#fff7e6;color:#1d1f24;border:3px solid #d8261b;border-radius:4px;padding:5px 16px 7px;box-shadow:0 6px 16px rgba(0,0,0,.35);min-width:170px;max-width:340px}
+#shipBan:before,#shipBan:after{content:'';position:absolute;top:-3px;width:10px;height:10px;border-radius:50%;background:#d8261b}#shipBan:before{left:-6px}#shipBan:after{right:-6px}
+#shipBan small{display:block;font-size:11.5px;font-weight:800;color:#b3120a;white-space:nowrap}
+#shipBan b{display:block;font-family:"Black Han Sans",sans-serif;font-weight:400;font-size:26px;line-height:1.15;word-break:keep-all}
+#shipBan i{display:block;font-style:normal;font-size:11.5px;font-weight:700;opacity:.75}
+#shipBan.mine{background:#ffe066;border-color:#ff5a1f}
+#glLost{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(10,12,14,.8)}
+#glLost>div{background:var(--panel);border-radius:10px;padding:20px 24px;text-align:center;max-width:320px}
+#glLost b{font-size:18px}#glLost p{font-size:13px;color:#c9cdd1;margin:8px 0 14px;line-height:1.6}
+@media (pointer:fine){#clientUI .bubble{font-size:15.5px;max-width:280px;padding:9px 14px}#clientUI .tag{font-size:18px}#clientBox{font-size:13px;padding:5px 11px;border:2px solid #d8261b}}
+/* ---- 발주처 ---- */
+#clientUI{position:fixed;z-index:4;pointer-events:none;transform:translate(-18%,-100%);display:flex;flex-direction:column;align-items:center;gap:6px}
+#clientUI .bubble{position:relative;max-width:240px;background:#fff;color:#111;font-weight:800;font-size:13.5px;line-height:1.35;padding:7px 12px;border-radius:12px;border:2px solid #d8261b;box-shadow:0 3px 10px rgba(0,0,0,.35);text-align:center;word-break:keep-all}
+#clientUI .bubble:after{content:'';position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:7px solid transparent;border-top-color:#d8261b;border-bottom:0}
+#clientUI .tag{background:#f6c6d2;color:#5a0d24;font-family:"Black Han Sans",sans-serif;font-size:15px;padding:2px 12px;border-radius:6px;border:2px solid #5a0d24;letter-spacing:1px}
+#clientUI .tag.warn{background:#d8261b;color:#fff;border-color:#fff;animation:pulse .5s infinite}
+#clientBox{font-size:11.5px;padding:3px 9px;color:#fff;background:#5a0d24!important;max-width:46vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---- 간단 화면 (H 키 · UI 버튼 · 설정) : 필요한 것만 작게 ---- */
+body.mini #hudTop,body.mini #rank,body.mini #nbBox,body.mini #tileBox,body.mini #bossBox,body.mini #btnReport,
+body.mini .glbl,body.mini .tool .num,body.mini #btnRank,body.mini #btnConq,body.mini #btnShare,body.mini #brand b,body.mini #secHint,body.mini #secInfo .k{display:none!important}
+body.mini #brand{padding:4px 6px;gap:5px}
+body.mini #toolbar .grp{padding-top:0;gap:3px}
+body.mini .tool,body.mini .tool.sm{width:40px;min-width:40px;height:40px;font-size:0!important;gap:0}
+body.mini .tool svg{width:20px;height:20px}
+body.mini #score{font-size:16px;padding:2px 8px}
+body.mini #score small{display:none}
+body.mini #credit{font-size:8px;opacity:.55}
+body.mini #hint{opacity:0;transition:opacity .35s}
+body.mini #hint.flash{opacity:1}
+body.mini #clientBox{font-size:10px;padding:2px 7px}
+body.mini #btnMini{background:var(--accent);border-color:#ff8a5a}
+
+/* ---- 휴대폰 공통 ---- */
+#toolbar{touch-action:pan-x}
+#btnFS{display:none}body.canfs #btnFS,body.canfs-pc #btnFS{display:inline-block}
+@media (pointer:coarse){
+  .lbl.pin{pointer-events:none}                 /* 손가락으로 회전하다 핀이 눌려 단면으로 들어가는 것 방지 → 핀은 두 번 탭 */
+  .lbl.pin.armed{background:var(--accent);border-color:#111;z-index:3}
+}
+
+/* ---- 휴대폰 가로 (터치 화면 · 높이 500px 이하) ---- */
+@media (pointer:coarse) and (max-height:500px){
+  #brand{left:calc(6px + env(safe-area-inset-left));top:6px;padding:3px 5px 3px 8px;gap:5px}
+  #brand b{font-size:13px;letter-spacing:.5px}
+  #brand .btn-s{padding:2px 7px;font-size:11px}
+  #hudTop{top:6px;padding:4px 10px;min-width:0;max-width:36vw;gap:10px}
+  #firmName{font-size:11.5px;max-width:24vw}
+  #firmAddr,#hudTop .k{display:none}
+  #hudTop .v{font-size:11.5px}
+  body.sec #hudTop{display:none}
+  #scoreBox{top:6px;right:calc(6px + env(safe-area-inset-right));gap:3px}
+  #rankLetter{font-size:24px;-webkit-text-stroke:1.5px #1a1a1a;text-shadow:2px 2px 0 #1a1a1a}
+  #rankTitle{display:none}
+  #rankBar{width:60px;height:4px}
+  #score{font-size:15px;padding:2px 8px}
+  #score small{font-size:9px;margin-right:4px}
+  #nbBox,#tileBox{display:none!important}
+  #bossBox,#btnReport,#clientBox{font-size:10px;padding:2px 7px}
+  #clientUI .bubble{max-width:190px;font-size:11.5px;padding:5px 9px}
+  #clientUI .tag{font-size:12px;padding:1px 9px}
+  #toolbar{left:calc(50% - 36px);bottom:calc(4px + env(safe-area-inset-bottom));padding:4px;gap:3px;max-width:calc(100vw - 86px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+  #toolbar .grp{padding-top:0;gap:3px}
+  .glbl,.tool .num{display:none}
+  .sep{margin:3px 2px}
+  .tool,.tool.sm,.tool[data-w="4"]{width:44px;min-width:44px;height:40px;font-size:8.5px;gap:1px;letter-spacing:-.3px;border-radius:5px}
+  .tool svg{width:17px;height:17px}
+  #ult{right:calc(8px + env(safe-area-inset-right));bottom:calc(3px + env(safe-area-inset-bottom));width:58px;height:58px;font-size:10.5px}
+  #credit{left:calc(6px + env(safe-area-inset-left));top:40px;bottom:auto!important;transform:none;font-size:8.5px;padding:1px 5px;max-width:34vw;opacity:.85}
+  #hint{font-size:10.5px;padding:2px 9px;max-width:calc(100vw - 100px);opacity:0;transition:opacity .35s}
+  #hint.flash{opacity:1}
+  #toast,body.sec #toast{top:42px;font-size:12px;padding:6px 10px;max-width:60vw}
+  body.sec #toast{top:70px}
+  #secPanel{top:6px;padding:3px 10px;max-width:48vw}
+  #secPanel .v{font-size:12px}
+  #secPanel .k{font-size:9.5px}
+  #secHint,#secInfo .k{display:none}
+  #secPanel .btn-s{font-size:11px;padding:2px 8px;margin-top:3px!important}
+  #cmdbar{font-size:11px;padding:4px 8px}
+  #btnDet{padding:6px 16px;font-size:14px}
+  .lbl{font-size:10px;padding:1px 4px}
+  .lbl.hq{font-size:11px;padding:2px 6px}
+  .lbl.pin{font-size:9.5px}
+  #bossUI .bubble{max-width:200px;font-size:12px;padding:6px 10px}
+  #bossUI .tag{font-size:13px;padding:1px 10px}
+  #bossArrow{font-size:11px}
+  .mark{font-size:34px;border-width:4px}
+  #combo{top:56px;left:calc(8px + env(safe-area-inset-left))}
+  #clientBanner{top:12%;padding:8px 14px}
+  #clientBanner b{font-size:24px}
+  #clientBanner p{font-size:11.5px}
+  #combo b{font-size:20px}
+  .boom{font-size:52px}
+  .count{font-size:48px}
+  .modal{padding:6px calc(6px + env(safe-area-inset-right)) 6px calc(6px + env(safe-area-inset-left))}
+  .card{padding:12px 14px;max-height:calc(100vh - 12px);max-height:calc(100dvh - 12px)}
+  .card h2{font-size:18px}
+  .card p.sub{margin-bottom:8px;font-size:11.5px}
+  #mRank .card,.card.conq,#mFirm .card,#mSet .card,#mReport .card{width:min(760px,100%)}
+  #rankBody{display:grid;grid-template-rows:auto auto;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0 18px}
+  ol.rk{margin:2px 0 6px}
+  ol.rk li{padding:4px 6px;font-size:12px}
+  .cq-map{grid-template-rows:repeat(5,34px);margin:2px 0 8px}
+  .cq-tile b{font-size:11px}.cq-tile small{font-size:9.5px}
+  #searchRes{max-height:38vh}
+  .card label.opt{padding:6px 0;font-size:13px}
+  #mTut .tut{max-width:560px}
+  #mTut #tutText{margin:4px 0 10px!important;font-size:13px!important;line-height:1.6!important}
+}
+
+/* ---- 세로로 들면 '가로로 돌려주세요' (휴대폰만) ---- */
+#rot,#inapp{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--panel);color:var(--ink);text-align:center;padding:24px;line-height:1.6}
+#rot{z-index:60}#inapp{z-index:70}
+#rot svg{width:76px;height:76px;color:var(--accent);animation:rotph 1.8s ease-in-out infinite}
+@keyframes rotph{0%,25%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
+#rot b,#inapp b{font-family:"Black Han Sans",sans-serif;font-size:24px;font-weight:400}
+#rot p,#inapp p{font-size:13.5px;color:#c9cdd1;max-width:340px}
+#rot .btn-p,#inapp .btn-p{font-size:15px;padding:11px 22px}
+#rot .ios,#inapp .ios,#inapp .and{display:none}
+body.ios #rot .ios,body.ios #inapp .ios,body.android #inapp .and{display:block}
+@media (pointer:coarse) and (orientation:portrait) and (max-width:600px){#rot{display:flex}}
+body.inapp #inapp{display:flex}
+#iosTip{position:fixed;left:50%;bottom:calc(60px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:8;display:none;align-items:center;gap:8px;background:#fff;color:#111;border-radius:10px;padding:7px 8px 7px 12px;font-size:12px;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,.35);white-space:nowrap}
+#iosTip button{font-size:16px;line-height:1;padding:0 4px;color:#666}
+body.iostip #iosTip{display:flex}
+
+/* 공유 창 */
+#mShare .card{width:min(640px,100%)}
+#shTabs{display:flex;gap:6px;margin:6px 0 10px}#shTabs button{flex:1;padding:7px;border:1px solid #000;border-radius:7px;background:#2a2f36;color:#ddd;font-weight:700;cursor:pointer}#shTabs button.on{background:#f2b134;color:#1d2126}
+#shImg{width:100%;aspect-ratio:1200/630;object-fit:cover;border-radius:8px;border:1px solid #000;background:#1d2126;display:block}
+#shText{width:100%;box-sizing:border-box;margin-top:8px;min-height:74px;resize:vertical;font:13px/1.5 inherit;font-family:inherit;padding:8px;border-radius:7px;border:1px solid #000;background:#14171b;color:#eee}
+.sh-btns{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin-top:8px}
+.sh-btns button{padding:10px 6px;border-radius:8px;border:1px solid #000;font-weight:800;cursor:pointer;background:#2a2f36;color:#fff;font-size:13px}
+#shKakao{background:#fee500!important;color:#191919!important}
+#shSns{display:flex;gap:6px;justify-content:flex-end;margin-top:8px;align-items:center}#shSns span{font-size:11.5px;opacity:.7;margin-right:auto}#shSns button{padding:5px 10px;border-radius:6px;border:1px solid #000;background:#2a2f36;color:#ddd;cursor:pointer;font-size:12px}
+#shVsRow{font-size:12.5px;margin-top:8px;display:flex;align-items:center;gap:6px}
+#chal{font-size:12px;padding:4px 10px;color:#1d2126;background:#f2b134!important;cursor:default;max-width:52vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#chal.win{background:#3fbf6a!important;color:#fff;cursor:pointer}
+@media (pointer:coarse),(max-height:500px){#shImg{max-height:34vh;object-fit:contain}#shText{min-height:52px;font-size:12px}.sh-btns button{padding:8px 4px;font-size:12px}#chal{font-size:10px;padding:2px 7px}}
+
+/* 최근 7일 무너진 사옥 · 요청함 */
+.hot-h{margin:10px 0 6px;color:#ffb86b!important;font-weight:800}.hot-h small{font-weight:400;opacity:.7}
+.req-link.top{margin:4px 0 4px;border:1px solid #f2b134;background:rgba(242,177,52,.10)}.req-row{display:flex;gap:6px}.req-row .req-link{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 6px;line-height:1.3}.req-row .req-link b{font-size:13.5px}.req-link small{opacity:.7;font-size:11px}
+#rqCats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:2px 0 6px}#rqCats button{padding:8px 2px;border:1px solid #000;border-radius:7px;background:#2a2f36;color:#ddd;font-weight:700;cursor:pointer;font-size:12.5px;white-space:nowrap}#rqCats button.on{background:#f2b134;color:#111}
+@media (max-width:520px){#rqCats{grid-template-columns:repeat(2,1fr)}}
+.req-link{display:block;width:100%;margin:8px 0 6px;padding:9px;border-radius:7px;border:1px dashed #6b7280;background:transparent;color:#ddd;cursor:pointer;font-size:13px}.req-link b{color:#f2b134}
+#mReq .card{width:min(520px,100%)}#rqPhotoPrev{display:block;max-width:100%;max-height:200px;margin:8px auto 0;border-radius:6px;border:1px solid #000}.rq-firm{padding:8px;border-radius:7px;background:#14171b;border:1px solid #000;font-weight:700;font-size:13px}#rqKinds button{white-space:nowrap}
+#rqKinds{display:flex;gap:6px;margin:6px 0 10px}#rqKinds button{flex:1;padding:7px 4px;border:1px solid #000;border-radius:7px;background:#2a2f36;color:#ddd;font-weight:700;cursor:pointer;font-size:12.5px}#rqKinds button.on{background:#f2b134;color:#1d2126}
+#mReq label{display:block;font-size:12px;margin:8px 0 3px;color:#ccc}#mReq label b{color:#ff8a7a}
+#mReq input,#mReq select,#mReq textarea{width:100%;box-sizing:border-box;padding:8px;border-radius:7px;border:1px solid #000;background:#14171b;color:#eee;font:inherit;font-size:13px}
+#mReq textarea{min-height:70px;resize:vertical}.rq-2{display:flex;gap:8px}.rq-2>div{flex:1}
+#rqMsg2{min-height:16px;font-size:12px;color:#ffb86b;margin-top:6px}
+
+/* 게임 가이드 · 환영 · 따라하기 */
+#mGuide .card.guide{width:min(820px,100%);padding-top:14px}
+#gTabs{display:flex;gap:4px;flex-wrap:wrap;margin:8px 0 10px;border-bottom:1px solid var(--line);padding-bottom:8px;position:sticky;top:-14px;background:var(--panel);z-index:1}
+#gTabs button{padding:6px 12px;border-radius:16px;background:var(--panel2);border:1px solid var(--line);font-size:13px;font-weight:700;color:#c9cdd1}
+#gTabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+#gBody{font-size:13.5px;line-height:1.65;color:#d6d9dc}
+#gBody b{color:#fff}#gBody u{text-decoration-color:var(--accent);text-underline-offset:3px}
+#gBody kbd,.g-name kbd{display:inline-block;min-width:20px;text-align:center;padding:0 6px;border-radius:4px;background:#2a2e33;border:1px solid #4a4f56;border-bottom-width:2px;font:700 12px/1.6 inherit;color:#fff}
+.g-steps{display:flex;flex-direction:column;gap:10px}
+.g-step{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border-radius:8px;padding:10px 12px}
+.g-step>i,.mi>i{flex:0 0 24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font:700 13px/24px inherit;text-align:center;font-style:normal}
+.g-step p{margin:2px 0 0}
+.g-ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:6px}
+.g-ctl span{background:#1d2024;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12.5px}
+.g-ctl em{display:block;font-style:normal;font-weight:700;color:var(--gold)}.g-ctl small{font-weight:400;color:#9aa0a6}
+.g-cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.g-cta .btn-p{font-size:14px;padding:10px 16px}.g-cta .btn-s{padding:9px 14px}
+.g-tools{display:flex;flex-direction:column;gap:12px}
+.g-tool{display:flex;gap:12px;background:var(--panel2);border-radius:8px;padding:10px;align-items:flex-start}
+.g-img{flex:0 0 46%;display:flex;flex-direction:column;gap:6px}
+.g-img img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:#111;display:block}
+.g-txt{flex:1;min-width:0}
+.g-name{font-weight:700;font-size:15px;color:#fff}.g-name small{font-weight:400;font-size:11px;color:#9aa0a6;margin-left:4px}
+.g-one{margin:3px 0 6px;color:#c9cdd1}
+.g-txt ol{margin:0 0 6px 18px;padding:0}.g-txt li{margin-bottom:3px}
+.g-tip{margin:0 0 8px;font-size:12.5px;color:#ffd58a}
+.g-try{font-weight:700}
+.g-ev{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.g-ev>div{background:var(--panel2);border-radius:8px;padding:10px 12px}.g-ev p{margin:3px 0 0;font-size:13px}
+@media (max-width:640px){.g-tool{flex-direction:column}.g-img{flex:none;width:100%}}
+@media (pointer:coarse) and (max-height:500px){.g-tool{flex-direction:row}.g-img{flex:0 0 40%}#gTabs button{padding:4px 9px;font-size:12px}#gBody{font-size:12.5px}}
+#mWelcome .card.welcome{width:min(420px,100%);text-align:center;display:flex;flex-direction:column;gap:8px}
+#mWelcome p{font-size:14px;line-height:1.7;margin:2px 0 6px;color:#d6d9dc}
+#mWelcome .btn-p{font-size:15px;padding:12px}#mWelcome .btn-p small{font-weight:400;opacity:.85}#mWelcome .btn-s{padding:9px;font-size:13.5px}
+#mission{position:fixed;left:12px;top:50%;transform:translateY(-50%);z-index:9;width:min(280px,42vw);background:rgba(24,26,29,.94);border:1px solid #000;border-left:4px solid var(--accent);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.45;color:#d6d9dc;box-shadow:0 4px 0 rgba(0,0,0,.35)}
+#mission .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;color:#fff}
+#mission .mh button{font-size:18px;line-height:1;padding:0 4px;color:#aaa}
+#mission .mi{display:flex;gap:7px;align-items:center;padding:4px 0;border-top:1px solid rgba(255,255,255,.06)}
+#mission .mi>i{flex:0 0 20px;height:20px;font-size:11px;line-height:20px;background:#3a3f45}
+#mission .mi:not(.ok):first-of-type>i,#mission .mi.ok+.mi:not(.ok)>i{background:var(--accent)}
+#mission .mi.ok{opacity:.55}#mission .mi.ok>i{background:#3fae5a}#mission .mi.ok span{text-decoration:line-through}
+#mission .mi span{flex:1}#mission .mi b{color:#fff}
+#mission .mi button{font-size:11px;padding:2px 7px;border-radius:4px;background:var(--accent);color:#fff;font-weight:700}
+#mission .mfoot,#mission .mdone{margin-top:6px;text-align:center}#mission .mdone{color:var(--gold);font-weight:700}
+@media (pointer:coarse) and (max-height:500px){#mission{top:auto;bottom:calc(64px + env(safe-area-inset-bottom));transform:none;font-size:11px;width:min(240px,38vw);padding:6px 8px}#mission .mi{padding:2px 0}}
+body.night #mission{background:rgba(14,16,22,.94)}
+/* 2026-11-04: 회사 고르기 창 — 위(검색·구분)는 고정, 아래 목록만 한 번에 스크롤 */
+.card.fcard{display:flex;flex-direction:column;overflow:hidden;padding-bottom:10px}
+.fhead{flex:0 0 auto;padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.fhead h2{margin-bottom:8px}
+.fbody{flex:1 1 auto;min-height:0;overflow:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-right:2px}
+#mFirm #searchRes{max-height:none;margin-bottom:8px}
+#fCats{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+#fCats button{flex:0 0 auto;padding:5px 10px;border-radius:14px;background:var(--panel2);border:1px solid var(--line);font-size:12.5px;font-weight:700;color:#c9cdd1;white-space:nowrap}
+#fCats button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+details.fold{margin:8px 0;border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--panel2)}
+details.fold summary{cursor:pointer;font-size:13px;font-weight:700;list-style:none}details.fold summary::-webkit-details-marker{display:none}
+details.fold summary:before{content:'▸ ';color:var(--muted)}details.fold[open] summary:before{content:'▾ '}
+details.fold summary small{font-weight:400;color:var(--muted);font-size:11px}
+details.fold .client-in{margin:8px 0 2px}details.fold.cast{margin:0 0 8px;background:#2a1b22;border-color:#5a0d24}details.fold.cast summary{color:#f6c6d2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}details.fold.cast summary b{color:#fff}details.fold.cast summary em{font-style:normal;font-weight:400;font-size:11px;color:#f2b134;margin-left:4px}
+.hot-more{display:block;width:100%;padding:7px;margin:-2px 0 8px;border-radius:7px;border:1px solid var(--line);background:transparent;color:#ccc;font-size:12.5px}
+#hotList.short .firm.extra{display:none}
+#rankTabs{margin-bottom:8px}#rankBody [hidden]{display:none!important}
+#mPatch details.fold ul{margin-top:6px}
+.modal .card>.close{position:sticky;top:-6px;z-index:2}
+/* 근사 좌표 안내 */
+#geoNote{position:fixed;left:50%;top:118px;transform:translate(-50%,-8px);z-index:9;display:flex;align-items:center;gap:8px;max-width:min(560px,calc(100vw - 24px));background:#2b2410;border:1px solid #f2b134;color:#ffe3a3;border-radius:8px;padding:7px 8px 7px 12px;font-size:12.5px;line-height:1.4;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#geoNote.on{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+#geoNote span{flex:1;min-width:0}
+#geoNote .gn-pick{flex:0 0 auto;padding:6px 10px;border-radius:6px;background:#f2b134;color:#1d1f24;font-weight:800;font-size:12.5px;border:0;white-space:nowrap}
+#geoNote .gn-x{flex:0 0 auto;background:transparent;border:0;color:#bbb;font-size:18px;padding:0 4px}
+@media (pointer:coarse) and (max-height:500px){#geoNote{top:auto;bottom:calc(70px + env(safe-area-inset-bottom));font-size:11px}#geoNote .gn-pick{font-size:11px;padding:5px 8px}}
+/* 광고 타워 현수막 */
+#dailyCard{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,#fff6d6,#ffe9a8);border:2px solid #d9a400;color:#3a2a00}
+#dailyCard .dc-h{font-weight:800;font-size:14px}#dailyCard .dc-h small{font-weight:500;color:#7a5c00;font-size:11px;margin-left:4px}
+#dailyCard .dc-n{font-size:17px;font-weight:800;margin-top:4px}#dailyCard .dc-a{font-size:11.5px;color:#6b5a2a}
+#dailyCard .dc-t,#dailyCard .dc-hof{font-size:12px;margin-top:4px}#dailyCard .dc-hof{color:#8a5a00}
+#dailyCard .btn-p{width:100%;margin-top:8px;background:#b8860b}
+#dailyBox{font-size:12px;padding:3px 10px;font-weight:700;color:#3a2a00;background:#ffe08a!important;white-space:nowrap}
+#dailyBox.hurry{background:#ff7a59!important;color:#fff;animation:dyPulse .6s infinite alternate}
+@keyframes dyPulse{to{transform:scale(1.06)}}
+.card.daily h2 b{font-size:30px}.card.daily h2 small{display:block;font-size:12px;font-weight:500;color:#666}
+.dy-top{margin:6px 0 0;padding:0;list-style:none;max-height:190px;overflow:auto}
+.dy-top li{display:flex;gap:8px;padding:4px 6px;border-bottom:1px solid #eee;font-size:13px}.dy-top li b{width:22px}.dy-top li span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dy-top li em{font-style:normal;font-weight:700}
+.dy-top li.empty{color:#888;justify-content:center}
+#adBan{position:fixed;z-index:4;display:block;pointer-events:none;transform-origin:50% 0;text-align:center;text-decoration:none;background:#fdfdfd;color:#16181c;border:3px solid #1f6feb;border-radius:4px;padding:6px 16px 8px;box-shadow:0 6px 16px rgba(0,0,0,.35);min-width:180px;max-width:360px}
+#adBan.lk{pointer-events:auto;cursor:pointer}
+#adBan:before,#adBan:after{content:'';position:absolute;top:-12px;width:2px;height:12px;background:#9aa3ad}#adBan:before{left:18px}#adBan:after{right:18px}
+#adBan small{display:block;font-size:11.5px;font-weight:800;color:#1f6feb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#adBan img{display:block;max-width:100%;max-height:90px;margin:4px auto;border-radius:2px}
+#adBan b{display:block;font-family:"Black Han Sans",sans-serif;font-weight:400;font-size:20px;line-height:1.2;word-break:keep-all}
+#adBan i{display:block;font-style:normal;font-size:11px;font-weight:700;color:#1f6feb;margin-top:2px}
+
+/* 🌍 재난 모드 */
+.tool .emo{font-style:normal;font-size:19px;line-height:1;display:block;margin:1px 0 2px}
+.tool.sm .emo{font-size:16px}
+#gmSeg{margin:0 0 8px}#gmSeg button{padding:8px;font-size:13.5px;font-weight:800}#gmSeg button small{font-size:10px;color:#7fe0a8;font-weight:800}
+#gmSeg button[data-gm="earth"].on{background:#1f8a57;border-color:#2fb58a}
+body.earth #toolbar .tool.on{background:#1f8a57;border-color:#2fb58a}
+body.earth #toolbar .glbl{color:#7fe0a8}
+body.earth #ult{--ult:#ffb020}
+.g-emo{display:flex;align-items:center;justify-content:center;height:100%;min-height:110px;font-size:64px;background:linear-gradient(135deg,#1d3a2c,#14251d);border-radius:8px}.g-mode{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;font-size:13px;padding:8px 10px;border-radius:8px;background:var(--panel2);border:1px solid var(--line)}.g-mode .btn-s{padding:5px 10px;font-size:12px;white-space:nowrap}
+.w-new{margin:10px 0 4px!important;padding:9px 11px;border-radius:8px;background:#163828;border:1px solid #2fb58a;color:#d8ffe9;font-size:13px!important;line-height:1.5}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="labels"></div>
+<div id="marks"></div>
+<section class="seo-intro">
+  <h1>SMASH ARCH — 건축사무소·건설사·대학교 사옥 부수기 게임</h1>
+  <p>전국 건축사사무소·건설사·대학교 1만 1천여 곳 중 한 곳을 고르면 그 주변의 실제 지도(OpenStreetMap)가 3D로 만들어지고, 사옥과 주변 건물을 마음껏 부술 수 있는 무료 웹 게임입니다. 설치와 로그인 없이 브라우저에서 바로 플레이할 수 있습니다.</p>
+  <h2>시공팀 무기</h2>
+  <p>철거반 인부떼, 불도저, 타워크레인 쇠공, 레미콘 과타설, 다이너마이트 연쇄 발파, 철근 빼기.</p>
+  <h2>설계팀 무기</h2>
+  <p>MOVE로 건물 던지기, EXTRUDE로 무한 증축 후 붕괴, TRIM으로 건물 자르기, 싱크홀로 땅 꺼뜨리기.</p>
+  <h2>단면 모드와 사장님</h2>
+  <p>단면 모드에서는 사옥을 잘라 우리 층만 정밀 철거할 수 있고, 기둥이 부러지면 층이 주저앉는 연쇄 붕괴가 일어납니다. 옥상의 사장님은 부술 때마다 한마디씩 하고, 사옥이 무너지면 근처 건축사무소로 도망칩니다.</p>
+  <h2>야근 모드와 부동산 호황</h2>
+  <p>밤이 되면 불 켜진 건물만 점수 2배. 사장님을 검거해도 점수를 더 모으면 부동산 호황이 와서 사장님이 비행선을 타고 돌아와 사옥을 새로 짓습니다. 대학교에서는 총장님이 나옵니다.</p>
+  <p>철거 공사 일보, 주간 랭킹, 최근 7일 가장 많이 무너진 사옥, 서울 25개 구 정복 지도를 제공합니다. 실제 회사·인물과 무관한 비공식 팬 게임입니다.</p>
+</section>
+<noscript><p style="padding:24px;font:16px sans-serif">SMASH ARCH는 자바스크립트와 WebGL이 필요한 3D 웹 게임입니다. 브라우저 설정에서 자바스크립트를 켜주세요.</p></noscript>
+<div id="flash"></div>
+<svg id="gest" style="display:none"><line x1="0" y1="0" x2="0" y2="0"/><circle r="6" cx="0" cy="0"/></svg>
+<div id="bossUI" style="display:none"><div class="bubble"></div><div class="tag">사장님</div></div>
+<div id="clientUI" style="display:none"><div class="bubble"></div><div class="tag">발주처</div></div>
+<button id="bossArrow" style="display:none"><i></i>사장님</button>
+<button id="btnDet" style="display:none">기폭! (Space)<b>0</b></button>
+
+<div id="brand" class="panel"><b>SMASH <span>ARCH</span></b><button class="btn-s" id="btnFirm">⌂ 다른 회사</button><button class="btn-s" id="btnHelp" title="게임 가이드 · 조작법">?</button><button class="btn-s" id="btnMini" title="간단 화면 (H)">UI</button><button class="btn-s" id="btnFS" title="전체 화면">⛶</button></div>
+
+<div id="hudTop" class="panel">
+  <div style="min-width:0">
+    <div id="firmName">불러오는 중…</div>
+    <div id="firmAddr"></div>
+  </div>
+  <div style="text-align:right">
+    <div class="k">가장 깊은 구멍</div>
+    <div class="v" id="depth">지하 0 m</div>
+  </div>
+</div>
+
+<div id="scoreBox">
+  <div id="rank"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><div id="rankTitle">인턴</div><div id="rankBar"><i></i></div></div><div id="rankLetter">F</div></div>
+  <div id="score" class="panel"><small>SCORE</small><span id="scoreV">0</span></div>
+  <div id="nbBox" class="panel" style="display:none"></div>
+  <div id="tileBox" class="panel" style="display:none;padding:3px 9px;font-size:11.5px"></div>
+  <div id="dayBox" class="panel" style="display:none"></div>
+  <div id="dailyBox" class="panel" style="display:none"></div>
+  <div id="bossBox" class="panel" style="display:none"></div>
+  <div id="clientBox" class="panel" style="display:none"></div>
+  <div id="chal" class="panel" style="display:none"></div>
+  <button class="btn-s" id="btnReport" style="background:var(--panel)">철거 일보</button>
+</div>
+
+<div id="secPanel" class="panel" style="display:none"></div>
+<div id="hint">클릭: 사용 · 드래그: 회전 · 우클릭 드래그: 이동 · 휠: 확대</div>
+
+<div id="toolbar" class="panel">
+  <div class="grp"><span class="glbl">시공팀</span><button class="tool on" data-w="0"><span class="num">1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="5" r="1.6"/><path d="M6 7v6M6 13l-2 5M6 13l2 5M4 9h4"/><circle cx="13" cy="5" r="1.6"/><path d="M13 7v6M13 13l-2 5M13 13l2 5M11 9h4"/><path d="M17 4l4 4M19 6l-3 3"/></svg>철거반</button><button class="tool" data-w="1"><span class="num">2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="8" width="9" height="6" rx="1"/><path d="M7 8V5h4v3"/><rect x="4" y="15" width="12" height="4" rx="2"/><path d="M16 11h3l1 8"/><path d="M19 10v10"/></svg>불도저</button><button class="tool" data-w="2"><span class="num">3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V4M5 4h15M5 8l4-4"/><path d="M15 4l2 7" /><circle cx="17.5" cy="14" r="3" fill="currentColor"/><path d="M2 21h7"/><path d="M10 16c2 3 6 4 10 3" stroke-dasharray="2 2"/></svg>쇠공</button><button class="tool" data-w="3"><span class="num">4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="13" width="10" height="5" rx="1"/><ellipse cx="16" cy="12" rx="5" ry="3.5"/><circle cx="5" cy="19" r="1.5"/><circle cx="16" cy="19" r="1.5"/></svg>레미콘</button><button class="tool" data-w="4"><span class="num">5</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10" width="3.5" height="10" rx="1"/><rect x="10" y="10" width="3.5" height="10" rx="1"/><rect x="15" y="10" width="3.5" height="10" rx="1"/><path d="M12 10V6c0-2 3-2 4-4"/><path d="M18 2l1 1M20 4h1"/></svg>다이너마이트</button><button class="tool" data-w="5"><span class="num">6</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 21V9M12 21V3M17 21V9"/><path d="M10 6l2-3 2 3"/><path d="M4 21h16"/></svg>철근 빼기</button></div>
+  <div class="sep"></div>
+  <div class="grp"><span class="glbl">설계팀</span><button class="tool" data-w="6"><span class="num">7</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg>MOVE</button><button class="tool" data-w="7"><span class="num">8</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="13" width="10" height="8"/><path d="M7 13V5h10v8" stroke-dasharray="2 2"/><path d="M12 11V2M9 5l3-3 3 3"/></svg>EXTRUDE</button><button class="tool" data-w="8"><span class="num">9</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17"/><path d="M2 15L22 7" stroke-dasharray="3 2"/><path d="M14 2l3 3-3 3"/></svg>TRIM</button><button class="tool" data-w="9"><span class="num">0</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 14h5M17 14h5"/><ellipse cx="12" cy="15" rx="5" ry="2.2"/><path d="M12 4v7M9 8l3 3 3-3"/><path d="M7 15l2 5h6l2-5"/></svg>싱크홀</button></div>
+  <div class="sep"></div>
+  <button class="tool sm" id="btnGM" title="모드 바꾸기"><i class="emo">🌍</i>재난 모드</button>
+  <button class="tool sm" id="btnSection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13"/><path d="M4 12h16M4 16h16M9 21v-5"/><path d="M14 3v18" stroke-dasharray="2 2"/></svg>단면</button>
+  <div class="sep"></div>
+  <button class="tool sm" id="btnUndo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>되돌리기</button>
+  <button class="tool sm" id="btnReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>전부 복구</button>
+  <button class="tool sm" id="btnRank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>랭킹</button>
+  <button class="tool sm" id="btnConq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></svg>정복</button>
+  <button class="tool sm" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 14v6h14v-6"/></svg>공유</button>
+  <button class="tool sm" id="btnSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>설정</button>
+  <button class="tool sm" id="btnDonate" title="개발자 커피 후원"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg>후원</button>
+</div>
+<div id="credit">건물·도로 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap 기여자</a> · 건물 모양은 단순화된 일반 재질 · 사무소 목록 © 공공데이터포털 · 회사와 관계없는 비공식 팬 게임 · 원작 아이디어 SMASH HYU (@Hong_Iron_DEV)</div>
+
+<div class="modal" id="mConq"><div class="card conq">
+  <button class="close" data-close>×</button>
+  <h2>구별 정복 현황</h2>
+  <p class="sub">부순 건축사무소(사옥·동네 핀)가 시도·시군구별로 쌓여요. 구를 누르면 아직 안 부순 사무소로 출동할 수 있어요.</p>
+  <div class="seg"><button data-who="all" class="on">모두 함께</button><button data-who="me">나</button></div>
+  <div class="seg"><button data-scope="seoul" class="on">서울 25개 구</button><button data-scope="kr">전국 시도</button></div>
+  <div id="conqBody"></div>
+</div></div>
+
+<div class="modal" id="mDonate"><div class="card donate-card">
+  <button class="close" data-close>×</button>
+  <h2>☕ 커피 한 잔 후원</h2>
+  <p style="font-size:13.5px;line-height:1.7;margin:6px 0 12px;color:#d6d9dc">SMASH ARCH는 혼자 만드는 무료 비공식 팬 게임이에요.<br>재밌게 하셨다면 커피 한 잔으로 응원해 주세요.<br><b style="color:var(--gold)">후원해도 게임 내용은 똑같고, 앞으로도 무료예요.</b></p>
+  <a class="btn-p" id="donateGo" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;font-size:15px;padding:11px">후원하러 가기</a>
+  <div class="small">결제와 정산은 후원 플랫폼 Fairy(fairy.hada.io)에서 처리돼요. 카드·간편결제 가능.</div>
+</div></div>
+<div class="modal" id="mRank"><div class="card">
+  <button class="close" data-close>×</button>
+  <h2>랭킹</h2>
+  <p class="sub" id="rankMine"></p>
+  <div class="row" style="margin:0 0 12px"><input id="rankNick" placeholder="닉네임 (최대 20자)" maxlength="20"><button class="btn-p" id="rankSubmit">내 점수 등록</button></div>
+  <div class="small" id="rankLockMsg" style="margin:-6px 0 10px;color:#ffb86b"></div>
+  <div id="rankTabs" class="seg"><button data-t="firms" class="on">🏢 부서진 사무소</button><button data-t="players">🏆 개인 점수</button></div>
+  <div id="rankBody"></div>
+  <button class="btn-s" id="rankShare" style="width:100%;margin-top:10px">🏆 랭킹 카드로 공유 (카톡·메신저)</button>
+</div></div>
+
+<button id="ult" title="필살기 (Q)"><span>필살기</span></button>
+<div id="cmdbar"></div>
+<div class="modal" id="mGuide"><div class="card guide">
+  <button class="close" data-close>×</button>
+  <h2>📘 게임 가이드</h2>
+  <div id="gTabs"></div>
+  <div id="gBody"></div>
+</div></div>
+<div class="modal" id="mWelcome"><div class="card welcome">
+  <h2>💥 SMASH ARCH에 오신 걸 환영해요</h2>
+  <p>실제 지도로 만든 우리 회사 동네를 부수는 게임이에요.<br>처음이라면 <b>따라하기</b>로 1분만 배워 보세요. 하나씩 알려드려요.</p>
+  <p class="w-new">🏆 <b>NEW 오늘의 사옥</b> — 매일 하나, 모두 같은 사옥에서 3분 대결! 1위는 다음 날 하늘 현수막에 이름이 걸려요. 🌍 재난 모드도 있어요.</p>
+  <button class="btn-p" id="wMission">🎯 따라하기로 배우기 <small>(추천 · 1분)</small></button>
+  <button class="btn-s" id="wGuide">📘 사진으로 된 가이드 먼저 보기</button>
+  <button class="btn-s" id="wSkip">바로 시작할게요</button>
+  <div class="small">가이드는 언제든 왼쪽 위 <b>?</b> 버튼으로 다시 볼 수 있어요.</div>
+</div></div>
+<div class="modal" id="mReport"><div class="card report">
+  <button class="close" data-close>×</button>
+  <div id="repBody"></div>
+  <div class="row" style="margin-top:14px"><button class="btn-p" id="repShare" style="flex:1">결과 공유하기</button><button class="btn-s" id="repRank">랭킹 등록</button></div>
+  <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
+</div></div>
+<div class="modal" id="mReq" data-kind="회사 추가"><div class="card">
+  <button class="close" data-close>×</button>
+  <h2>📮 요청 · 문의함</h2>
+  <div id="rqKinds"><button data-k="회사 추가" class="on">추가하기</button><button data-k="정보 수정">위치·정보 수정</button><button data-k="사옥 모양">🏢 사옥 모양</button><button data-k="문의·버그">문의·버그</button></div>
+  <div id="rqFirmBox">
+    <label id="rqNameL">회사 이름 <b>*</b></label><input id="rqName" maxlength="60" placeholder="예: OO종합건축사사무소" autocomplete="off">
+    <label>주소 <b>*</b> <small>(도로명 주소 권장)</small></label><input id="rqAddr" maxlength="150" placeholder="예: 서울 송파구 송파대로22길 5-23" autocomplete="off">
+    <div class="rq-2"><div style="flex:1 1 100%"><label>층수 <small>(사무실이 있는 층)</small></label><input id="rqFloor" maxlength="30" placeholder="예: 3층 · 3~5층 · 건물 전체" autocomplete="off"></div>
+    </div>
+    <label>구분 <small>(하나 고르기)</small></label>
+    <div id="rqCats"><button type="button" data-c="건축사사무소" class="on">📐 건축사사무소</button><button type="button" data-c="건설사">🏗 건설사</button><button type="button" data-c="일반 회사">🏢 일반 회사</button><button type="button" data-c="대학교">🎓 대학교</button></div>
+    <input type="hidden" id="rqCat" value="건축사사무소">
+  </div>
+  <div id="rqPhotoBox" style="display:none">
+    <div class="small" style="margin:2px 0 6px">사옥 모양이 실제와 다르면 <b>외관 사진</b>을 보내주세요. 제미나이(AI)가 층수·덩어리·외장·색·지붕을 읽고, <b>개발자가 확인한 뒤</b> 게임 속 사옥이 새로 올라가요.</div>
+    <label>회사 <small>(지금 보고 있는 사옥 · 다른 곳이면 그 회사로 먼저 이동해 주세요)</small></label><div id="rqPhotoFirm" class="rq-firm"></div>
+    <label>사옥 사진 <b>*</b> <small>(건물 전체가 보이게 · 정면이나 모서리에서)</small></label><input id="rqPhoto" type="file" accept="image/*">
+    <img id="rqPhotoPrev" alt="" style="display:none">
+    <div class="small" style="opacity:.75;margin-top:4px">사진은 운영자 드라이브에만 비공개로 저장되고, 게임에는 모양 숫자만 나가요. 사람 얼굴·차 번호판은 안 나오게 찍어주세요.</div>
+  </div>
+  <label>내용</label><textarea id="rqMsg" maxlength="800"></textarea>
+  <div id="rqContactBox"><label>답장 받을 연락처 <small>(선택 · 답장이 필요할 때만)</small></label><input id="rqContact" maxlength="80" placeholder="이메일 등" autocomplete="off"></div>
+  <input id="rqHp" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" aria-hidden="true">
+  <div id="rqMsg2"></div>
+  <button class="btn-p" id="rqSend" style="width:100%;margin-top:6px">보내기</button>
+  <p class="small" id="rqNote" style="margin:8px 0 0;opacity:.75">‘추가하기’는 (초·중·고등학교는 추가하지 않아요) 주소로 위치를 찾아 바로 목록에 추가돼요(누구나 검색 가능). 연락처·내용은 운영자 시트에만 저장되고 게임에는 안 나와요.</p>
+</div></div>
+<div class="modal" id="mShare"><div class="card">
+  <button class="close" data-close>×</button>
+  <h2>공유하기</h2>
+  <div id="shTabs"><button data-m="result" class="on">💥 내 결과</button><button data-m="rank">🏆 이번 주 랭킹</button></div>
+  <img id="shImg" alt="공유 이미지 미리보기">
+  <label id="shVsRow"><input type="checkbox" id="shVs" checked> 링크에 내 점수 도전장 넣기 <small style="opacity:.7">(받은 사람 화면에 "친구 기록 n점"이 떠요)</small></label>
+  <textarea id="shText" spellcheck="false"></textarea>
+  <div class="sh-btns">
+    <button id="shKakao">💬 카카오톡</button>
+    <button id="shNative">📤 다른 앱으로</button>
+    <button id="shCopyImg">🖼 이미지 복사</button>
+    <button id="shSave">⬇ 이미지 저장</button>
+    <button id="shCopy">🔗 문구+링크 복사</button>
+  </div>
+  <div id="shSns"><span>링크를 누른 사람은 같은 사옥에서 바로 시작해요</span><button data-s="x">X</button><button data-s="fb">페이스북</button><button data-s="naver">네이버</button></div>
+</div></div>
+<div id="toast"></div>
+<div id="combo"></div>
+<div id="clientBanner"></div>
+<div id="loading"><div id="loadingMsg">불러오는 중…</div></div>
+<div id="boot"><div><b>SMASH <span>ARCH</span></b><br><span id="bootMsg">건축사사무소 목록을 불러오는 중…</span></div></div>
+
+<div class="modal" id="mFirm"><div class="card fcard">
+  <div class="fhead">
+  <button class="close" data-close>×</button>
+  <h2>어디를 부술까요?</h2>
+  <div id="gmSeg" class="seg gm"><button data-gm="build" class="on">🏗 건축 모드</button><button data-gm="earth">🌍 재난 모드 <small>NEW</small></button></div>
+  <div class="row" style="margin:0 0 6px"><input id="customQ" placeholder="검색 — 회사·학교 이름, 주소, 좌표" autocomplete="off"></div>
+  <div id="fCats"><button data-k="all" class="on">전체</button><button data-k="">📐 건축사사무소</button><button data-k="c">🏗 건설사</button><button data-k="u">🎓 대학교</button><button data-k="g">🏢 일반 회사</button></div>
+  </div>
+  <div class="fbody">
+  <div id="dailyCard" style="display:none"></div>
+  <details class="fold cast"><summary id="castSum">🎭 사장님·발주처 이름 정하기</summary>
+  <div class="client-in"><label><small>선택 · 이 브라우저에만 저장, 서버·랭킹·공유에는 안 나가요</small></label>
+    <div class="cn-row"><span>👔 사장님</span><input id="bossName" class="cn-input" maxlength="12" placeholder="예: 왕소장, 김대표 — 비우면 '사장님'" autocomplete="off"></div>
+    <div class="cn-row"><span>😤 발주처</span><input id="clientNames" class="cn-input" maxlength="80" placeholder="쉼표로 최대 5개 — 비우면 가상 이름" autocomplete="off"></div></div>
+  </details>
+  <div id="searchRes" style="display:none"></div>
+  <div class="req-row"><button class="req-link top" data-req="회사 추가">📮 찾는 곳이 없나요?<b>바로 추가</b></button><button class="req-link top" data-req="사옥 모양">🏢 사옥 모양이 달라요?<b>사진 보내기</b></button></div>
+  <div class="small hot-h" id="hotHead" style="display:none">🔥 최근 7일 가장 많이 무너진 사옥 <small>(무너뜨린 사람 수 · 하루 1인 1회)</small></div>
+  <div id="hotList"></div>
+  <div id="bigFirms"><div class="small" style="margin:10px 0 6px;color:#ccc">대형 설계사무소</div><div id="firmList"></div></div>
+  <div class="small" style="margin:8px 0 4px"><b id="firmCount">0</b><br>출처: 공공데이터포털 전국건축사사무소표준데이터 · 한국교육개발원 2026 고등교육통계</div>
+  <div class="small">"좌표 확정"인 곳은 저장된 좌표로 바로 이동해요. ⚠ 표시는 근사 좌표라 어긋날 수 있어요. 도착해서 [📍 우리 건물 직접 고르기]를 눌러 알려주세요.</div>
+  <button class="req-link" data-req="문의·버그">📮 문의·버그 제보하기</button>
+  </div>
+</div></div>
+
+<div class="modal" id="mDaily"><div class="card daily">
+  <div class="small" style="margin:0 0 2px">🏆 오늘의 사옥 · 3분 챌린지 끝!</div>
+  <h2 id="dyScore">0점</h2>
+  <div class="row"><input id="dyNick" maxlength="20" placeholder="닉네임 (비우면 익명)" autocomplete="off"><button class="btn-p" id="dySend">기록 등록</button></div>
+  <div class="small" id="dyMsg"></div>
+  <div class="small" style="margin-top:8px">오늘의 순위 <small>(1위는 내일 하늘 광고 타워에 👑 명예의 전당으로 걸려요)</small></div>
+  <ol id="dyTop" class="dy-top"></ol>
+  <div class="row" style="margin-top:8px;gap:6px"><button class="btn-p" id="dyRetry" style="flex:1">🔁 다시 도전</button><button class="btn-s" id="dyFree" style="flex:1">자유롭게 놀기</button></div>
+</div></div>
+<div class="modal" id="mSet"><div class="card">
+  <button class="close" data-close>×</button>
+  <h2>설정</h2>
+  <label class="opt">효과음 <input type="checkbox" id="optSound" checked></label>
+  <label class="opt">건물 이름표 <input type="checkbox" id="optLabels" checked></label>
+  <label class="opt">동네 건축사무소 표시 <input type="checkbox" id="optPins" checked></label>
+  <label class="opt">잔해 많이 (느리면 끄기) <input type="checkbox" id="optDebris" checked></label>
+  <label class="opt">그림자 (느리면 끄기) <input type="checkbox" id="optShadows" checked></label>
+  <label class="opt">간단 화면 — 필요한 버튼만 작게 (H) <input type="checkbox" id="optMini"></label>
+  <label class="opt">화면 흔들림 (멀미 나면 끄기) <input type="checkbox" id="optShake"></label>
+  <label class="opt">낮·밤 바뀜 (밤 = 야근 모드) <input type="checkbox" id="optNight" checked></label>
+  <label class="opt">날씨 효과 (눈·비·벚꽃·단풍) <input type="checkbox" id="optWeather" checked></label>
+  <label class="opt">업데이트 소식 자동으로 띄우기 <input type="checkbox" id="optPatch" checked></label>
+  <button class="btn-s btn-install" style="width:100%;margin-top:8px">📲 앱으로 설치 (홈 화면·바탕화면에 추가)</button>
+  <div class="small" style="margin-top:10px">사장님 이름 · 발주처 이름 (이 브라우저에만 저장)</div>
+  <div class="row"><input id="bossName2" class="cn-input" maxlength="12" placeholder="사장님 — 비우면 '사장님'" style="flex:0 0 38%"><input id="clientNames2" class="cn-input" maxlength="80" placeholder="발주처 — 쉼표로 최대 5개"></div>
+  <div class="row" id="setLinks" style="margin-top:10px"><button class="btn-s" data-go="btnRank">랭킹</button><button class="btn-s" data-go="btnConq">정복</button><button class="btn-s" data-go="btnShare">공유</button><button class="btn-s" data-go="btnReport">철거 일보</button><button class="btn-s" data-req="문의·버그">📮 문의함</button><button class="btn-s" data-req="사옥 모양">🏢 사옥 모양 고치기</button><button class="btn-s" id="setGuide">📘 가이드</button><button class="btn-s" id="setPatch">📰 업데이트 내역</button></div>
+  <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
+  <button class="btn-p" id="btnPickHQ" style="width:100%;margin-top:12px">사옥 건물 직접 지정</button>
+  <div class="small" style="margin-top:14px">게임 서버 주소 (Apps Script 웹앱 …/exec) · 비워두면 config.js 값 사용</div>
+  <div class="row"><input id="optRankUrl" placeholder="https://script.google.com/macros/s/…/exec"><button class="btn-p" id="btnRankUrl">저장</button></div>
+  <div class="small">단축키: WASD·방향키 이동(Shift 빠르게) · 1~9·0 도구 · Q 필살기 · C 단면 · F 우리 층 확대 · H 간단 화면 · Ctrl+Z 되돌리기<br>원작: SMASH HYU (hong-iron.github.io/SMASH-HYU) — 코드는 새로 작성했습니다.</div>
+</div></div>
+
+<div id="rot">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></svg>
+  <b>가로로 돌려주세요</b>
+  <p>SMASH ARCH는 가로 화면 전용이에요.<br>휴대폰 화면 자동 회전이 꺼져 있으면 켜주세요.</p>
+  <button class="btn-p" id="rotFS" style="display:none">전체 화면으로 시작</button>
+  <p class="ios">Safari 아래쪽 <b style="font-size:15px">공유 버튼 → 홈 화면에 추가</b>로 실행하면<br>주소창 없이 전체 화면으로 할 수 있어요.</p>
+</div>
+<div id="inapp">
+  <b>SMASH <span style="color:var(--accent)">ARCH</span></b>
+  <p id="inappMsg">앱 안의 브라우저에서는 화면이 작게 나와요.<br>크롬·사파리에서 열어주세요.</p>
+  <p class="and"><b style="font-size:15px">⋮</b> 또는 <b style="font-size:15px">⋯</b> 메뉴 → <b style="font-size:15px">다른 브라우저로 열기</b></p>
+  <p class="ios">오른쪽 아래(또는 위) <b style="font-size:15px">⋯</b> 메뉴 → <b style="font-size:15px">Safari로 열기</b></p>
+  <button class="btn-p" id="inappOpen">크롬·사파리로 열기</button>
+  <button class="btn-s" id="inappStay" style="padding:7px 14px">그냥 여기서 할게요</button>
+</div>
+<div id="iosTip">공유 버튼 → 홈 화면에 추가하면 전체 화면으로 할 수 있어요<button id="iosTipX">×</button></div>
+<script>
+/* 휴대폰: 앱 안 브라우저(카톡 등) 탈출 · 전체 화면 · 가로 고정 — game.js 와 따로 동작 */
+(function(){
+  var ua=navigator.userAgent||'',B=document.body,root=document.documentElement;
+  var isIOS=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var isAnd=/Android/i.test(ua);
+  var coarse=matchMedia('(pointer:coarse)').matches;
+  var standalone=navigator.standalone===true||matchMedia('(display-mode: fullscreen),(display-mode: standalone)').matches;
+  if(isIOS)B.classList.add('ios');if(isAnd)B.classList.add('android');
+  function ss(k,v){try{if(v===undefined)return sessionStorage.getItem(k);sessionStorage.setItem(k,v)}catch(e){return null}}
+  function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+  // 1) 앱 안 브라우저 → 크롬·사파리로
+  var kakao=/KAKAOTALK/i.test(ua),line=/\sLine\//i.test(ua);
+  var inapp=kakao||line||/NAVER\(inapp|Instagram|FBAN|FBAV|FB_IAB|DaumApps|everytimeApp|BAND\/|; wv\)/i.test(ua);
+  function openExternal(){
+    var url=location.href;
+    if(kakao){location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(url);return}
+    if(line){location.href=url+(url.indexOf('?')<0?'?':'&')+'openExternalBrowser=1';return}
+    if(isAnd){location.href='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;end';return}
+  }
+  if(inapp&&!ss('sa_inapp_stay')){
+    B.classList.add('inapp');
+    if(isIOS&&!kakao&&!line)document.getElementById('inappOpen').style.display='none';   // 아이폰 다른 앱은 직접 Safari로 여는 방법이 없음 → 안내만
+    if(!ss('sa_ext_tried')){ss('sa_ext_tried','1');setTimeout(openExternal,300)}           // 한 번만 자동 시도 (무한 반복 방지)
+    else document.getElementById('inappMsg').innerHTML='자동으로 열리지 않았으면 아래 방법으로 열어주세요.';
+  }
+  document.getElementById('inappOpen').onclick=openExternal;
+  document.getElementById('inappStay').onclick=function(){ss('sa_inapp_stay','1');B.classList.remove('inapp')};
+
+  // 2) 전체 화면 + 가로 고정 (안드로이드 크롬 등. 아이폰은 웹에서 불가 → 홈 화면에 추가 안내)
+  var canFS=coarse&&!isIOS&&!standalone&&!inapp&&!!(root.requestFullscreen||root.webkitRequestFullscreen);
+  function inFS(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
+  function goFS(){if(!canFS||inFS())return;
+    try{var p=root.requestFullscreen?root.requestFullscreen({navigationUI:'hide'}):root.webkitRequestFullscreen();
+      Promise.resolve(p).then(function(){if(screen.orientation&&screen.orientation.lock)return screen.orientation.lock('landscape')}).catch(function(){})}catch(e){}}
+  function upd(){B.classList.toggle('canfs',canFS&&!inFS())}
+  if(canFS){
+    document.getElementById('rotFS').style.display='';
+    document.getElementById('rotFS').onclick=goFS;
+    document.getElementById('btnFS').onclick=goFS;
+    document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);upd();
+    // 처음 화면을 만지면 자동으로 전체 화면 (나중에 직접 나가면 다시 강제하지 않음)
+    var first=function(e){if(e.target&&e.target.closest&&e.target.closest('#inapp,input'))return;document.removeEventListener('pointerup',first,true);goFS()};
+    document.addEventListener('pointerup',first,true);
+  }
+  // 3) 아이폰 Safari: 가로 화면에서 한 번만 '홈 화면에 추가' 안내
+  if(isIOS&&coarse&&!standalone&&!inapp&&!ls('sa_iostip')){
+    setTimeout(function(){B.classList.add('iostip')},4000);
+    document.getElementById('iosTipX').onclick=function(){ls('sa_iostip','1');B.classList.remove('iostip')};
+    setTimeout(function(){B.classList.remove('iostip')},16000);
+  }
+})();
+</script>
+<div class="modal" id="mPatch"><div class="card patch">
+  <div class="small" style="margin:0 0 4px">업데이트 · 2026.11.06</div>
+  <h2>🏆 오늘의 사옥 챌린지</h2>
+  <ul>
+    <li><b>매일 사옥 하나, 모두 같은 곳에서 3분 대결!</b> 회사 고르기 창 맨 위 [도전하기]를 누르세요. 오늘의 사옥은 크게 키워져 있고(작은 사옥은 많이, 큰 사옥은 조금), 무너지면 바로 다시 솟아요.</li>
+    <li><b>도구는 골고루</b> — 같은 도구를 3번 넘게 연달아 쓰면 점수가 조금씩 줄어요(다른 도구를 쓰면 회복). 5종 이상 쓰면 최종 점수 ×1.1, 8종 이상 ×1.2. 필살기는 한 번만.</li>
+    <li><b>👑 명예의 전당</b> — 하루 1위는 다음 날 하늘 광고 타워 현수막에 이름이 걸려요.</li>
+    <li><b>🌨 날씨</b> — 계절 따라 눈·비·벚꽃·단풍이 내려요. 설정에서 끌 수 있어요.</li>
+    <li><b>📲 앱으로 설치</b> — 설정의 [앱으로 설치]를 누르면 홈 화면·바탕화면에 아이콘이 생기고 전체 화면으로 열려요. (아이폰은 공유 → 홈 화면에 추가)</li>
+  </ul>
+  <details class="fold"><summary>11.05 업데이트 보기 <small>(🌍 재난 모드)</small></summary>
+  <ul>
+    <li><b>건축을 너무 많이 해서 지구가 화났어요!</b> 이번엔 동물과 자연이 사옥을 부숴요. 회사 고르기 창 맨 위나 도구막대의 [🌍 재난 모드]로 바꾸면 같은 동네에서 도구만 바뀌어요.</li>
+    <li><b>동물의 분노</b> — 🐜 흰개미 떼 · 🐘 코끼리 떼 · 🪲 쇠똥구리(거대 똥공) · 🕊️ 비둘기 떼 · 🕳️ 두더지 굴</li>
+    <li><b>자연의 분노</b> — 🌧️ 산성비 · 🌪️ 토네이도 · 🌋 화산 · 🌊 쓰나미 · 🫨 지진</li>
+    <li><b>필살기 ☀ 태양 조각</b> — 게이지 대신 <b>30초마다</b> 쓸 수 있고 범위가 3배예요. 떨어지면 세상이 캄캄해지고, 밤이 끝나면 인류가 인공 태양을 띄워 다시 낮이 돼요.</li>
+    <li><b>사장님·발주처도 재난 모드 대사</b> — 발주처는 "이런 재해도 버틸 만큼 튼튼하게!", 부동산 호황은 "재해로 지을 땅이 많아졌어! 오히려 좋아!"</li>
+    <li><b>랭킹은 모드별로 따로</b> 집계돼요.</li>
+  </ul>
+  </details>
+  <details class="fold"><summary>11.04 업데이트 보기 <small>(광고 타워 · 위치 바로잡기 · 사옥 모양 고치기)</small></summary>
+  <ul>
+    <li><b>📢 광고 타워</b> — 게임을 시작하고 조금 지나면 하늘에서 쌍둥이 타워가 내려와요. 두 타워를 잇는 다리에 현수막이 걸려요. 진짜 건물이라 다 부술 수 있고, <b>다리를 떨어뜨리면 +30,000점</b>.</li>
+    <li><b>📍 사옥 위치 바로잡기</b> — 좌표가 근사값인 곳은 도착하면 안내가 떠요. [우리 건물 직접 고르기]로 건물을 누르면 내 화면에서 바로 바뀌고 위치가 개발자에게 전달돼요. 지도에 건물이 없으면 빈 땅을 눌러 사옥을 세울 수 있어요.</li>
+    <li><b>🔎 회사 고르기 창</b> — 검색창과 구분 버튼(건축사사무소·건설사·대학교·일반 회사)은 위에 고정, 아래 목록만 스크롤돼요. 가장 많이 무너진 사옥은 5곳만 먼저 보여요.</li>
+    <li><b>🏆 랭킹</b> — 부서진 사무소 / 개인 점수를 탭으로 나눠 한눈에.</li>
+    <li><b>🏢 사옥 모양 고치기</b> — 게임 속 사옥이 실제와 다르면 요청함(또는 설정)의 [🏢 사옥 모양]에서 외관 사진을 보내주세요. AI가 층수·덩어리·외장·지붕을 읽고, 개발자가 확인하면 사옥이 새로 올라가요.</li>
+    <li><b>🏗 빈 땅에 사옥 세우기</b> — 지도에 우리 건물이 없으면 [사옥 건물 직접 지정]에서 그 자리 빈 땅을 누르면 새로 세워져요.</li>
+  </ul>
+  </details>
+  <details class="fold"><summary>그 전 업데이트 보기 <small>(11.03 3차까지)</small></summary>
+  <ul>
+    <li><b>📘 게임 가이드 · 따라하기</b> — 왼쪽 위 <b>?</b> 버튼에 도구마다 예시 사진과 1·2·3 순서를 넣었어요. [🎯 따라하기]를 켜면 할 일 목록이 뜨고, 해내면 자동으로 체크돼요.</li>
+    <li><b>📰 업데이트 안내 끄기</b> — 아래 체크를 풀거나 설정에서 끌 수 있어요. 끄더라도 설정 → [업데이트 내역]에서 언제든 볼 수 있어요.</li>
+    <li><b>🌙 낮·밤 · 야근 모드</b> — 낮 90초, 밤 60초가 번갈아 와요. 밤에는 <b>불 켜진 건물(단면에서는 층) 점수 ×2</b>, 꺼진 건물은 ×0.25. 우리 사옥은 늘 야근 중이라 불이 켜져 있어요. 설정에서 끌 수 있어요.</li>
+    <li><b>📢 부동산 호황</b> — 사장님을 검거한 뒤 점수를 더 모으면 비행선을 타고 사장님이 돌아와 사옥을 새로 지어요. 비행선 현수막에는 최근 7일 가장 많이 무너진 사옥 1위가 걸려요. 필요한 점수는 10만 → 40만 → 90만…으로 점점 늘어나요. 발주처도 다시 올 수 있어요.</li>
+    <li><b>🚧 구청 공사중지</b> — 몇 초 만에 건물을 10동 넘게 몰아서 부수면 구청이 3초 동안 공사를 멈춰요. (필살기 직후는 봐줘요)</li>
+    <li><b>🎓 대학교 추가</b> — 전국 대학교·전문대학 440여 곳(보라색 핀). 대학교에선 사장님 대신 총장님이 나와요. 회사·학교 추가 버튼을 검색창 바로 아래로 옮기고, 구분은 버튼으로 고르게 바꿨어요.</li>
+    <li><b>🔥 가장 많이 무너진 사옥</b> — 이제 '무너뜨린 사람 수'로 순위를 매겨요. 한 사람이 같은 사옥을 하루에 여러 번 부숴도 1명으로 세요.</li>
+    <li><b>발주처 난입</b> — 사옥이 꽤 부서지면 검은 차를 타고 나타나 빨간 임시 철골·빨간펜 테이프·매스를 마구 갖다 놓아요. 전부 부술 거리! 건물이 무너지면 한 번은 새로 지어 사장님을 복귀시켜요.</li>
+    <li><b>사장님·발주처 이름 정하기</b> — 회사 고르기 창(또는 설정)에서 사장님 이름과 발주처 이름(최대 5개)을 정하면 그 이름으로 등장해요. 이 브라우저에만 저장돼요.</li>
+    <li><b>🔥 최근 7일 가장 많이 무너진 사옥</b> — 회사 고르기 창에 모두가 가장 많이 부순 사옥 TOP 10이 떠요.</li>
+    <li><b>📮 우리 회사 바로 추가 · 문의함</b> — 목록에 없는 회사는 이름·주소·층수를 넣으면 위치를 찾아 바로 추가돼요. 건축사사무소가 아닌 일반 회사도 OK(청록 핀). 설정에도 [문의함]이 있어요.</li>
+    <li><b>공유 개선</b> — [공유]를 누르면 지금 화면으로 결과 카드 이미지가 만들어져요. 카카오톡·다른 앱·이미지 복사/저장. 링크를 받은 친구는 같은 사옥에서 바로 시작하고 "친구 기록 n점" 도전장이 떠요. 랭킹도 카드로 공유돼요.</li>
+    <li><b>PC 전체 화면</b> — 왼쪽 위 [⛶ 전체] 버튼.</li>
+    <li><b>건설사 추가</b> — 시공능력평가 상위 100곳과 종합건설사 1,300여 곳. 주황색 핀으로 보여요.</li>
+    <li><b>0번 도구 싱크홀</b> — 심의 보류 도장 대신. 누른 곳 일대 지반이 약해져 몇 초 동안 무작위로 땅이 여러 번 꺼져요.</li>
+    <li><b>연속 콤보</b> — 쉬지 않고 부수면 n COMBO, 점수 최대 ×2.</li>
+    <li><b>화면 흔들림 기본 끔</b> — 멀미 방지. 설정에서 다시 켤 수 있어요.</li>
+    <li><b>휴대폰</b> — 가로 전용 화면, 안드로이드 전체 화면, 간단 화면(H)·[UI] 버튼.</li>
+  </ul>
+  </details>
+  <label class="opt" style="margin-top:8px;border:0">다음 업데이트부터 자동으로 띄우지 않기 <input type="checkbox" id="patchNo"></label>
+  <div class="row" style="margin-top:6px;gap:6px"><button class="btn-p" id="patchDaily" style="flex:1;background:#b8860b">🏆 오늘의 사옥 도전</button><button class="btn-s" id="patchOk" style="flex:1">확인하고 시작</button></div>
+</div></div>
+<script src="config.js"></script>
+<script>
+/* 부트스트랩: 구글 시트(Apps Script 웹앱)에서 사무소 목록을 받아 FIRMDATA_BOOT 로 넘긴 뒤 game.js 실행
+   - 이 브라우저에 저장된 목록이 있으면 바로 시작하고, 뒤에서 새 목록을 받아 다음 접속 때 반영
+   - 서버가 안 되면 data/firms.json(저장된 스냅샷)으로 시작 */
+(function(){
+  var CK='smasharch_firms_v3';   // 목록 형식이 바뀌면 숫자를 올려 예전 저장본을 안 쓰게 함
+  function api(){var u='';try{u=JSON.parse(localStorage.getItem('smasharch_rank_url')||'null')||''}catch(e){}return String(u||(window.SMASH_CONFIG&&SMASH_CONFIG.API_URL)||'').trim()}
+  function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
+  function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
+  function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+    s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
+  var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
+  var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));
+  if(cached&&ok(cached.d)){start(cached.d,'cache');fromSheet.catch(function(){});return}
+  fromSheet.then(function(d){start(d,'sheet')}).catch(function(){
+    document.getElementById('bootMsg').textContent=u?'시트 연결이 안 돼서 저장된 목록으로 시작해요…':'저장된 목록으로 시작해요…';
+    getT('data/firms.json',30000).then(function(d){start(d,'snapshot')}).catch(function(){start(null,'none')})});
+})();
+</script>
+</body>
+</html>
