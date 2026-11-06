@@ -392,7 +392,7 @@ body.mini #btnMini{background:var(--accent);border-color:#ff8a5a}
 #rot .btn-p,#inapp .btn-p{font-size:15px;padding:11px 22px}
 #rot .ios,#inapp .ios,#inapp .and{display:none}
 body.ios #rot .ios,body.ios #inapp .ios,body.android #inapp .and{display:block}
-@media (pointer:coarse) and (orientation:portrait) and (max-width:600px){#rot{display:flex}}
+@media (pointer:coarse) and (orientation:portrait){#rot{display:flex}}   /* 폭 제한 없앰: 데스크톱 보기·큰 화면 폰·태블릿도 세로면 가로 안내 */
 body.inapp #inapp{display:flex}
 /* 테스트 서버: 세로 허용(?rec=0 이면 원래대로) ·: 세로로 들어도 안내 없이 게임 화면 그대로 */
 html.rec #rot{display:none!important}
