@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<script>try{if(!/[?&]rec=0(&|$)/.test(location.search))document.documentElement.classList.add("rec")}catch(e){}</script>
 <title>SMASH ARCH — 사옥 부수기 게임 | 건축사사무소·건설사·대학교 1만 1천여 곳</title>
 <meta name="description" content="전국 건축사사무소·건설사·대학교 1만 1천여 곳을 실제 지도 위 3D로 부수는 무료 웹 게임. 불도저·쇠공·다이너마이트, 설계팀 무기 MOVE·EXTRUDE·TRIM, 단면 모드, 밤마다 야근 모드, 사장님이 비행선 타고 돌아오는 부동산 호황까지. 설치·로그인 없음.">
 <meta name="keywords" content="건축사무소 게임, 사옥 부수기, 건물 부수기 게임, 회사 부수기, 대학교 부수기, 캠퍼스 부수기, 건설사, 설계사무소, 건축사사무소, 스트레스 해소 게임, 웹 게임, SMASH ARCH">
@@ -394,9 +393,6 @@ body.mini #btnMini{background:var(--accent);border-color:#ff8a5a}
 body.ios #rot .ios,body.ios #inapp .ios,body.android #inapp .and{display:block}
 @media (pointer:coarse) and (orientation:portrait){#rot{display:flex}}   /* 폭 제한 없앰: 데스크톱 보기·큰 화면 폰·태블릿도 세로면 가로 안내 */
 body.inapp #inapp{display:flex}
-/* 테스트 서버: 세로 허용(?rec=0 이면 원래대로) ·: 세로로 들어도 안내 없이 게임 화면 그대로 */
-html.rec #rot{display:none!important}
-html.rec #hudTop>div:last-child{display:none}html.rec #hudTop{max-width:calc(100vw - 190px)}
 #iosTip{position:fixed;left:50%;bottom:calc(60px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:8;display:none;align-items:center;gap:8px;background:#fff;color:#111;border-radius:10px;padding:7px 8px 7px 12px;font-size:12px;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,.35);white-space:nowrap}
 #iosTip button{font-size:16px;line-height:1;padding:0 4px;color:#666}
 body.iostip #iosTip{display:flex}
@@ -596,6 +592,51 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   #mWelcome .w-row{grid-column:2;grid-row:3/5}
   #mWelcome .w-row{flex-direction:column}
 }
+
+/* ===== 2026.11.13 — 모바일 모드 스위치 · 단면 나가기 · 층 확대 · 허브/인스타 · 연속 출석 ===== */
+#mobMode,#mobSec{display:none}
+body.ui-mob #toolbar{grid-auto-rows:auto}
+body.ui-mob #mobMode{display:flex;grid-column:1/-1;gap:3px;height:30px}
+body.ui-mob #mobMode button{flex:1;min-width:0;padding:0;border-radius:6px;background:var(--panel2);border:1px solid var(--line);font-size:10.5px;font-weight:700;white-space:nowrap;letter-spacing:-.3px}
+body.ui-mob #mobMode button.on{background:var(--accent);border-color:#ff8a5a;color:#fff}
+body.ui-mob #mobSec{display:block;grid-column:1/-1;height:28px;padding:0;border-radius:6px;background:var(--panel2);border:1px solid var(--line);font-size:11px;font-weight:700}
+body.ui-mob.earth #mobSec{display:none}
+#mobSec .ms-out{display:none}
+body.sec #mobSec .ms-in{display:none}
+body.sec #mobSec .ms-out{display:inline}
+body.sec #mobSec{background:#2d6cdf;border-color:#6ea0ff;color:#fff}
+body.ui-mob #btnGM,body.ui-mob #btnSection{display:none!important}
+body.ui-mob .tool,body.ui-mob .tool.sm,body.ui-mob .tool[data-w]{height:42px!important}
+body.ui-mob #sysMenu{grid-auto-rows:46px}
+body.ui-mob #sysMenu .tool,body.ui-mob #sysMenu .tool.sm{height:46px!important}
+a.tool{text-decoration:none;color:inherit}
+body.ui-pc #btnHub,body.ui-pc #btnInsta{display:none}
+/* 모바일 상단 버튼: 손가락 크기로 */
+body.ui-mob #brand .btn-s{min-width:34px;min-height:30px;font-size:12px;padding:2px 8px}
+@media (max-width:640px){body.ui-mob #btnMini{display:none}}
+/* 모바일 단면 패널: 상단 버튼을 가리지 않게 도구 레일 옆으로 */
+body.ui-mob #secPanel{left:calc(112px + env(safe-area-inset-left))!important;top:46px!important;transform:none!important;max-width:calc(100vw - 280px)!important;text-align:left}
+body.ui-mob.sec #toast{top:104px!important}
+/* 모바일 하단: 조작 힌트와 저작권 문구가 겹치지 않게 */
+body.ui-mob #hint{bottom:17px!important}
+/* 단면 패널 버튼 줄 */
+.sec-btns{display:flex;gap:4px;justify-content:center;margin-top:5px;flex-wrap:wrap}
+.sec-btns .btn-s{margin:0!important;white-space:nowrap}
+.sec-btns .fstep{display:none;min-width:30px}
+#secPanel.inside .fstep{display:inline-block}
+#btnSecExit{background:#2d6cdf;border-color:#6ea0ff;color:#fff}
+body.ui-mob .sec-btns{justify-content:flex-start}
+body.ui-mob .sec-btns .btn-s{min-height:28px;font-size:11.5px!important;padding:2px 9px!important}
+.lbl.fl{pointer-events:auto;cursor:pointer}
+.lbl.fl:hover,.lbl.fl.cur{background:var(--accent);border-color:#111}
+/* 허브 · 인스타 링크 */
+.hub-row{margin-top:8px}
+a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 8px;font-size:12.5px;white-space:nowrap}
+.fnote a{color:inherit}
+/* 연속 출석 */
+#streakBox{margin:0 0 6px;padding:5px 10px;border-radius:8px;background:#3a2210;border:1px solid #c2622a;color:#ffd9b8;font-size:12.5px}
+#streakBox b{color:#ffb020;font-size:14px}
+#streakBox small{opacity:.75;margin-left:6px}
 </style>
 </head>
 <body>
@@ -654,11 +695,13 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
 <div id="hint">클릭: 사용 · 드래그: 회전 · 우클릭 드래그: 이동 · 휠: 확대</div>
 
 <div id="toolbar" class="panel">
+  <div id="mobMode"><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난</button></div>
+  <button id="mobSec"><span class="ms-in">▦ 단면 보기</span><span class="ms-out">✕ 동네로</span></button>
   <div class="grp"><span class="glbl">시공팀</span><button class="tool on" data-w="0"><span class="num">1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="5" r="1.6"/><path d="M6 7v6M6 13l-2 5M6 13l2 5M4 9h4"/><circle cx="13" cy="5" r="1.6"/><path d="M13 7v6M13 13l-2 5M13 13l2 5M11 9h4"/><path d="M17 4l4 4M19 6l-3 3"/></svg>철거반</button><button class="tool" data-w="1"><span class="num">2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="8" width="9" height="6" rx="1"/><path d="M7 8V5h4v3"/><rect x="4" y="15" width="12" height="4" rx="2"/><path d="M16 11h3l1 8"/><path d="M19 10v10"/></svg>불도저</button><button class="tool" data-w="2"><span class="num">3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V4M5 4h15M5 8l4-4"/><path d="M15 4l2 7" /><circle cx="17.5" cy="14" r="3" fill="currentColor"/><path d="M2 21h7"/><path d="M10 16c2 3 6 4 10 3" stroke-dasharray="2 2"/></svg>쇠공</button><button class="tool" data-w="3"><span class="num">4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="13" width="10" height="5" rx="1"/><ellipse cx="16" cy="12" rx="5" ry="3.5"/><circle cx="5" cy="19" r="1.5"/><circle cx="16" cy="19" r="1.5"/></svg>레미콘</button><button class="tool" data-w="4"><span class="num">5</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10" width="3.5" height="10" rx="1"/><rect x="10" y="10" width="3.5" height="10" rx="1"/><rect x="15" y="10" width="3.5" height="10" rx="1"/><path d="M12 10V6c0-2 3-2 4-4"/><path d="M18 2l1 1M20 4h1"/></svg>다이너마이트</button><button class="tool" data-w="5"><span class="num">6</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 21V9M12 21V3M17 21V9"/><path d="M10 6l2-3 2 3"/><path d="M4 21h16"/></svg>철근 빼기</button></div>
   <div class="sep"></div>
   <div class="grp"><span class="glbl">설계팀</span><button class="tool" data-w="6"><span class="num">7</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg>MOVE</button><button class="tool" data-w="7"><span class="num">8</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="13" width="10" height="8"/><path d="M7 13V5h10v8" stroke-dasharray="2 2"/><path d="M12 11V2M9 5l3-3 3 3"/></svg>EXTRUDE</button><button class="tool" data-w="8"><span class="num">9</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17"/><path d="M2 15L22 7" stroke-dasharray="3 2"/><path d="M14 2l3 3-3 3"/></svg>TRIM</button><button class="tool" data-w="9"><span class="num">0</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 14h5M17 14h5"/><ellipse cx="12" cy="15" rx="5" ry="2.2"/><path d="M12 4v7M9 8l3 3 3-3"/><path d="M7 15l2 5h6l2-5"/></svg>싱크홀</button></div>
   <div class="sep"></div>
-  <button class="tool sm" id="btnGM" title="모드 바꾸기"><i class="emo">🌍</i>재난 모드</button>
+  <button class="tool sm" id="btnGM" title="모드 바꾸기 (지금: 건축 모드)"><i class="emo">🌍</i>재난으로</button>
   <button class="tool sm" id="btnSection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13"/><path d="M4 12h16M4 16h16M9 21v-5"/><path d="M14 3v18" stroke-dasharray="2 2"/></svg>단면</button>
   <div class="sep"></div>
   <button class="tool sm" id="btnUndo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>되돌리기</button>
@@ -668,6 +711,8 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   <button class="tool sm" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 14v6h14v-6"/></svg>공유</button>
   <button class="tool sm" id="btnSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>설정</button>
   <button class="tool sm" id="btnDonate" title="개발자 커피 후원"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg>후원</button>
+  <a class="tool sm" id="btnHub" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener" title="CJW GAMES — 다른 게임 모음"><i class="emo">🎮</i>다른 게임</a>
+  <a class="tool sm" id="btnInsta" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener" title="인스타그램 @cjw.games"><i class="emo">📷</i>인스타</a>
 </div>
 <div id="sysMenu" class="panel"></div>
 <div id="credit">건물·도로 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap 기여자</a> · 건물 모양은 단순화된 일반 재질 · 사무소 목록 © 공공데이터포털 · 회사와 관계없는 비공식 팬 게임 · 원작 아이디어 SMASH HYU (@Hong_Iron_DEV)</div>
@@ -718,6 +763,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   <button class="close" data-close>×</button>
   <div id="repBody"></div>
   <div class="row" style="margin-top:14px"><button class="btn-p" id="repShare" style="flex:1">결과 공유하기</button><button class="btn-s" id="repRank">랭킹 등록</button></div>
+  <div class="row hub-row"><a class="btn-s hub-a" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener">🎮 CJW GAMES · 다른 게임</a><a class="btn-s hub-a" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener">📷 인스타 @cjw.games</a></div>
   <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
 </div></div>
 <div class="modal" id="mReq" data-kind="회사 추가"><div class="card">
@@ -779,6 +825,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
       <div class="row" style="margin:0 0 6px"><input id="customQ" placeholder="검색 — 회사·학교 이름, 주소, 좌표" autocomplete="off"></div>
       <div id="fCats"><button data-k="all" class="on">전체</button><button data-k="">📐 건축사사무소</button><button data-k="c">🏗 건설사</button><button data-k="u">🎓 대학교</button><button data-k="g">🏢 일반 회사</button></div>
     </div>
+    <div id="streakBox" style="display:none"></div>
     <div id="dailyCard" style="display:none"></div>
     <div class="fmini">
       <details class="fold cast"><summary id="castSum">🎭 사장님·발주처 이름 정하기</summary>
@@ -794,7 +841,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
     <div class="small hot-h" id="hotHead" style="display:none">🔥 최근 7일 가장 많이 무너진 사옥 <small>(무너뜨린 사람 수)</small></div>
     <div id="hotList"></div>
     <div id="bigFirms"><div class="small" style="margin:8px 0 6px;color:#ccc">대형 설계사무소</div><div id="firmList"></div></div>
-    <div class="small fnote"><b id="firmCount">0</b> · ⚠ 표시는 근사 좌표예요. 도착해서 [📍 우리 건물 직접 고르기]로 알려주세요.<br>출처: 공공데이터포털 · 한국교육개발원 2026 고등교육통계</div>
+    <div class="small fnote"><b id="firmCount">0</b> · ⚠ 표시는 근사 좌표예요. 도착해서 [📍 우리 건물 직접 고르기]로 알려주세요.<br>출처: 공공데이터포털 · 한국교육개발원 2026 고등교육통계<br>만든 곳: <a href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener">🎮 CJW GAMES</a> · <a href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener">📷 인스타 @cjw.games</a></div>
     <button class="req-link" data-req="문의·버그">📮 문의·버그 제보하기</button>
   </div>
   </div>
@@ -828,6 +875,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   <div class="small" style="margin-top:10px">사장님 정장 색 (이 브라우저에만 저장)</div>
   <div class="suit-row" id="suitRow"></div>
   <div class="row" id="setLinks" style="margin-top:10px"><button class="btn-s" data-go="btnRank">랭킹</button><button class="btn-s" data-go="btnConq">정복</button><button class="btn-s" data-go="btnShare">공유</button><button class="btn-s" data-go="btnReport">철거 일보</button><button class="btn-s" data-req="문의·버그">📮 문의함</button><button class="btn-s" data-req="사옥 모양">🏢 사옥 모양 고치기</button><button class="btn-s" id="setGuide">📘 가이드</button><button class="btn-s" id="setPatch">📰 업데이트 내역</button></div>
+  <div class="row hub-row"><a class="btn-s hub-a" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener">🎮 CJW GAMES · 다른 게임</a><a class="btn-s hub-a" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener">📷 인스타 @cjw.games</a></div>
   <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
   <button class="btn-p" id="btnPickHQ" style="width:100%;margin-top:12px">사옥 건물 직접 지정</button>
   <div class="small" style="margin-top:14px">게임 서버 주소 (Apps Script 웹앱 …/exec) · 비워두면 config.js 값 사용</div>
@@ -882,7 +930,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   document.getElementById('inappStay').onclick=function(){ss('sa_inapp_stay','1');B.classList.remove('inapp')};
 
   // 2) 전체 화면 + 가로 고정 (안드로이드 크롬 등. 아이폰은 웹에서 불가 → 홈 화면에 추가 안내)
-  var canFS=!document.documentElement.classList.contains('rec')&&coarse&&!isIOS&&!standalone&&!inapp&&!!(root.requestFullscreen||root.webkitRequestFullscreen);
+  var canFS=coarse&&!isIOS&&!standalone&&!inapp&&!!(root.requestFullscreen||root.webkitRequestFullscreen);
   function inFS(){return !!(document.fullscreenElement||document.webkitFullscreenElement)}
   function goFS(){if(!canFS||inFS())return;
     try{var p=root.requestFullscreen?root.requestFullscreen({navigationUI:'hide'}):root.webkitRequestFullscreen();
@@ -978,7 +1026,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
   function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
   function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
-  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261105d';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261113a';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
     s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
   var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
   var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));
@@ -988,5 +1036,7 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
     getT('data/firms.json',30000).then(function(d){start(d,'snapshot')}).catch(function(){start(null,'none')})});
 })();
 </script>
+<!-- CJW GAMES 허브 방문 기록 (게임목록 game_id: smash) — 게임 로딩을 막지 않도록 async -->
+<script src="https://ccct12.github.io/CJW_Games/sdk.js" async onload="try{CJWHub.visit('smash')}catch(e){}"></script>
 </body>
 </html>

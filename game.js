@@ -1718,7 +1718,7 @@ function applyGM(silent){const e=EARTH();document.body.classList.toggle('earth',
   const det=$('#btnDet');if(det&&det.firstChild)det.firstChild.textContent=e?'와르르! (Space)':'기폭! (Space)';
   const ul=$('#ult span');if(ul)ul.textContent=e?'태양 조각':'필살기';
   const sb=$('#btnSection');if(sb)sb.style.display=e?'none':'';
-  const gb=$('#btnGM');if(gb)gb.innerHTML=e?'<i class="emo">🏗</i>건축 모드':'<i class="emo">🌍</i>재난 모드';
+  const gb=$('#btnGM');if(gb){gb.innerHTML=e?'<i class="emo">🏗</i>건축으로':'<i class="emo">🌍</i>재난으로';gb.title='모드 바꾸기 (지금: '+(e?'재난':'건축')+' 모드)'}
   document.querySelectorAll('[data-gm]').forEach(b=>b.classList.toggle('on',b.dataset.gm===GM));
   try{const u=new URL(location.href);if(e)u.searchParams.set('mode','earth');else u.searchParams.delete('mode');history.replaceState(null,'',u)}catch(err){}
   if(!silent)selectWeapon(weapon)}
@@ -2713,7 +2713,7 @@ function enterSection(bArg,firmArg){if(EARTH()){toast('단면은 건축 모드�
   D.used.fill(0);D.rest.fill(0);rubDirty=true;secDirty=true;
   SEC.base=secSnap();
   $('#btnSection').classList.add('on');$('#btnSection').lastChild.textContent='동네로';
-  document.body.classList.add('sec');  $('#secPanel').innerHTML='<div id="secInfo"></div><div id="secHint" class="k"></div><button id="btnFloor" class="btn-s" style="margin-top:5px"></button>';$('#btnFloor').onclick=toggleInside;$('#btnFloor').textContent=(SEC.ourK!=null?'우리 층':floorName(SEC.focusK))+' 확대해서 보기'+(TOUCH?'':' (F)');
+  document.body.classList.add('sec');  $('#secPanel').innerHTML='<div id="secInfo"></div><div id="secHint" class="k"></div><div class="sec-btns"><button id="btnFloorDn" class="btn-s fstep" title="아래층">▼</button><button id="btnFloor" class="btn-s"></button><button id="btnFloorUp" class="btn-s fstep" title="위층">▲</button><button id="btnSecExit" class="btn-s">✕ 동네로</button></div>';$('#btnFloor').onclick=toggleInside;$('#btnFloorDn').onclick=()=>stepFloor(-1);$('#btnFloorUp').onclick=()=>stepFloor(1);$('#btnSecExit').onclick=()=>exitSection();secFloorBtn();
   $('#secPanel').style.display='';$('#btnUndo').disabled=true;$('#btnReset').disabled=false;
   makeSecLabels();selectWeapon(weapon);
   const oc=SEC.others.length;
@@ -2741,10 +2741,22 @@ function secTargets(){ // 각 층이 놓일 높이 (아래층이 무너지면 �
 function storyHealth(s){let tot=0,alive=0,core=false,coreHp=0;
   for(const e of SEC.els){if(e.k!==s.k)continue;if(e.kind==='col'){tot++;if(e.alive)alive++}if(e.kind==='core'&&e.alive){core=true;coreHp=e.hp/e.hp0}}
   return{r:tot?alive/tot:1,core,coreHp}}
-function toggleInside(){if(!SEC)return;SEC.inside=!SEC.inside;
-  if(SEC.inside){const s=SEC.S(SEC.focusK);SEC.overCam={...cam};cam.tx=0;cam.ty=s.y+0.9;cam.tz=SEC.D*0.12;cam.theta=0.22;cam.phi=1.42;cam.dist=Math.max(SEC.W*0.42,11)}
-  else Object.assign(cam,SEC.overCam);
-  $('#btnFloor').textContent=(SEC.inside?'단면 전체 보기 (F)':((SEC.ourK!=null?'우리 층':floorName(SEC.focusK))+' 확대해서 보기 (F)')).replace(TOUCH?' (F)':'@@','')}
+function secFloorBtn(){const f=$('#btnFloor');if(!f||!SEC)return;const key=TOUCH?'':' (F)';
+  const nm=(SEC.ourK!=null&&SEC.focusK===SEC.ourK?'우리 층 ':'')+floorName(SEC.focusK);
+  f.textContent=SEC.inside?nm+' · 전체 보기'+key:(SEC.ourK!=null?'우리 층 확대':'층 확대')+key;
+  $('#secPanel').classList.toggle('inside',!!SEC.inside);
+  for(const L of SLBL)if(L.el)L.el.classList.toggle('cur',!!SEC.inside&&!L.top&&L.s&&L.s.k===SEC.focusK)}
+function zoomFloor(k){if(!SEC)return;const s=SEC.S(k);if(!s)return;
+  if(s.state!=='ok'){toast(floorName(k)+'은(는) 이미 무너졌어요',1400);return}
+  if(!SEC.inside)SEC.overCam={...cam};SEC.inside=true;SEC.focusK=k;
+  cam.tx=0;cam.ty=s.y+0.9;cam.tz=SEC.D*0.12;cam.theta=0.22;cam.phi=1.42;cam.dist=Math.max(SEC.W*0.42,11);secFloorBtn()}
+function stepFloor(d){if(!SEC)return;let k=SEC.focusK;
+  for(let i=0;i<SEC.st.length;i++){k+=d;const s=SEC.S(k);if(!s){toast(d>0?'맨 위층이에요':'맨 아래층이에요',1200);return}if(s.state==='ok'){zoomFloor(k);return}}}
+function toggleInside(){if(!SEC)return;
+  if(SEC.inside){SEC.inside=false;Object.assign(cam,SEC.overCam);secFloorBtn();return}
+  let k=SEC.focusK;const s0=SEC.S(k);
+  if(!s0||s0.state!=='ok'){const ok=SEC.st.filter(s=>s.state==='ok'&&s.k>=0);if(!ok.length){toast('확대해서 볼 층이 남아 있지 않아요',1600);return}k=ok[0].k}
+  zoomFloor(k)}
 function secCheck(){
   for(const s of SEC.st){
     if(s.state==='ok'&&!s.warned&&s.k>-SEC.nb){const h=storyHealth(s);if(!h.core&&h.r<0.55&&h.r>=0.34){s.warned=1;toast(`⚠ ${floorName(s.k)} 붕괴 임박 — 기둥 ${Math.round(h.r*100)}% 남음`,2500)}}
@@ -3188,6 +3200,7 @@ function makeSecLabels(){const box=$('#labels');box.innerHTML='';SLBL=[];
   for(const s of SEC.st){const ours=SEC.ourK!=null&&s.k===SEC.ourK;
     if(!ours&&s.k!==0&&s.k!==-1&&s.k!==SEC.N-1&&((s.k+1)%step))continue;
     const el=document.createElement('div');el.className='lbl'+(ours?' hq':'');el.textContent=ours?`${SEC.firm.name} · ${floorName(s.k)}`:floorName(s.k);
+    el.classList.add('fl');el.title='눌러서 이 층 확대';el.addEventListener('pointerdown',e=>e.stopPropagation());el.onclick=()=>zoomFloor(s.k);
     box.appendChild(el);SLBL.push({s,el,ours})}
   const byF={};for(const o of SEC.others){if(o.fl==null)continue;const k=o.fl>0?o.fl-1:o.fl;if(k===SEC.ourK||!SEC.S(k))continue;(byF[k]=byF[k]||[]).push(o.name)}
   for(const k in byF){const n=byF[k];const el=document.createElement('div');el.className='lbl other';el.textContent=`${n[0]}${n.length>1?' 외 '+(n.length-1):''} · ${floorName(+k)}`;box.appendChild(el);SLBL.push({s:SEC.S(+k),el,ours:true,other:true})}
@@ -4134,6 +4147,18 @@ async function doInstall(){if(isStandalone()){toast('이미 앱으로 실행 중
 if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
 
 WX.kind=wxSeason();
+
+// ---------- 연속 출석 (보상은 나중에: STREAK.n = 연속 일수, STREAK.best = 최고, STREAK.days = 누적) ----------
+const STREAK=(function(){const t=kstDay();let s=lsGet('smasharch_streak');
+  if(!s||typeof s!=='object'||Array.isArray(s))s={last:'',n:0,best:0,days:0};
+  let isNew=false;
+  if(s.last!==t){const y=new Date(Date.now()+9*3600e3-86400e3).toISOString().slice(0,10);
+    s.n=s.last===y?(+s.n||0)+1:1;s.last=t;s.days=(+s.days||0)+1;s.best=Math.max(+s.best||0,s.n);isNew=true;lsSet('smasharch_streak',s)}
+  return{n:s.n,best:s.best,days:s.days,last:s.last,isNew}})();
+function streakUI(){const el=$('#streakBox');if(!el)return;
+  el.innerHTML='🔥 연속 출석 <b>'+STREAK.n+'일</b><small>최고 '+STREAK.best+'일 · 누적 '+STREAK.days+'일</small>';el.style.display=''}
+streakUI();
+if(STREAK.isNew)setTimeout(()=>toast(STREAK.n>1?'🔥 '+STREAK.n+'일 연속 출석!':'📅 오늘 출석 완료! 내일도 오면 연속 출석이 쌓여요',3200),2500);
 // =====================================================================
 // 회사 추가 요청 · 문의함 → Apps Script '요청함' 시트로
 // =====================================================================
@@ -4393,7 +4418,7 @@ canvas.addEventListener('webglcontextrestored',()=>location.reload());
   if(f){loadFirm(f);if(vs>0&&vs<1e10)challengeStart(vs)}else{resetWorld();$('#firmName').textContent='회사를 골라주세요';$('#mFirm').classList.add('open');loadHot()}
   if(lsGet('smasharch_ver')!==GAME_VER&&$('#mPatch')){if(opts.patch===false&&!NOTICE_MAJOR)lsSet('smasharch_ver',GAME_VER);else $('#mPatch').classList.add('open')}   // 공지는 처음 온 사람에게도 (닫으면 환영 창)   // 설정에서 끌 수 있음   // 다시 온 사람은 업데이트 내역
 })();
-if($('#patchOk'))$('#patchOk').onclick=()=>{$('#mPatch').classList.remove('open');lsSet('smasharch_ver',GAME_VER);if(!lsGet('smasharch_tut_v2'))setTimeout(showWelcome,300);
+if($('#patchOk'))$('#patchOk').onclick=()=>{$('#mPatch').classList.remove('open');lsSet('smasharch_ver',GAME_VER);if(!lsGet('smasharch_tut_v2')&&CUR)setTimeout(showWelcome,300);
   const no=$('#patchNo');if(no){opts.patch=!no.checked;lsSet('smasharch_opts',opts);const o=$('#optPatch');if(o)o.checked=opts.patch}};
 if($('#patchNo'))$('#patchNo').checked=opts.patch===false;
 if($('#patchEarth'))$('#patchEarth').onclick=()=>{$('#patchOk').click();setGM('earth')};
@@ -4401,14 +4426,14 @@ if($('#patchDaily'))$('#patchDaily').onclick=()=>{$('#patchOk').click();closeMod
 function openPatch(){closeModals();const no=$('#patchNo');if(no)no.checked=opts.patch===false;$('#mPatch').classList.add('open')}
 if($('#setPatch'))$('#setPatch').onclick=openPatch;
 
-$('#btnSection').onclick=()=>enterSection();
+$('#btnSection').onclick=()=>enterSection();if($('#mobSec'))$('#mobSec').onclick=()=>enterSection();
 
 // ---- 화면 틀: PC / 모바일 따로 (게임 로직은 공용) ----
 function applyLayout(){let mob=TOUCH;try{const q=new URL(location.href).searchParams.get('ui');if(q==='mob')mob=true;else if(q==='pc')mob=false}catch(e){}
   if(document.documentElement.classList.contains('rec'))mob=false;   // 촬영용 세로 화면: 아래 도구막대(PC 배치)를 손가락으로
   document.body.classList.toggle('ui-mob',mob);document.body.classList.toggle('ui-pc',!mob);
   if(!mob)return;const menu=$('#sysMenu');if(!menu||menu.children.length)return;
-  ['btnGM','btnSection','btnUndo','btnReset','btnRank','btnConq','btnShare','btnSet','btnDonate'].forEach(id=>{const b=$('#'+id);if(b)menu.appendChild(b)});
+  ['btnUndo','btnReset','btnRank','btnConq','btnShare','btnSet','btnDonate','btnHub','btnInsta'].forEach(id=>{const b=$('#'+id);if(b)menu.appendChild(b)});
   const bm=$('#btnMenu');if(bm)bm.onclick=e=>{e.stopPropagation();menu.classList.toggle('open')};
   menu.addEventListener('click',()=>setTimeout(()=>menu.classList.remove('open'),50));
   document.addEventListener('pointerdown',e=>{if(menu.classList.contains('open')&&!menu.contains(e.target)&&e.target!==bm)menu.classList.remove('open')},true)}
