@@ -595,6 +595,26 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   #mWelcome .w-row{flex-direction:column}
 }
 
+/* ===== 2026.11.13 5차 — 출석 보상 창 · 오른쪽 위 버튼 줄 · 분류 펼침 목록 ===== */
+#quickRow{display:flex;gap:4px;justify-content:flex-end}
+#scoreBox{pointer-events:none}#scoreBox>*{pointer-events:auto}   /* 버튼 줄 때문에 넓어진 빈 자리가 화면 터치를 막지 않게 */
+#quickRow .btn-s{background:var(--panel);white-space:nowrap}
+#btnReward b{color:#ffb020}
+#btnSpray.on{background:var(--accent)!important;border-color:#ff8a5a;color:#fff}
+#btnSpray.locked{opacity:.55}
+@media (pointer:coarse) and (max-height:500px){#quickRow .btn-s{font-size:10px;padding:2px 7px}}
+body.ui-mob #quickRow .btn-s{min-height:24px}
+#rwHead{margin:4px 0 10px}
+#rwHead .rw-n{font-size:13px;color:#c9cdd1;margin-bottom:8px}
+#rwHead .rw-n b{font-size:22px;color:#ffb020;font-family:"Black Han Sans",sans-serif;font-weight:400;margin:0 2px}
+.rw-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.rw-days i{font-style:normal;text-align:center;padding:7px 0 5px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);font-size:11px;color:var(--muted);line-height:1.25}
+.rw-days i b{display:block;font-size:15px}
+.rw-days i.done{background:#3a2210;border-color:#c2622a;color:#ffd9b8}
+.rw-days i.gift{border-style:dashed}
+.rw-days i.gift.done{border-style:solid;background:#5a3a08;border-color:#f2b134;color:#ffe9a8}
+.fleft #fCats{display:none!important}
+#fCatSel{flex:0 0 auto;max-width:46%;padding:0 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:inherit;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 /* ===== 2026.11.13 4차 — 연속 출석 보상 ===== */
 #rwList{display:flex;flex-direction:column;gap:5px;margin-top:6px}
 .rw{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);font-size:12.5px}
@@ -605,7 +625,6 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
 .rw button.on{background:var(--accent);border-color:#ff8a5a;color:#fff;font-weight:700}
 .rw.lock{opacity:.6}
 .tool.locked{opacity:.55}
-@media (max-width:1340px){body.ui-pc #btnSpray{display:none}}   /* 좁은 PC 화면: 도구막대가 넘치지 않게 숨기고 설정 → 연속 출석 보상에서 사용 */
 body.spraying #gl{cursor:crosshair}
 #spCols{display:flex;gap:8px;margin-top:10px}
 #spCols button{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer}
@@ -743,7 +762,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <div id="clientBox" class="panel" style="display:none"></div>
   <div id="questBox" class="panel" style="display:none"></div>
   <div id="chal" class="panel" style="display:none"></div>
-  <button class="btn-s" id="btnReport" style="background:var(--panel)">철거 일보</button>
+  <div id="quickRow"><button class="btn-s" id="btnReward" title="출석 보상">🔥 출석</button><button class="btn-s" id="btnSpray" title="스프레이 낙서 — 연속 출석 7일 보상">🎨 스프레이</button><button class="btn-s" id="btnReport">철거 일보</button></div>
 </div>
 
 <div id="secPanel" class="panel" style="display:none"></div>
@@ -766,7 +785,6 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <button class="tool sm" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 14v6h14v-6"/></svg>공유</button>
   <button class="tool sm" id="btnSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>설정</button>
   <button class="tool sm" id="btnDonate" title="개발자 커피 후원"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg>후원</button>
-  <button class="tool sm" id="btnSpray" title="스프레이 낙서 — 연속 출석 7일 보상"><i class="emo">🎨</i>스프레이</button>
   <a class="tool sm" id="btnHub" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener" title="CJW GAMES — 다른 게임 모음"><i class="emo">🎮</i>다른 게임</a>
   <a class="tool sm" id="btnInsta" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener" title="인스타그램 @cjw.games"><i class="emo">📷</i>인스타</a>
 </div>
@@ -849,6 +867,13 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <button class="btn-p" id="rqSend" style="width:100%;margin-top:6px">보내기</button>
   <p class="small" id="rqNote" style="margin:8px 0 0;opacity:.75">‘추가하기’는 (초·중·고등학교는 추가하지 않아요) 주소로 위치를 찾아 바로 목록에 추가돼요(누구나 검색 가능). 연락처·내용은 운영자 시트에만 저장되고 게임에는 안 나와요.</p>
 </div></div>
+<div class="modal" id="mReward"><div class="card" style="width:min(440px,100%)">
+  <button class="close" data-close>×</button>
+  <h2>🔥 출석 보상</h2>
+  <div id="rwHead"></div>
+  <div id="rwList"></div>
+  <div class="small" style="margin-top:10px;line-height:1.6">하루 한 번 접속하면 연속 일수가 쌓여요 (한국 시간 자정 기준).<br>한 번 받은 보상은 연속이 끊겨도 계속 쓸 수 있어요. 기록은 이 브라우저에만 저장돼요.</div>
+</div></div>
 <div class="modal" id="mSpray"><div class="card" style="width:min(400px,100%)">
   <button class="close" data-close>×</button>
   <h2>🎨 스프레이 낙서</h2>
@@ -894,7 +919,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
       <button class="close" data-close>×</button>
       <h2>어디를 부술까요?<span id="streakBox" style="display:none"></span></h2>
       <div id="gmSeg" class="seg gm"><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난 <small>NEW</small></button></div>
-      <div class="row" style="margin:0 0 6px"><input id="customQ" placeholder="검색 — 회사·학교 이름, 주소, 좌표" autocomplete="off"></div>
+      <div class="row" style="margin:0 0 6px"><select id="fCatSel" aria-label="분류 고르기"><option value="all">전체</option><option value="">📐 건축사사무소</option><option value="c">🏗 건설사</option><option value="u">🎓 대학교</option><option value="g">🏢 일반 회사</option></select><input id="customQ" placeholder="검색 — 이름, 주소, 좌표" autocomplete="off"></div>
       <div id="fCats"><button data-k="all" class="on">전체</button><button data-k="">📐 건축사사무소</button><button data-k="c">🏗 건설사</button><button data-k="u">🎓 대학교</button><button data-k="g">🏢 일반 회사</button></div>
     </div>
     <div id="dailyCard" style="display:none"></div>
@@ -947,9 +972,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <div class="row"><input id="bossName2" class="cn-input" maxlength="12" placeholder="사장님 — 비우면 '사장님'" style="flex:0 0 38%"><input id="clientNames2" class="cn-input" maxlength="80" placeholder="발주처 — 쉼표로 최대 5개"></div>
   <div class="small" style="margin-top:10px">사장님 정장 색 (이 브라우저에만 저장)</div>
   <div class="suit-row" id="suitRow"></div>
-  <div class="small" style="margin-top:12px">🔥 연속 출석 보상 <span id="rwNow"></span> <small>(한 번 받으면 계속 쓸 수 있어요)</small></div>
-  <div id="rwList"></div>
-  <div class="row" id="setLinks" style="margin-top:10px"><button class="btn-s" data-go="btnRank">랭킹</button><button class="btn-s" data-go="btnConq">정복</button><button class="btn-s" data-go="btnShare">공유</button><button class="btn-s" data-go="btnReport">철거 일보</button><button class="btn-s" data-req="문의·버그">📮 문의함</button><button class="btn-s" data-req="사옥 모양">🏢 사옥 모양 고치기</button><button class="btn-s" id="setGuide">📘 가이드</button><button class="btn-s" id="setPatch">📰 업데이트 내역</button></div>
+  <div class="row" id="setLinks" style="margin-top:10px"><button class="btn-s" data-go="btnRank">랭킹</button><button class="btn-s" data-go="btnConq">정복</button><button class="btn-s" data-go="btnShare">공유</button><button class="btn-s" data-go="btnReport">철거 일보</button><button class="btn-s" data-go="btnReward">🔥 출석 보상</button><button class="btn-s" data-req="문의·버그">📮 문의함</button><button class="btn-s" data-req="사옥 모양">🏢 사옥 모양 고치기</button><button class="btn-s" id="setGuide">📘 가이드</button><button class="btn-s" id="setPatch">📰 업데이트 내역</button></div>
   <div class="row hub-row"><a class="btn-s hub-a" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener">🎮 CJW GAMES · 다른 게임</a><a class="btn-s hub-a" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener">📷 인스타 @cjw.games</a></div>
   <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
   <button class="btn-p" id="btnPickHQ" style="width:100%;margin-top:12px">사옥 건물 직접 지정</button>
@@ -1101,7 +1124,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
   function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
   function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
-  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261113d';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261113e';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
     s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
   var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
   var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));

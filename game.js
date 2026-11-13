@@ -4221,7 +4221,10 @@ const GOLD_C=[1.0,0.82,0.30],GOLD_D=[0.86,0.64,0.14],GOLD_L=[1.0,0.93,0.62],GOLD
 function rwBest(){return Math.max(+STREAK.best||0,RW_DEV)}
 function rwOK(n){return rwBest()>=n}
 function goldOn(k){return RW.gold===k&&rwOK(5)}
-function rwUI(){const box=$('#rwList');if(!box)return;const now=$('#rwNow');if(now)now.textContent='— 지금 '+STREAK.n+'일 · 최고 '+rwBest()+'일';
+function rwUI(){const box=$('#rwList');if(!box)return;
+  {const hd=$('#rwHead');if(hd){const gift={3:'🧥',5:'✨',7:'🎨'};let s='';for(let i=1;i<=7;i++)s+='<i class="'+(i<=Math.min(7,STREAK.n)?'done':'')+(gift[i]?' gift':'')+'"><b>'+(gift[i]||(i<=STREAK.n?'✔':'·'))+'</b>'+i+'일</i>';
+    hd.innerHTML='<div class="rw-n">지금 연속 <b>'+STREAK.n+'</b>일 · 최고 '+rwBest()+'일 · 누적 '+STREAK.days+'일</div><div class="rw-days">'+s+'</div>'}
+   const rb=$('#btnReward');if(rb)rb.innerHTML='🔥 출석 <b>'+STREAK.n+'</b>일'}
   const lock=n=>'<small>🔒 연속 '+n+'일이 되면 열려요</small>';
   box.innerHTML=
     '<div class="rw'+(rwOK(3)?'':' lock')+'"><span class="rw-d">3일</span><span class="rw-t">🧥 사장님 거지 옷'+(rwOK(3)?'':lock(3))+'</span>'+(rwOK(3)?'<button data-rw="beggar" class="'+(RW.beggar?'on':'')+'">'+(RW.beggar?'입는 중':'입히기')+'</button>':'')+'</div>'+
@@ -4229,13 +4232,19 @@ function rwUI(){const box=$('#rwList');if(!box)return;const now=$('#rwNow');if(n
     '<div class="rw'+(rwOK(7)?'':' lock')+'"><span class="rw-d">7일</span><span class="rw-t">🎨 스프레이 낙서'+(rwOK(7)?'<small>건물 외벽에 문구를 써요 (나만 보여요)</small>':lock(7))+'</span>'+(rwOK(7)?'<button data-rw="spray">쓰러 가기</button>':'')+'</div>';
   box.querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=b.dataset.rw;
     if(k==='beggar'){RW.beggar=!RW.beggar;if(BOSS)BOSS.look=null;toast(RW.beggar?'🧥 '+bossTitle()+'이 거지 옷으로 갈아입었어요':'원래 옷으로 돌아왔어요',2000)}
-    else if(k==='spray'){closeModals();sprayArm();return}
+    else if(k==='spray'){RW_BACK=false;closeModals();sprayArm();return}
     else{RW.gold=RW.gold===k?'':k;toast(RW.gold?'✨ 황금 '+(k==='dozer'?'불도저':'쇠공')+' 적용!':'황금 스킨을 껐어요',1800)}
     lsSet('smasharch_reward',RW);rwUI()});
   const sb=$('#btnSpray');if(sb)sb.classList.toggle('locked',!rwOK(7))}
 rwUI();
-{const sb=$('#streakBox');if(sb)sb.onclick=()=>toast('🎁 3일 거지 옷 · 5일 황금 스킨 · 7일 스프레이 — 지금 '+STREAK.n+'일 (설정 → 연속 출석 보상에서 써요)',4200)}
-if(STREAK.isNew&&STREAK.best===STREAK.n&&[3,5,7].includes(STREAK.n))setTimeout(()=>toast('🎁 연속 출석 '+STREAK.n+'일 보상이 열렸어요: '+({3:'사장님 거지 옷',5:'황금 스킨',7:'스프레이 낙서'})[STREAK.n]+' — 설정 → 연속 출석 보상',5200),6200);
+let RW_BACK=false;
+function rwOpen(){RW_BACK=!!($('#mFirm')&&$('#mFirm').classList.contains('open'))||!CUR;closeModals();rwUI();$('#mReward').classList.add('open')}
+{const back=()=>{if(RW_BACK){RW_BACK=false;setTimeout(()=>{if(!document.querySelector('.modal.open'))$('#btnFirm').click()},0)}};
+  const m=$('#mReward');if(m){m.addEventListener('pointerdown',e=>{if(e.target===m)back()});const c=m.querySelector('.close');if(c)c.addEventListener('click',back)}
+  const sb=$('#streakBox');if(sb)sb.onclick=rwOpen;const rb=$('#btnReward');if(rb)rb.onclick=rwOpen}
+// 회사 고르기 창: 분류 펼침 목록 (예전 분류 버튼과 같은 동작)
+{const s=$('#fCatSel');if(s)s.onchange=()=>{FCAT=s.value;document.querySelectorAll('#fCats button').forEach(x=>x.classList.toggle('on',x.dataset.k===FCAT));runSearch()}}
+if(STREAK.isNew&&STREAK.best===STREAK.n&&[3,5,7].includes(STREAK.n))setTimeout(()=>toast('🎁 연속 출석 '+STREAK.n+'일 보상이 열렸어요: '+({3:'사장님 거지 옷',5:'황금 스킨',7:'스프레이 낙서'})[STREAK.n]+' — 오른쪽 위 [🔥 출석]에서 써보세요',5200),6200);
 
 // ---------- 스프레이 낙서 — [스프레이] → 건물 누르기 → 문구 입력 → 누른 쪽 외벽에 글씨. 나만 보이고(저장 안 함), 그 벽이 부서지면 사라짐 ----------
 const SPRAY={arm:false,list:[],b:null,hit:null,col:0};
@@ -4641,7 +4650,7 @@ function applyLayout(){let mob=TOUCH;try{const q=new URL(location.href).searchPa
   if(document.documentElement.classList.contains('rec'))mob=false;   // 촬영용 세로 화면: 아래 도구막대(PC 배치)를 손가락으로
   document.body.classList.toggle('ui-mob',mob);document.body.classList.toggle('ui-pc',!mob);
   if(!mob)return;const menu=$('#sysMenu');if(!menu||menu.children.length)return;
-  ['btnUndo','btnReset','btnRank','btnConq','btnShare','btnSpray','btnSet','btnDonate','btnHub','btnInsta'].forEach(id=>{const b=$('#'+id);if(b)menu.appendChild(b)});
+  ['btnUndo','btnReset','btnRank','btnConq','btnShare','btnSet','btnDonate','btnHub','btnInsta'].forEach(id=>{const b=$('#'+id);if(b)menu.appendChild(b)});
   const bm=$('#btnMenu');if(bm)bm.onclick=e=>{e.stopPropagation();menu.classList.toggle('open')};
   menu.addEventListener('click',()=>setTimeout(()=>menu.classList.remove('open'),50));
   document.addEventListener('pointerdown',e=>{if(menu.classList.contains('open')&&!menu.contains(e.target)&&e.target!==bm)menu.classList.remove('open')},true)}
