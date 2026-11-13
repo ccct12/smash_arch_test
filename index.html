@@ -37,7 +37,9 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{
   --bg:#e6e9eb; --panel:#17191c; --panel2:#24272b; --ink:#f3f4f5; --muted:#9aa0a6;
@@ -593,6 +595,58 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   #mWelcome .w-row{flex-direction:column}
 }
 
+/* ===== 2026.11.13 4차 — 연속 출석 보상 ===== */
+#rwList{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+.rw{display:flex;align-items:center;gap:8px;padding:6px 9px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);font-size:12.5px}
+.rw .rw-d{flex:0 0 auto;font-weight:800;color:#ffb020;min-width:34px}
+.rw .rw-t{flex:1;min-width:0}
+.rw .rw-t small{display:block;color:var(--muted);font-size:11px}
+.rw button{flex:0 0 auto;padding:4px 9px;border-radius:6px;background:var(--panel);border:1px solid var(--line);font-size:12px;color:inherit;cursor:pointer}
+.rw button.on{background:var(--accent);border-color:#ff8a5a;color:#fff;font-weight:700}
+.rw.lock{opacity:.6}
+.tool.locked{opacity:.55}
+@media (max-width:1340px){body.ui-pc #btnSpray{display:none}}   /* 좁은 PC 화면: 도구막대가 넘치지 않게 숨기고 설정 → 연속 출석 보상에서 사용 */
+body.spraying #gl{cursor:crosshair}
+#spCols{display:flex;gap:8px;margin-top:10px}
+#spCols button{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer}
+#spCols button.on{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+.fhead h2 #streakBox{cursor:pointer}
+#setLinks{flex-wrap:wrap}
+#setLinks .btn-s{white-space:nowrap}
+/* ===== 2026.11.13 3차 — 회사 고르기 창 정리: 강조는 [오늘의 사옥] 하나만, 나머지는 같은 톤 ===== */
+.fleft .fhead h2{display:flex;align-items:center;gap:8px;margin-right:28px}
+.fhead h2 #streakBox{margin:0 0 0 auto;padding:2px 8px;border-radius:999px;background:transparent;border:1px solid var(--line);color:#c9cdd1;font:600 11.5px/1.5 "Noto Sans KR",sans-serif;white-space:nowrap;letter-spacing:0}
+.fhead h2 #streakBox b{color:#ffb020;font-size:12px;font-weight:800}
+.fleft #fCats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.fleft #fCats::-webkit-scrollbar{display:none}
+.fleft #fCats button{padding:4px 9px;font-size:12px;background:transparent}
+.fleft .fhead{margin-bottom:8px}
+.fmini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:2px}
+.fmini .req-row{display:contents}
+.fmini details.fold.cast,.fmini .req-link.top{margin:0!important;padding:7px 6px!important;border:1px solid var(--line)!important;border-radius:7px;background:var(--panel2)!important;color:#c9cdd1!important;font-size:12px!important;font-weight:600;text-align:center;line-height:1.3;display:block!important;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fmini details.fold.cast summary{color:#c9cdd1!important;font-size:12px;font-weight:600}
+.fmini details.fold.cast summary:before{content:''!important}
+.fmini details.fold.cast summary b{color:#fff;font-weight:700}
+.fmini details.fold.cast summary em{display:none}
+.fmini details.fold.cast[open]{grid-column:1/-1;order:9;text-align:left;white-space:normal;padding:8px 10px!important}
+.fmini details.fold.cast[open] summary{color:#fff!important;margin-bottom:2px}
+.fmini details.fold .client-in{background:transparent;border:0;padding:0;margin:6px 0 0}
+.fmini .client-in label,.fmini .cn-row span{color:#c9cdd1}
+#dailyCard{margin:0 0 8px!important}
+/* 5분 알림: 철거 일보 버튼 깜빡임 */
+#btnReport.nudge{background:#f2b134!important;color:#1d2126!important;border-color:#8a6508!important;animation:repNudge .7s ease-in-out 8}
+@keyframes repNudge{50%{transform:scale(1.12)}}
+/* ===== 2026.11.13 2차 — 돌발 미션 · 세로 카드 · 5초 영상 ===== */
+#questBox{font-size:12px;font-weight:700;padding:4px 10px;color:#2b1d00;background:#ffd24a!important;border-color:#8a6508;white-space:nowrap}
+#questBox b{font-family:"Black Han Sans",sans-serif;font-weight:400;margin-right:4px}
+#questBox.hurry{background:#ff8a3d!important;color:#fff}
+@media (pointer:coarse) and (max-height:500px){#questBox{font-size:10px;padding:2px 7px}}
+#shFmt{display:flex;gap:6px;margin:0 0 8px}
+#shFmt button{flex:1;padding:5px;border:1px solid #000;border-radius:7px;background:#2a2f36;color:#ddd;font-size:12.5px;cursor:pointer}
+#shFmt button.on{background:#3fbf6a;color:#fff;font-weight:700}
+#shImg.tall{aspect-ratio:9/16;width:auto;max-width:100%;height:min(46vh,420px);max-height:none;margin:0 auto;object-fit:contain}
+#recVideo{width:100%;max-height:50vh;border-radius:8px;border:1px solid #000;background:#000;display:block}
+#recChip{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top));transform:translateX(-50%);z-index:30;background:#c81e1e;color:#fff;font-weight:800;font-size:13px;padding:5px 12px;border-radius:999px;border:2px solid #fff;pointer-events:none;white-space:nowrap}
 /* ===== 2026.11.13 — 모바일 모드 스위치 · 단면 나가기 · 층 확대 · 허브/인스타 · 연속 출석 ===== */
 #mobMode,#mobSec{display:none}
 body.ui-mob #toolbar{grid-auto-rows:auto}
@@ -687,6 +741,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <div id="dailyBox" class="panel" style="display:none"></div>
   <div id="bossBox" class="panel" style="display:none"></div>
   <div id="clientBox" class="panel" style="display:none"></div>
+  <div id="questBox" class="panel" style="display:none"></div>
   <div id="chal" class="panel" style="display:none"></div>
   <button class="btn-s" id="btnReport" style="background:var(--panel)">철거 일보</button>
 </div>
@@ -711,6 +766,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <button class="tool sm" id="btnShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 14v6h14v-6"/></svg>공유</button>
   <button class="tool sm" id="btnSet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>설정</button>
   <button class="tool sm" id="btnDonate" title="개발자 커피 후원"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg>후원</button>
+  <button class="tool sm" id="btnSpray" title="스프레이 낙서 — 연속 출석 7일 보상"><i class="emo">🎨</i>스프레이</button>
   <a class="tool sm" id="btnHub" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener" title="CJW GAMES — 다른 게임 모음"><i class="emo">🎮</i>다른 게임</a>
   <a class="tool sm" id="btnInsta" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener" title="인스타그램 @cjw.games"><i class="emo">📷</i>인스타</a>
 </div>
@@ -762,7 +818,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
 <div class="modal" id="mReport"><div class="card report">
   <button class="close" data-close>×</button>
   <div id="repBody"></div>
-  <div class="row" style="margin-top:14px"><button class="btn-p" id="repShare" style="flex:1">결과 공유하기</button><button class="btn-s" id="repRank">랭킹 등록</button></div>
+  <div class="row" style="margin-top:14px"><button class="btn-p" id="repShare" style="flex:1">결과 공유하기</button><button class="btn-s" id="repRank">랭킹 등록</button><button class="btn-s" data-close>계속 부수기</button></div>
   <div class="row hub-row"><a class="btn-s hub-a" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener">🎮 CJW GAMES · 다른 게임</a><a class="btn-s hub-a" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener">📷 인스타 @cjw.games</a></div>
   <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
 </div></div>
@@ -793,10 +849,25 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <button class="btn-p" id="rqSend" style="width:100%;margin-top:6px">보내기</button>
   <p class="small" id="rqNote" style="margin:8px 0 0;opacity:.75">‘추가하기’는 (초·중·고등학교는 추가하지 않아요) 주소로 위치를 찾아 바로 목록에 추가돼요(누구나 검색 가능). 연락처·내용은 운영자 시트에만 저장되고 게임에는 안 나와요.</p>
 </div></div>
+<div class="modal" id="mSpray"><div class="card" style="width:min(400px,100%)">
+  <button class="close" data-close>×</button>
+  <h2>🎨 스프레이 낙서</h2>
+  <div class="small"><b id="spWho"></b> 외벽에 쓸 문구 <small>(나만 보여요 · 부수면 사라져요)</small></div>
+  <div class="row" style="margin-top:6px"><input id="spText" maxlength="14" placeholder="예: 야근 금지 (14자까지)" autocomplete="off"><button class="btn-p" id="spGo">쓰기</button></div>
+  <div id="spCols"></div>
+</div></div>
+<div class="modal" id="mRec"><div class="card">
+  <button class="close" data-close>×</button>
+  <h2>🎬 5초 영상</h2>
+  <video id="recVideo" controls loop muted playsinline></video>
+  <div class="small" id="recInfo" style="margin:6px 0"></div>
+  <div class="sh-btns"><button id="recShare">📤 다른 앱으로 (인스타 등)</button><button id="recSave">⬇ 영상 저장</button><button id="recAgain">🔁 다시 찍기</button></div>
+</div></div>
 <div class="modal" id="mShare"><div class="card">
   <button class="close" data-close>×</button>
   <h2>공유하기</h2>
   <div id="shTabs"><button data-m="result" class="on">💥 내 결과</button><button data-m="rank">🏆 이번 주 랭킹</button></div>
+  <div id="shFmt"><button data-f="wide" class="on">▭ 가로 카드</button><button data-f="tall">▯ 세로 카드 (스토리·릴스)</button></div>
   <img id="shImg" alt="공유 이미지 미리보기">
   <label id="shVsRow"><input type="checkbox" id="shVs" checked> 링크에 내 점수 도전장 넣기 <small style="opacity:.7">(받은 사람 화면에 "친구 기록 n점"이 떠요)</small></label>
   <textarea id="shText" spellcheck="false"></textarea>
@@ -806,6 +877,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
     <button id="shCopyImg">🖼 이미지 복사</button>
     <button id="shSave">⬇ 이미지 저장</button>
     <button id="shCopy">🔗 문구+링크 복사</button>
+    <button id="shRec" style="display:none">🎬 5초 영상 찍기</button>
   </div>
   <div id="shSns"><span>링크를 누른 사람은 같은 사옥에서 바로 시작해요</span><button data-s="x">X</button><button data-s="fb">페이스북</button><button data-s="naver">네이버</button></div>
 </div></div>
@@ -820,20 +892,19 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <div class="fleft">
     <div class="fhead">
       <button class="close" data-close>×</button>
-      <h2>어디를 부술까요?</h2>
+      <h2>어디를 부술까요?<span id="streakBox" style="display:none"></span></h2>
       <div id="gmSeg" class="seg gm"><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난 <small>NEW</small></button></div>
       <div class="row" style="margin:0 0 6px"><input id="customQ" placeholder="검색 — 회사·학교 이름, 주소, 좌표" autocomplete="off"></div>
       <div id="fCats"><button data-k="all" class="on">전체</button><button data-k="">📐 건축사사무소</button><button data-k="c">🏗 건설사</button><button data-k="u">🎓 대학교</button><button data-k="g">🏢 일반 회사</button></div>
     </div>
-    <div id="streakBox" style="display:none"></div>
     <div id="dailyCard" style="display:none"></div>
     <div class="fmini">
-      <details class="fold cast"><summary id="castSum">🎭 사장님·발주처 이름 정하기</summary>
+      <details class="fold cast"><summary id="castSum" title="사장님·발주처 이름을 우리 회사 버전으로 바꿀 수 있어요">🎭 이름 바꾸기</summary>
       <div class="client-in"><label><small>선택 · 이 브라우저에만 저장돼요</small></label>
         <div class="cn-row"><span>👔 사장님</span><input id="bossName" class="cn-input" maxlength="12" placeholder="예: 왕소장 — 비우면 '사장님'" autocomplete="off"></div>
         <div class="cn-row"><span>😤 발주처</span><input id="clientNames" class="cn-input" maxlength="80" placeholder="쉼표로 최대 5개 — 비우면 가상 이름" autocomplete="off"></div></div>
       </details>
-      <div class="req-row"><button class="req-link top" data-req="회사 추가">📮 찾는 곳이 없나요?<b>바로 추가</b></button><button class="req-link top" data-req="사옥 모양">🏢 사옥 모양이 달라요?<b>사진 보내기</b></button></div>
+      <div class="req-row"><button class="req-link top" data-req="회사 추가" title="찾는 곳이 없으면 바로 추가할 수 있어요">📮 회사 추가</button><button class="req-link top" data-req="사옥 모양" title="사옥 모양이 실제와 다르면 사진을 보내주세요">🏢 모양 제보</button></div>
     </div>
   </div>
   <div class="fright">
@@ -868,12 +939,16 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <label class="opt">화면 흔들림 (멀미 나면 끄기) <input type="checkbox" id="optShake"></label>
   <label class="opt">낮·밤 바뀜 (밤 = 야근 모드) <input type="checkbox" id="optNight" checked></label>
   <label class="opt">날씨 효과 (눈·비·벚꽃·단풍) <input type="checkbox" id="optWeather" checked></label>
+  <label class="opt">돌발 미션 (30초 깜짝 목표) <input type="checkbox" id="optQuest" checked></label>
+  <label class="opt">배경음 — 사무실 소음·야근 분위기 (시험 중) <input type="checkbox" id="optBgm"></label>
   <label class="opt">업데이트 소식 자동으로 띄우기 <input type="checkbox" id="optPatch" checked></label>
   <button class="btn-s btn-install" style="width:100%;margin-top:8px">📲 앱으로 설치 (홈 화면·바탕화면에 추가)</button>
   <div class="small" style="margin-top:10px">사장님 이름 · 발주처 이름 (이 브라우저에만 저장)</div>
   <div class="row"><input id="bossName2" class="cn-input" maxlength="12" placeholder="사장님 — 비우면 '사장님'" style="flex:0 0 38%"><input id="clientNames2" class="cn-input" maxlength="80" placeholder="발주처 — 쉼표로 최대 5개"></div>
   <div class="small" style="margin-top:10px">사장님 정장 색 (이 브라우저에만 저장)</div>
   <div class="suit-row" id="suitRow"></div>
+  <div class="small" style="margin-top:12px">🔥 연속 출석 보상 <span id="rwNow"></span> <small>(한 번 받으면 계속 쓸 수 있어요)</small></div>
+  <div id="rwList"></div>
   <div class="row" id="setLinks" style="margin-top:10px"><button class="btn-s" data-go="btnRank">랭킹</button><button class="btn-s" data-go="btnConq">정복</button><button class="btn-s" data-go="btnShare">공유</button><button class="btn-s" data-go="btnReport">철거 일보</button><button class="btn-s" data-req="문의·버그">📮 문의함</button><button class="btn-s" data-req="사옥 모양">🏢 사옥 모양 고치기</button><button class="btn-s" id="setGuide">📘 가이드</button><button class="btn-s" id="setPatch">📰 업데이트 내역</button></div>
   <div class="row hub-row"><a class="btn-s hub-a" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener">🎮 CJW GAMES · 다른 게임</a><a class="btn-s hub-a" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener">📷 인스타 @cjw.games</a></div>
   <a class="donate" href="https://fairy.hada.io/@smash-arch#support" target="_blank" rel="noopener">☕ 만든 사람에게 커피 한 잔 <small>(선택 · 게임은 계속 무료)</small></a>
@@ -1026,7 +1101,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
   function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
   function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
-  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261113a';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261113d';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
     s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
   var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
   var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));
