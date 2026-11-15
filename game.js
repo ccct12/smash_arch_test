@@ -1831,7 +1831,7 @@ const K_HINTS=['클릭: 돌진 주먹 — 누른 곳으로 달려가 주먹으�
   '클릭: 호통 — 누른 쪽으로 호통이 부채꼴로 퍼져 나가요. 닿는 건물은 외벽이 벗겨지고 아래층이 무너져요',
   '클릭: 법카 긁기 — 거대한 법인카드가 누른 쪽으로 긁고 지나가요. 길에 있는 건물 밑동이 잘려요. 변신 중엔 3장',
   '클릭: 회전의자 — 대표 의자에 앉아 빙글빙글 돌면서 누른 곳까지 가요. 닿는 건물을 전부 쳐내고, 멈출 때 한 번 더 터져요',
-  '클릭: 전 직원 집합 — 직원들이 누른 쪽으로 우르르 몰려가 건물을 들이받아요. 변신 중엔 훨씬 많이 와요',
+  '클릭: 전 직원 집합 — 누른 곳으로 직원들이 사방에서 모여들어요. 오는 길의 건물을 들이받고, 다 모이면 「화이팅!」 하고 한가운데가 터져요',
   '클릭: 리무진 호출 — 김 기사가 모는 리무진이 사장님 자리에서 누른 쪽으로 건물을 들이받으며 달려요. 변신 중엔 3대',
   '클릭: 해고 통보 — 사장님이 손가락으로 가리킨 건물에 붉은 빛이 꽂혀요. 변신 중엔 옆 건물 2채도 같이 해고돼요'];
 const WEAPONS_K=[{id:'kgo',name:'돌진 주먹',nosnap:true,fire(h){return kaiGo(h)}},{id:'kjump',name:'점프 찍기',nosnap:true,fire(h){return kaiJump(h)}},{id:'kthrow',name:'결재판',nosnap:true,fire(h){return kaiThrow(h)}},
@@ -1850,7 +1850,7 @@ const K_GUIDE=[
   {w:4,emo:'📣',name:'호통',team:'사장님 기술',one:'누른 쪽으로 호통이 부채꼴로 퍼져 나가요.',steps:['<b>5 호통</b>을 골라요',`호통칠 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'사장님 앞에서 시작해 멀리 갈수록 넓게 퍼져요'],tip:'건물이 몰려 있는 쪽을 보고 쓰세요. 가까울수록 세게 맞아요.'},
   {w:5,emo:'💳',name:'법카 긁기',team:'사장님 특기',one:'거대한 법인카드가 긁고 지나가며 건물 밑동을 잘라요.',steps:['<b>6 법카 긁기</b>를 골라요',`긁을 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'지나간 자리에 영수증이 길게 남아요'],tip:'건물이 한 줄로 늘어선 길에 쓰면 줄줄이 넘어가요.'},
   {w:6,emo:'🌀',name:'회전의자',team:'사장님 특기',one:'대표 의자에 앉아 빙글빙글 돌면서 이동해요. 닿는 건물을 전부 쳐내요.',steps:['<b>7 회전의자</b>를 골라요',`갈 곳을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'도는 동안에는 방향을 다시 눌러 바꿀 수 있어요'],tip:'멈추는 순간 둘레가 한 번 더 터져요.'},
-  {w:7,emo:'👥',name:'전 직원 집합',team:'사장님 특기',one:'직원들이 우르르 몰려가 건물을 들이받아요.',steps:['<b>8 전 직원 집합</b>을 골라요',`직원들을 보낼 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'사장님 자리에서 출발해 누른 곳보다 더 멀리 달려요'],tip:'변신 중에 부르면 훨씬 많이, 훨씬 넓게 몰려가요.'},
+  {w:7,emo:'👥',name:'전 직원 집합',team:'사장님 특기',one:'누른 곳으로 직원들이 사방에서 모여들고, 다 모이면 한가운데가 터져요.',steps:['<b>8 전 직원 집합</b>을 골라요',`집합 장소를 <b>${TOUCH?'탭':'클릭'}</b>해요`,'둥글게 좁혀 오면서 길에 있는 건물을 들이받아요'],tip:'건물이 빽빽한 동네 한가운데를 누르세요. 변신 중엔 훨씬 멀리서, 훨씬 많이 와요.'},
   {w:8,emo:'🚘',name:'리무진 호출',team:'사장님 특기',one:'김 기사가 모는 리무진이 건물을 들이받으며 달려요.',steps:['<b>9 리무진 호출</b>을 골라요',`리무진이 갈 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'사장님 자리에서 출발해 누른 곳보다 더 멀리 가요'],tip:'변신 중에 부르면 3대가 나란히 달려요.'},
   {w:9,emo:'👉',name:'해고 통보',team:'사장님 특기',one:'손가락으로 가리킨 건물에 붉은 빛이 꽂혀요.',steps:['<b>0 해고 통보</b>를 골라요',`해고할 건물을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'웬만한 건물은 한 방에 무너져요'],tip:'변신 중엔 옆 건물 2채도 같이 해고돼요.'}];
 const K_GUIDE_ULT=`<div class="g-tool g-ult"><div class="g-txt"><div class="g-name"><kbd>Q</kbd> 💢 변신</div><p class="g-one">부술수록 오른쪽 아래 <b>분노 게이지</b>가 차요. 가득 차면 ${TOUCH?'원을 누르면':'Q 키를 누르면'} ${KAI_BIG_SEC}초 동안 사장님이 거대해져서, 웬만한 건물은 닿기만 해도 무너져요. 사장님 모드는 랭킹이 없어요.</p>`;
@@ -1901,11 +1901,11 @@ function kaiCards(h){if(!kaiOK()||BOSS.state==='jump'||!kaiCool('cCard',900))ret
   sfx(8,0.5);floatText(BOSS.x,BOSS.y+2.6*S,BOSS.z,'💳 법카 긁는다!','cad',1.3);bossSay(pickL(['한도는 무제한이다!','법카로 긁어!','영수증은 챙겨라!','이건 접대비다!']),0);return true}
 // 7. 회전의자: 돌면서 이동
 function kaiSpin(h){if(!kaiOK()||BOSS.state==='jump')return false;BOSS.tx=h.x;BOSS.tz=h.z;BOSS.tb=null;if(BOSS.state!=='spin'){BOSS.spin=BOSS.big>0?3.8:3.4;sfx(10,0.8);bossSay(pickL(['빙글빙글~!','회전의자 맛 좀 봐라!','이게 대표 의자다!']),0)}BOSS.state='spin';return true}
-// 8. 전 직원 집합: 직원들이 누른 쪽으로 우르르 몰려감
-function kaiStaff(h){if(!kaiOK()||!kaiCool('cCoffee',1600))return false;const big=BOSS.big>0,S=BOSS.S,[dx,dz,l]=kaiDir(h),n=big?48:18,W=big?120:44,D=big?70:30,m=[];kaiFace(h.x,h.z);BOSS.flinch=0.4;
-  for(let i=0;i<n;i++)m.push({f:-Math.random()*D,p:(Math.random()-0.5)*W,ph:Math.random()*6.28,c:i%4});
-  KOBJ.push({k:'staff',x:BOSS.x+dx*S*1.2,z:BOSS.z+dz*S*1.2,dx,dz,left:Math.max(l,110)+(big?320:190),v:big?120:100,W,s:big?3.3:1.7,m,hits:new Set(),t:0,acc:0,big});
-  sfx(12,1.2);floatText(BOSS.x,BOSS.y+2.6*S,BOSS.z,'👥 전 직원 집합!','cad',1.5);bossSay(pickL(['전 직원 집합!','다들 뛰어!','주말 출근이다!','오늘 회식은 저기서 한다!']),0);return true}
+// 8. 전 직원 집합: 누른 곳으로 직원들이 사방에서 모여듦 → 다 모이면 「화이팅!」
+function kaiStaff(h){if(!kaiOK()||!kaiCool('cCoffee',1600))return false;const big=BOSS.big>0,S=BOSS.S,n=big?54:22,R=big?170:88,m=[];kaiFace(h.x,h.z);BOSS.flinch=0.4;
+  for(let i=0;i<n;i++)m.push({a:i/n*6.283+Math.random()*0.2,dr:Math.random()*R*0.22,ph:Math.random()*6.28,c:i%4});
+  KOBJ.push({k:'staff',x:h.x,z:h.z,R,r:R,v:big?120:78,s:big?3.3:2.3,m,hits:new Set(),t:0,acc:0,st:0,hold:0,big});
+  ring(h.x,groundAt(h.x,h.z)+1,h.z,R,[0.6,0.8,1]);sfx(12,1.2);floatText(h.x,groundAt(h.x,h.z)+(big?40:22),h.z,'📢 집합 장소','cad',1.2);floatText(BOSS.x,BOSS.y+2.6*S,BOSS.z,'👥 전 직원 집합!','cad',1.5);bossSay(pickL(['전 직원 집합!','5분 안에 다 모여!','주말 출근이다!','오늘 회식은 저기서 한다!']),0);return true}
 // 9. 리무진 호출: 검은 리무진이 들이받으며 달림 (변신 중엔 3대)
 function kaiLimo(h){if(!kaiOK()||!kaiCool('cDozer',1500))return false;const big=BOSS.big>0,S=BOSS.S,[dx,dz,l]=kaiDir(h),n=big?3:1,s=big?2.2:1.6;kaiFace(h.x,h.z);BOSS.flinch=0.4;
   for(let i=0;i<n;i++){const off=(i-(n-1)/2)*15*s;KOBJ.push({k:'limo',x:BOSS.x+dx*S*1.3-dz*off,z:BOSS.z+dz*S*1.3+dx*off,dx,dz,left:Math.max(l,120)+(big?340:220),v:big?175:150,s,hits:new Set(),t:-Math.abs(i-(n-1)/2)*0.18,acc:0,big})}
@@ -1945,13 +1945,20 @@ function kaiObjUpdate(dt,now){for(let i=KOBJ.length-1;i>=0;i--){const o=KOBJ[i];
           if(o.n%2===1)floatText(b.cx,b.base+Math.min(b.h0,30)+8,b.cz,pickL(['₩ 승인','₩₩ 승인','일시불!','접대비 처리']),'cad',0.9)});
         forTreesNear(o.x,o.z,o.W*0.5,t=>{if(t.alive&&Math.hypot(t.x-o.x,t.z-o.z)<o.W*0.5)killTree(t)});if(CLIENT)clientHitAt(o.x,g+2,o.z,o.W*0.5,4)}
       if(o.left<=0){o.end=0.001;const g=groundAt(o.x,o.z);floatText(o.x,g+16,o.z,o.n?'💳 결제 완료 — '+o.n+'건':'💳 결제 완료','boom',1.4);kaiPapers(o.x,g+3,o.z,10,14);sfx(6,0.3)}}}
-  else if(o.k==='staff'){const sp=o.v*dt;o.x+=o.dx*sp;o.z+=o.dz*sp;o.left-=sp;o.acc+=dt;                                  // 전 직원 집합: 우르르 몰려감
-    if(o.acc>0.05){o.acc=0;const big=o.big,W=o.W,g=groundAt(o.x,o.z);
-      forBuildingsNear(o.x,o.z,W*0.5+16,b=>{if(!b.alive||b.lifted||o.hits.has(b)||distToBuilding(b,o.x,o.z)>W*0.5)return;o.hits.add(b);
-        facadeStrip(b,o.x,o.z,big?1.5:1.1);kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.7+6,big?13:8.5,big?6:4);boom3(b.cx,b.base+3,b.cz,big?14:8);sfxBoom(0.25);cam.shake=Math.max(cam.shake,big?4:2.2);
-        if(o.hits.size%2===1)floatText(b.cx,b.base+Math.min(b.h0,30)+8,b.cz,pickL(['넵!','충성!','알겠습니다!','바로 하겠습니다!','넵넵!']),'cad',0.9)});
-      forTreesNear(o.x,o.z,W*0.5,t=>{if(t.alive&&Math.hypot(t.x-o.x,t.z-o.z)<W*0.5)killTree(t)});if(CLIENT)clientHitAt(o.x,g+2,o.z,W*0.5,4);kaiDust(o.x-o.dx*W*0.3,o.z-o.dz*W*0.3,big?6:3,14)}
-    if(o.left<=0){rm=true;floatText(o.x,groundAt(o.x,o.z)+14,o.z,'칼퇴!','boom',1.1);kaiDust(o.x,o.z,o.big?20:10,20)}}
+  else if(o.k==='staff'){const big=o.big,g=groundAt(o.x,o.z);                                                              // 전 직원 집합: 둥글게 좁혀 옴 → 화이팅
+    if(o.st===0){o.r=Math.max(0,o.r-o.v*dt);o.acc+=dt;
+      if(o.acc>0.06){o.acc=0;
+        forBuildingsNear(o.x,o.z,o.R+20,b=>{if(!b.alive||b.lifted||o.hits.has(b))return;const d=Math.hypot(b.cx-o.x,b.cz-o.z),hw=Math.sqrt(b.area)*0.5;if(d>o.R||d+hw<o.r)return;o.hits.add(b);
+          facadeStrip(b,o.x+(b.cx-o.x)*2,o.z+(b.cz-o.z)*2,big?1.4:1);kaiLow(b,b.cx,b.cz,hw*1.4+6,big?11:7,big?5:3);boom3(b.cx,b.base+3,b.cz,big?12:7);sfxBoom(0.22);cam.shake=Math.max(cam.shake,big?3.5:2);
+          if(o.hits.size%2===1)floatText(b.cx,b.base+Math.min(b.h0,30)+8,b.cz,pickL(['넵!','충성!','갑니다!','지금 갑니다!','넵넵!']),'cad',0.9)});
+        forTreesNear(o.x,o.z,o.R,t=>{if(t.alive){const d=Math.hypot(t.x-o.x,t.z-o.z);if(d<=o.R&&d>=o.r-4)killTree(t)}});
+        if(fxOK(3))for(let q=0;q<3;q++){const a=Math.random()*6.283;kaiDust(o.x+Math.cos(a)*(o.r+o.R*0.1),o.z+Math.sin(a)*(o.r+o.R*0.1),1,10)}}
+      if(o.r<=0){o.st=1;const R=big?60:32;                                                                                 // 다 모임: 한가운데가 터짐
+        forBuildingsNear(o.x,o.z,R+24,b=>{if(!b.alive||b.lifted)return;const d=distToBuilding(b,o.x,o.z);if(d>R)return;if(eSmall(b)){killBuilding(b);return}
+          if(d<R*0.5&&b.h0<(big?110:44)){kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.8+8,30,99);if(b.alive)killBuilding(b);return}kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.75+8,big?16:10,big?7:5)});
+        if(CLIENT)clientHitAt(o.x,g+2,o.z,R,6);carve(o.x,o.z,R*0.4,big?4:1.6);boom3(o.x,g+4,o.z,big?40:20);ring(o.x,g+1,o.z,R*1.6,[1,0.85,0.4]);later(0.12,()=>ring(o.x,groundAt(o.x,o.z)+1,o.z,R,[1,0.6,0.3]));
+        kaiDust(o.x,o.z,big?40:20,big?44:26);kaiPapers(o.x,g+4,o.z,big?20:10,big?24:14);cam.shake=Math.max(cam.shake,big?10:6);hitStop(big?0.08:0.05);sfxBoom(big?1:0.7);sfx(big?24:12,0.8);floatText(o.x,g+(big?46:24),o.z,'화 이 팅 !!','boom',1.5)}}
+    else{o.hold+=dt;if(o.hold>0.9){rm=true;floatText(o.x,g+14,o.z,'칼퇴!','cad',1);kaiDust(o.x,o.z,big?16:8,18)}}}
   else if(o.k==='fire'){if(!o.hit&&o.t>=0.22){o.hit=true;kaiFireHit(o)}if(o.t>0.8)rm=true}                                 // 해고 통보: 가리킴 → 꽂힘
   else if(o.k==='limo'){const sp=o.v*dt;o.x+=o.dx*sp;o.z+=o.dz*sp;o.left-=sp;o.acc+=dt;                                    // 리무진: 들이받으며 달림
     if(o.acc>0.035){o.acc=0;const s=o.s,big=o.big,fx=o.x+o.dx*17*s,fz=o.z+o.dz*17*s,g=groundAt(fx,fz),w=7*s;
@@ -1990,10 +1997,13 @@ function drawKaiObj(m,mg){const now=performance.now()/1000;
       pushShape(mg,CUBE,o.x+o.dx*W*0.33,y,o.z+o.dz*W*0.33,W*0.04,W*0.05,W*1.02,r,[1,0.95,0.6],1);                                                        // 빛나는 앞날
       for(let k=0;k<3;k++)pushShape(mg,CUBE,o.x-o.dx*W*(0.5+k*0.3)+px*W*(k-1)*0.3,y,o.z-o.dz*W*(0.5+k*0.3)+pz*W*(k-1)*0.3,W*0.34,W*0.012,W*0.03,r,[1,0.88,0.45],1)   // 속도 줄
       continue}
-    if(o.k==='staff'){const s=o.s,r=Math.atan2(o.dz,o.dx),px=-o.dz,pz=o.dx,SH=[[0.95,0.95,0.97],[0.62,0.78,0.95],[0.14,0.17,0.3],[0.9,0.9,0.86]];                // 직원들: 다리·셔츠·넥타이·머리
-      for(const q of o.m){const x=o.x+o.dx*q.f+px*q.p,z=o.z+o.dz*q.f+pz*q.p,y=groundAt(x,z)+Math.abs(Math.sin(o.t*13+q.ph))*0.7*s;
+    if(o.k==='staff'){const s=o.s,SH=[[0.95,0.95,0.97],[0.62,0.78,0.95],[0.14,0.17,0.3],[0.9,0.9,0.86]],N=o.m.length;                                             // 직원들: 다리·셔츠·넥타이·머리
+      if(o.st===0&&fxOK(6))for(let i=0;i<12;i++){const a=i*0.5236+now*2,rr=(o.big?9:5)*(1+0.15*Math.sin(now*8));pushShape(mg,CUBE,o.x+Math.cos(a)*rr,groundAt(o.x,o.z)+0.8,o.z+Math.sin(a)*rr,rr*0.36,0.5,0.9,a+1.5708,[0.5,0.8,1],1)}   // 집합 장소 표시
+      o.m.forEach((q,i)=>{const rr=o.st===0?o.r+q.dr+s*1.5:s*(1.2+(i%3)*1.5+q.dr*0.02),dx=-Math.cos(q.a),dz=-Math.sin(q.a),x=o.x-dx*rr,z=o.z-dz*rr,r=q.a+3.1416,
+          y=groundAt(x,z)+Math.abs(Math.sin((o.st?now*11:o.t*13)+q.ph))*(o.st?2.2:0.7)*s;
         pushShape(m,CUBE,x,y+0.6*s,z,0.6*s,1.2*s,1*s,r,[0.12,0.13,0.18],0);pushShape(m,CUBE,x,y+1.95*s,z,0.7*s,1.5*s,1.25*s,r,SH[q.c],0);
-        pushShape(m,CUBE,x+o.dx*0.37*s,y+2*s,z+o.dz*0.37*s,0.06*s,1*s,0.24*s,r,[0.8,0.15,0.15],0);pushShape(m,CUBE,x,y+3.15*s,z,0.85*s,0.9*s,0.9*s,r,[0.95,0.78,0.62],0);pushShape(m,CUBE,x-o.dx*0.05*s,y+3.7*s,z-o.dz*0.05*s,0.9*s,0.3*s,0.94*s,r,[0.1,0.08,0.07],0)}
+        pushShape(m,CUBE,x+dx*0.37*s,y+2*s,z+dz*0.37*s,0.06*s,1*s,0.24*s,r,[0.8,0.15,0.15],0);pushShape(m,CUBE,x,y+3.15*s,z,0.85*s,0.9*s,0.9*s,r,[0.95,0.78,0.62],0);pushShape(m,CUBE,x-dx*0.05*s,y+3.7*s,z-dz*0.05*s,0.9*s,0.3*s,0.94*s,r,[0.1,0.08,0.07],0);
+        if(o.st)pushShape(m,CUBE,x,y+4.3*s,z,0.25*s,0.9*s,0.25*s,r,SH[q.c],0)});                                                                                // 화이팅: 번쩍 든 팔
       continue}
     if(o.k==='fire'){const S=BOSS.S,x0=BOSS.x-Math.sin(BOSS.yaw)*S*0.7,z0=BOSS.z+Math.cos(BOSS.yaw)*S*0.7,y0=BOSS.y+1.7*S,N=18,on=o.t>=0.22,k=on?Math.max(0,1-(o.t-0.22)/0.58):0.25,w=(o.big?4.2:2.4)*k;     // 해고 통보: 붉은 빛줄기
       for(let i=1;i<=N;i++){const u=i/N,j=on?Math.sin(now*50+i*2.1)*w*0.25:0;pushShape(mg,i%2?SPHERE:ICO,x0+(o.tx-x0)*u+j,y0+(o.ty-y0)*u,z0+(o.tz-z0)*u-j,w,w,w,i,i%3===0?[1,0.8,0.6]:[1,0.14,0.1],1)}
@@ -3014,7 +3024,7 @@ const bosSel=$('#optBossSuit');if(bosSel){bosSel.value=String(lsGet('smasharch_b
 function applyMini(){document.body.classList.toggle('mini',!!opts.mini);const el=$('#optMini');if(el)el.checked=!!opts.mini;setTimeout(layoutHUD,0)}
 function toggleMini(){opts.mini=!opts.mini;lsSet('smasharch_opts',opts);applyMini();toast(opts.mini?'간단 화면 — 필요한 버튼만 남겼어요 (랭킹·정복·공유는 설정 안에)':'기본 화면으로 돌아왔어요',2200)}
 if($('#btnMini'))$('#btnMini').onclick=toggleMini;
-if($('#btnDonate'))$('#btnDonate').onclick=()=>{closeModals();$('#mDonate').classList.add('open')};
+if($('#btnDonate'))$('#btnDonate').onclick=()=>{closeModals();$('#mDonate').classList.add('open')};if($('#brDonate'))$('#brDonate').onclick=()=>$('#btnDonate').click();
 document.querySelectorAll('#setLinks [data-go]').forEach(b=>b.onclick=()=>{closeModals();const t=$('#'+b.dataset.go);if(t)t.click()});
 document.querySelectorAll('#toolbar .tool').forEach(b=>{if(!b.title)b.title=b.textContent.trim()});
 applyMini();
@@ -4936,6 +4946,10 @@ function layoutHUD(){const tb=$('#toolbar');if(!tb)return;const r=tb.getBounding
   const u=$('#ult');const overlap=!C&&r.right>innerWidth-96;u.style.bottom=overlap?(gap+10)+'px':'';
   $('#btnDet').style.bottom=C?(gap+8)+'px':'';
   const c=$('#credit');c.style.bottom=C?'':Math.max(2,(innerHeight-r.bottom)-16)+'px';
+  {const br=$('#brand'),ht=$('#hudTop');if(br&&ht){document.body.classList.remove('br-tight');ht.style.left='';ht.style.transform='';
+    if(document.body.classList.contains('ui-pc')&&innerWidth>900){const put=()=>{const b=br.getBoundingClientRect().right+8,w=ht.offsetWidth,c=(innerWidth-w)/2;if(b<=c)return true;ht.style.left=b+'px';ht.style.transform='none';return b+w<=innerWidth-225};
+      if(!put()){document.body.classList.add('br-tight');ht.style.left='';ht.style.transform='';put()}}
+    if(!layoutHUD.ro&&window.ResizeObserver){layoutHUD.ro=new ResizeObserver(()=>layoutHUD());layoutHUD.ro.observe(br);layoutHUD.ro.observe(ht)}}}
   const mt=$('#modeTabs');if(mt){if(document.body.classList.contains('ui-mob')){mt.style.left='';mt.style.bottom=''}else{mt.style.left=(r.left+10)+'px';mt.style.bottom=(gap-1)+'px'}}}
 function isCompact(){return matchMedia('(pointer:coarse) and (max-height:500px)').matches}
 addEventListener('resize',()=>{resize();layoutHUD()});resize();setTimeout(layoutHUD,0);
@@ -5044,7 +5058,7 @@ function applyLayout(){let mob=TOUCH;try{const q=new URL(location.href).searchPa
   if(document.documentElement.classList.contains('rec'))mob=false;   // 촬영용 세로 화면: 아래 도구막대(PC 배치)를 손가락으로
   document.body.classList.toggle('ui-mob',mob);document.body.classList.toggle('ui-pc',!mob);
   const menu=$('#sysMenu');if(!menu||menu.children.length)return;
-  (mob?['btnUndo','btnReset','btnRank','btnConq','btnShare']:[]).concat(['btnSet','btnDonate','btnHub','btnInsta','mnMini','mnFS']).forEach(id=>{const b=$('#'+id);if(b)menu.appendChild(b)});
+  (mob?['btnUndo','btnReset','btnRank','btnConq','btnShare','btnSet','btnDonate','btnHub','btnInsta','mnMini','mnFS']:[]).forEach(id=>{const b=$('#'+id);if(b)menu.appendChild(b)});
   {const mm=$('#mnMini'),mf=$('#mnFS');if(mm){mm.classList.toggle('on',!!opts.mini);mm.onclick=()=>{$('#btnMini').click();mm.classList.toggle('on',!!opts.mini)}}if(mf)mf.onclick=()=>$('#btnFS').click()}
   const bm=$('#btnMenu');if(bm)bm.onclick=e=>{e.stopPropagation();menu.classList.toggle('open')};
   menu.addEventListener('click',()=>setTimeout(()=>menu.classList.remove('open'),50));
