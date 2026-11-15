@@ -595,6 +595,64 @@ body.ui-mob #hudTop{left:calc(50% + 90px)!important;top:6px!important;transform:
   #mWelcome .w-row{flex-direction:column}
 }
 
+/* ===== 9차 — 모드 탭: PC는 도구막대 위에 가로로, 모바일은 도구 레일 오른쪽에 세로로 ===== */
+#pcMode,#pcModeSep,#mobMode{display:none!important}   /* 8차까지 쓰던 모드 칸은 숨김 */
+#modeTabs{position:fixed;z-index:5;display:flex;gap:3px}
+#modeTabs button{display:flex;align-items:center;justify-content:center;gap:4px;padding:0 13px;height:25px;border-radius:9px 9px 0 0;border:1px solid #000;border-bottom:0;background:rgba(24,26,29,.82);color:#aab0b6;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}
+#modeTabs button i{font-style:normal;font-size:12px}
+#modeTabs button:hover{color:#fff}
+#modeTabs button.on{height:28px;color:#fff;background:var(--accent);border-color:#ff8a5a}
+#modeTabs{align-items:flex-end}
+#modeTabs button[data-gm="earth"].on{background:#1f8a57;border-color:#2fb58a}
+#modeTabs button[data-gm="boss"].on{background:#8f1d16;border-color:#d8261b}
+body.ui-pc #hint{margin-bottom:28px}   /* 조작 안내가 탭과 겹치지 않게 */
+body.mini.ui-pc #modeTabs button{height:19px;padding:0 9px;font-size:10.5px}body.mini.ui-pc #modeTabs button.on{height:21px}
+/* 모바일: 도구 레일 오른쪽에 세로 탭 */
+body.ui-mob #modeTabs{left:calc(113px + env(safe-area-inset-left));top:52px;bottom:auto!important;flex-direction:column;align-items:flex-start;gap:4px;z-index:6}
+body.ui-mob #modeTabs button{writing-mode:vertical-rl;height:auto;width:24px;padding:8px 0;gap:3px;border-radius:0 9px 9px 0;border:1px solid #000;border-left:0;font-size:11px;letter-spacing:1px}
+body.ui-mob #modeTabs button.on{height:auto;width:28px}
+body.ui-mob #modeTabs button i{font-size:11px}
+body.ui-mob #sysMenu{left:calc(146px + env(safe-area-inset-left))}
+body.ui-mob #secPanel{left:calc(146px + env(safe-area-inset-left))!important;max-width:calc(100vw - 310px)!important}
+body.ui-mob #mission,body.ui-mob #combo{left:calc(146px + env(safe-area-inset-left))!important}
+/* PC ☰ 메뉴: 랭킹·정복·공유가 도구막대로 돌아가서 6칸 */
+/* ===== 8차 — 모드 고르기 · 메뉴 통합 (화면 정돈) ===== */
+/* 모드: PC는 도구막대 맨 왼쪽 세로 3칸, 모바일은 도구 레일 맨 위 가로 3칸. 예전 순환 버튼(#btnGM)은 숨김 */
+#btnGM{display:none!important}
+#pcMode{display:flex;flex-direction:column;gap:2px;justify-content:flex-end;position:relative;padding-top:13px}
+#pcMode .pm-l{position:absolute;left:2px;top:-1px;font-size:10px;color:var(--muted);letter-spacing:.5px}
+body.mini #pcMode .pm-l{display:none}
+#pcMode button{width:78px;height:17px;padding:0;border-radius:5px;background:var(--panel2);border:1px solid var(--line);font-size:11px;font-weight:700;color:#c9cdd1;white-space:nowrap;line-height:1}
+#pcMode button.on{background:var(--accent);border-color:#ff8a5a;color:#fff}
+#pcMode button[data-gm="earth"].on{background:#1f8a57;border-color:#2fb58a}
+#pcMode button[data-gm="boss"].on{background:#8f1d16;border-color:#d8261b}
+body.ui-mob #pcMode,body.ui-mob #pcModeSep{display:none!important}
+body.mini #pcMode{padding-top:0}body.mini #pcMode button{width:58px;height:12px;font-size:9px}
+body.ui-mob #mobMode button[data-gm="earth"].on{background:#1f8a57;border-color:#2fb58a}
+/* ☰ 메뉴: PC·모바일 모두 사용. 랭킹·정복·공유·설정·후원·다른 게임·인스타·간단 화면·전체 화면을 한곳에 */
+body #btnMenu{display:inline-block}
+#btnMenu .bm-t{font-size:12px}
+body.ui-mob #btnMenu .bm-t{display:none}
+@media (max-width:1500px){#btnMenu .bm-t{display:none}}   /* 좁은 PC: 위쪽 줄이 가운데 회사 이름 칸과 겹치지 않게 */
+body #sysMenu.open{display:grid}
+body.ui-pc #sysMenu{position:fixed;left:12px;top:64px;z-index:8;grid-template-columns:repeat(3,62px);grid-auto-rows:56px;gap:5px;padding:8px;border-radius:10px}
+body.ui-pc #sysMenu .tool,body.ui-pc #sysMenu .tool.sm{width:62px;min-width:62px;height:56px}
+#sysMenu #btnHub,#sysMenu #btnInsta{display:flex!important}
+#btnMini,#btnFS{display:none!important}
+#mnFS{display:none!important}
+body.canfs #mnFS,body.canfs-pc #mnFS{display:flex!important}
+#mnMini.on{background:var(--accent);border-color:#ff8a5a}
+body.mini #sysMenu .tool{font-size:0!important}
+/* 사장님 기술 이름이 길어서 살짝 좁힘 */
+body.kai .tool[data-w]{letter-spacing:-.4px}
+/* ===== 7차 — 👔 사장님 모드 ===== */
+#gmSeg button[data-gm="boss"].on{background:#8f1d16;border-color:#d8261b}
+.fleft #gmSeg button{padding:6px 2px;font-size:12.5px;white-space:nowrap}
+body.ui-mob #mobMode button{font-size:10px;letter-spacing:-.5px}
+body.ui-mob #mobMode button[data-gm="boss"].on{background:#8f1d16;border-color:#d8261b}
+body.ui-mob.kai #mobSec{display:none}
+body.kai #ult{--ult:#ff3b2f}
+body.kai #btnUndo{display:none}
 /* ===== 2026.11.13 5차 — 출석 보상 창 · 오른쪽 위 버튼 줄 · 분류 펼침 목록 ===== */
 #quickRow{display:flex;gap:4px;justify-content:flex-end}
 #scoreBox{pointer-events:none}#scoreBox>*{pointer-events:auto}   /* 버튼 줄 때문에 넓어진 빈 자리가 화면 터치를 막지 않게 */
@@ -738,7 +796,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
 <button id="bossArrow" style="display:none"><i></i>사장님</button>
 <button id="btnDet" style="display:none">기폭! (Space)<b>0</b></button>
 
-<div id="brand" class="panel"><b>SMASH <span>ARCH</span></b><button class="btn-s" id="btnFirm">⌂ 다른 회사</button><button class="btn-s" id="btnMenu" title="메뉴">☰</button><button class="btn-s" id="btnDaily" title="오늘의 사옥 3분 챌린지 (건축 모드)">🏆<span class="bd-t"> 오늘의 사옥</span></button><button class="btn-s" id="btnHelp" title="게임 가이드 · 조작법">?</button><button class="btn-s" id="btnMini" title="간단 화면 (H)">UI</button><button class="btn-s" id="btnFS" title="전체 화면">⛶</button></div>
+<div id="brand" class="panel"><b>SMASH <span>ARCH</span></b><button class="btn-s" id="btnFirm">⌂ 다른 회사</button><button class="btn-s" id="btnMenu" title="메뉴 — 랭킹·정복·공유·설정">☰<span class="bm-t"> 메뉴</span></button><button class="btn-s" id="btnDaily" title="오늘의 사옥 3분 챌린지 (건축 모드)">🏆<span class="bd-t"> 오늘의 사옥</span></button><button class="btn-s" id="btnHelp" title="게임 가이드 · 조작법">?</button><button class="btn-s" id="btnMini" title="간단 화면 (H)">UI</button><button class="btn-s" id="btnFS" title="전체 화면">⛶</button></div>
 
 <div id="hudTop" class="panel">
   <div style="min-width:0">
@@ -769,8 +827,10 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
 <div id="hint">클릭: 사용 · 드래그: 회전 · 우클릭 드래그: 이동 · 휠: 확대</div>
 
 <div id="toolbar" class="panel">
-  <div id="mobMode"><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난</button></div>
+  <div id="mobMode"><button data-gm="build" class="on">건축</button><button data-gm="earth">재난</button><button data-gm="boss">사장님</button></div>
   <button id="mobSec"><span class="ms-in">▦ 단면 보기</span><span class="ms-out">✕ 동네로</span></button>
+  <div id="pcMode"><span class="pm-l">모드</span><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난</button><button data-gm="boss">👔 사장님</button></div>
+  <div class="sep" id="pcModeSep"></div>
   <div class="grp"><span class="glbl">시공팀</span><button class="tool on" data-w="0"><span class="num">1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="5" r="1.6"/><path d="M6 7v6M6 13l-2 5M6 13l2 5M4 9h4"/><circle cx="13" cy="5" r="1.6"/><path d="M13 7v6M13 13l-2 5M13 13l2 5M11 9h4"/><path d="M17 4l4 4M19 6l-3 3"/></svg>철거반</button><button class="tool" data-w="1"><span class="num">2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="8" width="9" height="6" rx="1"/><path d="M7 8V5h4v3"/><rect x="4" y="15" width="12" height="4" rx="2"/><path d="M16 11h3l1 8"/><path d="M19 10v10"/></svg>불도저</button><button class="tool" data-w="2"><span class="num">3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 21V4M5 4h15M5 8l4-4"/><path d="M15 4l2 7" /><circle cx="17.5" cy="14" r="3" fill="currentColor"/><path d="M2 21h7"/><path d="M10 16c2 3 6 4 10 3" stroke-dasharray="2 2"/></svg>쇠공</button><button class="tool" data-w="3"><span class="num">4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="13" width="10" height="5" rx="1"/><ellipse cx="16" cy="12" rx="5" ry="3.5"/><circle cx="5" cy="19" r="1.5"/><circle cx="16" cy="19" r="1.5"/></svg>레미콘</button><button class="tool" data-w="4"><span class="num">5</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10" width="3.5" height="10" rx="1"/><rect x="10" y="10" width="3.5" height="10" rx="1"/><rect x="15" y="10" width="3.5" height="10" rx="1"/><path d="M12 10V6c0-2 3-2 4-4"/><path d="M18 2l1 1M20 4h1"/></svg>다이너마이트</button><button class="tool" data-w="5"><span class="num">6</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 21V9M12 21V3M17 21V9"/><path d="M10 6l2-3 2 3"/><path d="M4 21h16"/></svg>철근 빼기</button></div>
   <div class="sep"></div>
   <div class="grp"><span class="glbl">설계팀</span><button class="tool" data-w="6"><span class="num">7</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg>MOVE</button><button class="tool" data-w="7"><span class="num">8</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="13" width="10" height="8"/><path d="M7 13V5h10v8" stroke-dasharray="2 2"/><path d="M12 11V2M9 5l3-3 3 3"/></svg>EXTRUDE</button><button class="tool" data-w="8"><span class="num">9</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17"/><path d="M2 15L22 7" stroke-dasharray="3 2"/><path d="M14 2l3 3-3 3"/></svg>TRIM</button><button class="tool" data-w="9"><span class="num">0</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 14h5M17 14h5"/><ellipse cx="12" cy="15" rx="5" ry="2.2"/><path d="M12 4v7M9 8l3 3 3-3"/><path d="M7 15l2 5h6l2-5"/></svg>싱크홀</button></div>
@@ -787,7 +847,10 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <button class="tool sm" id="btnDonate" title="개발자 커피 후원"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2.5 2.5 0 0 1 0 5h-2"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/></svg>후원</button>
   <a class="tool sm" id="btnHub" href="https://ccct12.github.io/CJW_Games/?src=smash" target="_blank" rel="noopener" title="CJW GAMES — 다른 게임 모음"><i class="emo">🎮</i>다른 게임</a>
   <a class="tool sm" id="btnInsta" href="https://www.instagram.com/cjw.games/" target="_blank" rel="noopener" title="인스타그램 @cjw.games"><i class="emo">📷</i>인스타</a>
+  <button class="tool sm" id="mnMini" title="간단 화면 — 필요한 버튼만 작게 (H)"><i class="emo">🧹</i>간단 화면</button>
+  <button class="tool sm" id="mnFS" title="전체 화면"><i class="emo">⛶</i>전체 화면</button>
 </div>
+<div id="modeTabs"><button data-gm="build" class="on"><i>🏗</i><span>건축</span></button><button data-gm="earth"><i>🌍</i><span>재난</span></button><button data-gm="boss"><i>👔</i><span>사장님</span></button></div>
 <div id="sysMenu" class="panel"></div>
 <div id="credit">건물·도로 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap 기여자</a> · 건물 모양은 단순화된 일반 재질 · 사무소 목록 © 공공데이터포털 · 회사와 관계없는 비공식 팬 게임 · 원작 아이디어 SMASH HYU (@Hong_Iron_DEV)</div>
 
@@ -918,7 +981,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
     <div class="fhead">
       <button class="close" data-close>×</button>
       <h2>어디를 부술까요?<span id="streakBox" style="display:none"></span></h2>
-      <div id="gmSeg" class="seg gm"><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난 <small>NEW</small></button></div>
+      <div id="gmSeg" class="seg gm"><button data-gm="build" class="on">🏗 건축</button><button data-gm="earth">🌍 재난</button><button data-gm="boss">👔 사장님 <small>NEW</small></button></div>
       <div class="row" style="margin:0 0 6px"><select id="fCatSel" aria-label="분류 고르기"><option value="all">전체</option><option value="">📐 건축사사무소</option><option value="c">🏗 건설사</option><option value="u">🎓 대학교</option><option value="g">🏢 일반 회사</option></select><input id="customQ" placeholder="검색 — 이름, 주소, 좌표" autocomplete="off"></div>
       <div id="fCats"><button data-k="all" class="on">전체</button><button data-k="">📐 건축사사무소</button><button data-k="c">🏗 건설사</button><button data-k="u">🎓 대학교</button><button data-k="g">🏢 일반 회사</button></div>
     </div>
@@ -1124,7 +1187,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
   function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
   function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
-  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261113f';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261114c';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
     s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
   var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
   var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));
