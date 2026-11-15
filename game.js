@@ -1823,20 +1823,20 @@ const E_R={termite:75,meteor:100,bolt:110,acid:70,quake:120,volcano:105,sat:130}
 //   · 세기 조정: KAI_S(보통 크기) · KAI_BIG(변신 크기) · KAI_BIG_SEC(변신 시간) · KAI_RAGE(변신에 필요한 점수)
 // =====================================================================
 const KAI_S=12,KAI_BIG=34,KAI_BIG_SEC=20,KAI_RAGE=600000;
-const K_TOOLS=[['👊','돌진 주먹'],['🦶','점프 찍기'],['📋','결재판'],['🏌️','골프 스윙'],['📣','호통'],['💳','법카 긁기'],['🌀','회전의자'],['☕','커피 쏟기'],['🚘','리무진 호출'],['🏢','건물 던지기']];
+const K_TOOLS=[['👊','돌진 주먹'],['🦶','점프 찍기'],['📋','결재판'],['🏌️','골프 스윙'],['📣','호통'],['💳','법카 긁기'],['🌀','회전의자'],['👥','전 직원 집합'],['🚘','리무진 호출'],['👉','해고 통보']];
 const K_HINTS=['클릭: 돌진 주먹 — 누른 곳으로 달려가 주먹으로 부숴요. 변신하면 가는 길의 건물도 밟고 지나가요',
   '클릭: 점프 찍기 — 누른 곳으로 뛰어올라 내리찍어요. 둘레 건물이 한꺼번에 무너져요',
   '클릭: 결재판 — 하늘에서 거대한 결재판이 떨어져 건물을 내리눌러요. 「반려」 도장이 찍혀요',
-  '클릭: 골프 스윙 — 누른 쪽으로 거대한 골프공을 날려요. 공이 튀면서 길에 있는 건물을 뚫고 지나가요',
+  '클릭: 골프 스윙 — 누른 쪽으로 거대한 골프공을 날려요. 공이 튀면서 길에 있는 건물을 뚫고 지나가요. 변신 중엔 3개',
   '클릭: 호통 — 누른 쪽으로 호통이 부채꼴로 퍼져 나가요. 닿는 건물은 외벽이 벗겨지고 아래층이 무너져요',
-  '클릭: 법카 긁기 — 거대한 법인카드가 누른 쪽으로 긁고 지나가요. 길에 있는 건물 밑동이 잘려요',
+  '클릭: 법카 긁기 — 거대한 법인카드가 누른 쪽으로 긁고 지나가요. 길에 있는 건물 밑동이 잘려요. 변신 중엔 3장',
   '클릭: 회전의자 — 대표 의자에 앉아 빙글빙글 돌면서 누른 곳까지 가요. 닿는 건물을 전부 쳐내고, 멈출 때 한 번 더 터져요',
-  '클릭: 커피 쏟기 — 누른 곳에 거대한 믹스커피 종이컵이 떨어지고, 커피가 사방으로 넘쳐흘러요',
+  '클릭: 전 직원 집합 — 직원들이 누른 쪽으로 우르르 몰려가 건물을 들이받아요. 변신 중엔 훨씬 많이 와요',
   '클릭: 리무진 호출 — 김 기사가 모는 리무진이 사장님 자리에서 누른 쪽으로 건물을 들이받으며 달려요. 변신 중엔 3대',
-  '클릭: 건물 던지기 — 가까운 건물을 뽑아서 누른 곳으로 던져요'];
+  '클릭: 해고 통보 — 사장님이 손가락으로 가리킨 건물에 붉은 빛이 꽂혀요. 변신 중엔 옆 건물 2채도 같이 해고돼요'];
 const WEAPONS_K=[{id:'kgo',name:'돌진 주먹',nosnap:true,fire(h){return kaiGo(h)}},{id:'kjump',name:'점프 찍기',nosnap:true,fire(h){return kaiJump(h)}},{id:'kthrow',name:'결재판',nosnap:true,fire(h){return kaiThrow(h)}},
   {id:'kgolf',name:'골프 스윙',nosnap:true,fire(h){return kaiGolf(h)}},{id:'kyell',name:'호통',nosnap:true,fire(h){return kaiYell(h)}},{id:'kcard',name:'법카 긁기',nosnap:true,fire(h){return kaiCards(h)}},
-  {id:'kspin',name:'회전의자',nosnap:true,fire(h){return kaiSpin(h)}},{id:'kcoffee',name:'커피 쏟기',nosnap:true,fire(h){return kaiCoffee(h)}},{id:'kdozer',name:'리무진 호출',nosnap:true,fire(h){return kaiLimo(h)}},{id:'khurl',name:'건물 던지기',nosnap:true,fire(h){return kaiHurl(h)}}];
+  {id:'kspin',name:'회전의자',nosnap:true,fire(h){return kaiSpin(h)}},{id:'kcoffee',name:'전 직원 집합',nosnap:true,fire(h){return kaiStaff(h)}},{id:'kdozer',name:'리무진 호출',nosnap:true,fire(h){return kaiLimo(h)}},{id:'khurl',name:'해고 통보',nosnap:true,fire(h){return kaiFire(h)}}];
 const KL={idle:['오늘은 내가 직접 부순다!','설계비 깎은 놈 나와!','경쟁사? 전부 철거다!','야근은 이제 내가 시킨다!','이 동네는 내가 접수한다!','법인카드 한도는 무제한이다!','도면은 발로 그리는 거야!'],
   hit:['결재!','반려!','다시 해와!','이게 대표의 주먹이다!','설계변경이다!'],
   big:['으아아아아!!','이게 대표의 무게다!!','결재는 발로 한다!!','전부 다시 해와아아!!'],
@@ -1850,9 +1850,9 @@ const K_GUIDE=[
   {w:4,emo:'📣',name:'호통',team:'사장님 기술',one:'누른 쪽으로 호통이 부채꼴로 퍼져 나가요.',steps:['<b>5 호통</b>을 골라요',`호통칠 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'사장님 앞에서 시작해 멀리 갈수록 넓게 퍼져요'],tip:'건물이 몰려 있는 쪽을 보고 쓰세요. 가까울수록 세게 맞아요.'},
   {w:5,emo:'💳',name:'법카 긁기',team:'사장님 특기',one:'거대한 법인카드가 긁고 지나가며 건물 밑동을 잘라요.',steps:['<b>6 법카 긁기</b>를 골라요',`긁을 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'지나간 자리에 영수증이 길게 남아요'],tip:'건물이 한 줄로 늘어선 길에 쓰면 줄줄이 넘어가요.'},
   {w:6,emo:'🌀',name:'회전의자',team:'사장님 특기',one:'대표 의자에 앉아 빙글빙글 돌면서 이동해요. 닿는 건물을 전부 쳐내요.',steps:['<b>7 회전의자</b>를 골라요',`갈 곳을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'도는 동안에는 방향을 다시 눌러 바꿀 수 있어요'],tip:'멈추는 순간 둘레가 한 번 더 터져요.'},
-  {w:7,emo:'☕',name:'커피 쏟기',team:'사장님 특기',one:'거대한 믹스커피 종이컵이 떨어지고 커피가 사방으로 넘쳐흘러요.',steps:['<b>8 커피 쏟기</b>를 골라요',`쏟을 곳을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'컵이 떨어진 자리부터 둥글게 퍼져요'],tip:'건물이 빽빽한 동네 한가운데에 쏟으세요.'},
+  {w:7,emo:'👥',name:'전 직원 집합',team:'사장님 특기',one:'직원들이 우르르 몰려가 건물을 들이받아요.',steps:['<b>8 전 직원 집합</b>을 골라요',`직원들을 보낼 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'사장님 자리에서 출발해 누른 곳보다 더 멀리 달려요'],tip:'변신 중에 부르면 훨씬 많이, 훨씬 넓게 몰려가요.'},
   {w:8,emo:'🚘',name:'리무진 호출',team:'사장님 특기',one:'김 기사가 모는 리무진이 건물을 들이받으며 달려요.',steps:['<b>9 리무진 호출</b>을 골라요',`리무진이 갈 쪽을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'사장님 자리에서 출발해 누른 곳보다 더 멀리 가요'],tip:'변신 중에 부르면 3대가 나란히 달려요.'},
-  {w:9,emo:'🏢',name:'건물 던지기',team:'사장님 특기',one:'가까운 건물을 뽑아서 누른 곳으로 던져요.',steps:['<b>0 건물 던지기</b>를 골라요',`던질 곳을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'가까이에 뽑을 건물이 없으면 땅덩이를 던져요'],tip:'변신하면 훨씬 큰 건물도 뽑을 수 있어요.'}];
+  {w:9,emo:'👉',name:'해고 통보',team:'사장님 특기',one:'손가락으로 가리킨 건물에 붉은 빛이 꽂혀요.',steps:['<b>0 해고 통보</b>를 골라요',`해고할 건물을 <b>${TOUCH?'탭':'클릭'}</b>해요`,'웬만한 건물은 한 방에 무너져요'],tip:'변신 중엔 옆 건물 2채도 같이 해고돼요.'}];
 const K_GUIDE_ULT=`<div class="g-tool g-ult"><div class="g-txt"><div class="g-name"><kbd>Q</kbd> 💢 변신</div><p class="g-one">부술수록 오른쪽 아래 <b>분노 게이지</b>가 차요. 가득 차면 ${TOUCH?'원을 누르면':'Q 키를 누르면'} ${KAI_BIG_SEC}초 동안 사장님이 거대해져서, 웬만한 건물은 닿기만 해도 무너져요. 사장님 모드는 랭킹이 없어요.</p>`;
 let KPROJ=[];
 function kaiOK(){return !!(BOSS&&BOSS.kai&&MODE==='city')}
@@ -1870,8 +1870,9 @@ function kaiGo(h){if(!kaiOK())return false;if(BOSS.state==='jump')return false;
   BOSS.tx=h.x;BOSS.tz=h.z;BOSS.tb=h.b&&h.b.alive?h.b:null;BOSS.state='run';kaiFace(h.x,h.z);return true}
 function kaiJump(h){if(!kaiOK())return false;if(BOSS.state==='jump')return false;const d=Math.hypot(h.x-BOSS.x,h.z-BOSS.z);
   BOSS.state='jump';BOSS.jump={t:0,T:clamp(0.55+d/280,0.6,1.5),x0:BOSS.x,y0:BOSS.y,z0:BOSS.z,x1:h.x,z1:h.z,h:Math.max(28,d*0.32)+(BOSS.big>0?45:0)};kaiFace(h.x,h.z);sfx(6,0.3);return true}
-function kaiThrow(h){if(!kaiOK()||!kaiCool('cStamp',520))return false;const big=BOSS.big>0,g=groundAt(h.x,h.z),tb=h.b&&h.b.alive?h.b:null,top=tb?tb.base+Math.max(2,tb.h):g,y0=top+(big?260:170);
-  kaiFace(h.x,h.z);BOSS.flinch=0.35;KOBJ.push({k:'stamp',x:h.x,z:h.z,y:y0,y0,top,t:0,T:0.42,s:big?26:11,b:tb,hit:false,rot:Math.atan2(h.z-BOSS.z,h.x-BOSS.x)});
+function kaiThrow(h){if(!kaiOK()||!kaiCool('cStamp',520))return false;const big=BOSS.big>0,[dx,dz]=kaiDir(h),n=big?3:1,s=big?22:11;kaiFace(h.x,h.z);BOSS.flinch=0.35;
+  for(let i=0;i<n;i++){const off=(i-(n-1)/2)*s*3.1,x=h.x-dz*off,z=h.z+dx*off,g=groundAt(x,z);let tb=null;if(i===(n-1)/2)tb=h.b&&h.b.alive?h.b:null;else forBuildingsNear(x,z,20,b=>{if(!tb&&b.alive&&!b.lifted&&distToBuilding(b,x,z)<2)tb=b});
+    const top=tb?tb.base+Math.max(2,tb.h):g,y0=top+(big?260:170);KOBJ.push({k:'stamp',x,z,y:y0,y0,top,t:-Math.abs(i-(n-1)/2)*0.14,T:0.42,s,big,b:tb,hit:false,rot:Math.atan2(dz,dx)})}
   sfx(5,0.25);bossSay(pickL(['반려!','이걸 결재라고 올렸나!','다시 써와!','결재는 내가 한다!']),0);return true}
 function kaiTransform(){if(!kaiOK()){if(MODE!=='city')toast('변신은 동네 화면에서만 할 수 있어요');return}
   if(BOSS.big>0){toast(`변신 중 — ${Math.ceil(BOSS.big)}초 남았어요`,1400);return}
@@ -1887,22 +1888,24 @@ function kaiCool(key,ms){const now=performance.now();if(now-(BOSS[key]||0)<ms)re
 // 4. 골프 스윙: 튀면서 굴러가는 거대한 공
 function kaiGolf(h){if(!kaiOK()||BOSS.state==='jump'||!kaiCool('cGolf',650))return false;let dx=h.x-BOSS.x,dz=h.z-BOSS.z;const l=Math.hypot(dx,dz)||1;dx/=l;dz/=l;
   const big=BOSS.big>0,S=BOSS.S;kaiFace(h.x,h.z);BOSS.flinch=0.3;
-  KBALLS.push({x:BOSS.x+dx*S,z:BOSS.z+dz*S,y:0,dx,dz,left:Math.max(l,110)+(big?280:170),v:big?150:125,r:big?9:6.5,acc:0,t:0,hits:new Set()});
+  for(const a of big?[-0.24,0,0.24]:[0]){const c=Math.cos(a),s=Math.sin(a),ex=dx*c-dz*s,ez=dx*s+dz*c;KBALLS.push({x:BOSS.x+ex*S,z:BOSS.z+ez*S,y:0,dx:ex,dz:ez,left:Math.max(l,110)+(big?300:170),v:big?155:125,r:big?10:6.5,acc:0,t:0,hits:new Set()})}
   sfx(7,0.3);floatText(BOSS.x,BOSS.y+2.5*S,BOSS.z,'나이스 샷!','cad',1);bossSay(pickL(['나이스 샷!','홀인원이다!','굿 샷~']),0);return true}
 // 5. 호통: 누른 쪽으로 부채꼴로 퍼져 나감 (실제 판정은 kaiObjUpdate 의 yell)
 function kaiYell(h){if(!kaiOK()||!kaiCool('cYell',1300))return false;const big=BOSS.big>0,S=BOSS.S,[dx,dz]=kaiDir(h);kaiFace(h.x,h.z);BOSS.flinch=0.5;
-  KOBJ.push({k:'yell',x:BOSS.x+dx*S*0.5,z:BOSS.z+dz*S*0.5,a:Math.atan2(dz,dx),R:big?340:180,half:0.62,r:S,v:big?340:240,hits:new Set(),t:0,acc:0,big});
+  KOBJ.push({k:'yell',x:BOSS.x+dx*S*0.5,z:BOSS.z+dz*S*0.5,a:Math.atan2(dz,dx),R:big?340:180,half:big?0.72:0.62,r:S,v:big?340:240,hits:new Set(),t:0,acc:0,big});
+  if(big)KOBJ.push({k:'yell',x:BOSS.x+dx*S*0.5,z:BOSS.z+dz*S*0.5,a:Math.atan2(dz,dx),R:340,half:0.72,r:S,v:340,hits:new Set(),t:-0.4,acc:0,big});
   cam.shake=Math.max(cam.shake,big?9:5);hitStop(0.05);sfx(26,1.2);sfxBoom(0.5);const w=pickL(['야근해!!!','다시 해와!!!','이게 최선이야?!','오늘 안에 끝내!!','누가 퇴근하래!!']);floatText(BOSS.x+dx*S*2,BOSS.y+2.8*S,BOSS.z+dz*S*2,w,'boom',1.5);bossSay(w,3);return true}
 // 6. 법카 긁기: 거대한 법인카드가 누른 쪽으로 긁고 지나감 (지나간 자리에 영수증)
 function kaiCards(h){if(!kaiOK()||BOSS.state==='jump'||!kaiCool('cCard',900))return false;const big=BOSS.big>0,S=BOSS.S,[dx,dz,l]=kaiDir(h);kaiFace(h.x,h.z);BOSS.flinch=0.4;
-  const x=BOSS.x+dx*S,z=BOSS.z+dz*S;KOBJ.push({k:'card',x,z,x0:x,z0:z,dx,dz,left:Math.max(l,90)+(big?260:140),v:big?330:250,W:big?66:32,hits:new Set(),t:0,acc:0,n:0,end:0,big});
+  for(const a of big?[-0.34,0,0.34]:[0]){const c=Math.cos(a),s=Math.sin(a),ex=dx*c-dz*s,ez=dx*s+dz*c,x=BOSS.x+ex*S,z=BOSS.z+ez*S;KOBJ.push({k:'card',x,z,x0:x,z0:z,dx:ex,dz:ez,left:Math.max(l,90)+(big?280:140),v:big?330:250,W:big?56:32,hits:new Set(),t:0,acc:0,n:0,end:0,big})}
   sfx(8,0.5);floatText(BOSS.x,BOSS.y+2.6*S,BOSS.z,'💳 법카 긁는다!','cad',1.3);bossSay(pickL(['한도는 무제한이다!','법카로 긁어!','영수증은 챙겨라!','이건 접대비다!']),0);return true}
 // 7. 회전의자: 돌면서 이동
 function kaiSpin(h){if(!kaiOK()||BOSS.state==='jump')return false;BOSS.tx=h.x;BOSS.tz=h.z;BOSS.tb=null;if(BOSS.state!=='spin'){BOSS.spin=BOSS.big>0?3.8:3.4;sfx(10,0.8);bossSay(pickL(['빙글빙글~!','회전의자 맛 좀 봐라!','이게 대표 의자다!']),0)}BOSS.state='spin';return true}
-// 8. 커피 쏟기: 거대한 믹스커피 종이컵이 떨어지고 커피가 둥글게 넘쳐흐름
-function kaiCoffee(h){if(!kaiOK()||!kaiCool('cCoffee',1800))return false;const big=BOSS.big>0,g=groundAt(h.x,h.z);kaiFace(h.x,h.z);BOSS.flinch=0.35;
-  KOBJ.push({k:'cup',x:h.x,z:h.z,y:g+(big?300:200),y0:g+(big?300:200),t:0,T:0.5,s:big?22:10,R:big?150:80,r:0,v:big?120:80,st:0,hold:0,hits:new Set(),acc:0,big});
-  sfx(22,0.8);bossSay(pickL(['커피나 한잔해!','당 떨어진다!','믹스커피가 최고지!','미스 김~ 커피!']),0);return true}
+// 8. 전 직원 집합: 직원들이 누른 쪽으로 우르르 몰려감
+function kaiStaff(h){if(!kaiOK()||!kaiCool('cCoffee',1600))return false;const big=BOSS.big>0,S=BOSS.S,[dx,dz,l]=kaiDir(h),n=big?48:18,W=big?120:44,D=big?70:30,m=[];kaiFace(h.x,h.z);BOSS.flinch=0.4;
+  for(let i=0;i<n;i++)m.push({f:-Math.random()*D,p:(Math.random()-0.5)*W,ph:Math.random()*6.28,c:i%4});
+  KOBJ.push({k:'staff',x:BOSS.x+dx*S*1.2,z:BOSS.z+dz*S*1.2,dx,dz,left:Math.max(l,110)+(big?320:190),v:big?120:100,W,s:big?3.3:1.7,m,hits:new Set(),t:0,acc:0,big});
+  sfx(12,1.2);floatText(BOSS.x,BOSS.y+2.6*S,BOSS.z,'👥 전 직원 집합!','cad',1.5);bossSay(pickL(['전 직원 집합!','다들 뛰어!','주말 출근이다!','오늘 회식은 저기서 한다!']),0);return true}
 // 9. 리무진 호출: 검은 리무진이 들이받으며 달림 (변신 중엔 3대)
 function kaiLimo(h){if(!kaiOK()||!kaiCool('cDozer',1500))return false;const big=BOSS.big>0,S=BOSS.S,[dx,dz,l]=kaiDir(h),n=big?3:1,s=big?2.2:1.6;kaiFace(h.x,h.z);BOSS.flinch=0.4;
   for(let i=0;i<n;i++){const off=(i-(n-1)/2)*15*s;KOBJ.push({k:'limo',x:BOSS.x+dx*S*1.3-dz*off,z:BOSS.z+dz*S*1.3+dx*off,dx,dz,left:Math.max(l,120)+(big?340:220),v:big?175:150,s,hits:new Set(),t:-Math.abs(i-(n-1)/2)*0.18,acc:0,big})}
@@ -1913,9 +1916,9 @@ function kaiDir(h){const dx=h.x-BOSS.x,dz=h.z-BOSS.z,l=Math.hypot(dx,dz)||1;retu
 // 건물 아래층 nf개를 r 범위·p 세기로 침 (작은 건물은 바로 무너짐)
 function kaiLow(b,x,z,r,p,nf){if(!b.alive||b.lifted)return;if(eSmall(b)||b.area<260&&b.h0<16){killBuilding(b);return}eHitLow(b,x,z,r,p,nf)}
 function kaiPapers(x,y,z,n,sp){for(let k=0;k<fxN(n,3);k++)spawn(x,y,z,eRnd(-sp,sp),eRnd(sp*0.3,sp*1.4),eRnd(-sp,sp),eRnd(0.6,1.4),[0.97,0.96,0.9],eRnd(0.8,1.4),3)}
-function kaiStampHit(o){const big=o.big=o.s>15,R=o.s*1.5,x=o.x,z=o.z,g=groundAt(x,z);
+function kaiStampHit(o){const big=o.big,R=o.s*1.5,x=o.x,z=o.z,g=groundAt(x,z);
   forBuildingsNear(x,z,R+24,b=>{if(!b.alive||b.lifted)return;const d=distToBuilding(b,x,z);if(d>R)return;
-    if(b===o.b||d<R*0.45){if(eSmall(b)||b.h0<(big?95:36)){killBuilding(b);return}kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.75+8,big?17:10,big?8:5)}
+    if(b===o.b||d<R*0.45){if(eSmall(b)){killBuilding(b);return}if(b.h0<(big?95:36)){kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.8+8,30,99);if(b.alive)killBuilding(b);return}kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.75+8,big?17:10,big?8:5)}
     else kaiLow(b,x,z,R,big?9:5,3)});
   forTreesNear(x,z,R,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<R)killTree(t)});if(CLIENT)clientHitAt(x,g+2,z,R,6);
   carve(x,z,R*0.45,big?5:2);boom3(x,g+3,z,o.s*2.2);ring(x,g+1,z,R*1.7,[1,0.22,0.16]);later(0.12,()=>ring(x,groundAt(x,z)+1,z,R*1.1,[1,0.5,0.4]));kaiPapers(x,g+3,z,big?26:14,big?26:16);kaiDust(x,z,big?30:14,big?40:22);
@@ -1942,20 +1945,14 @@ function kaiObjUpdate(dt,now){for(let i=KOBJ.length-1;i>=0;i--){const o=KOBJ[i];
           if(o.n%2===1)floatText(b.cx,b.base+Math.min(b.h0,30)+8,b.cz,pickL(['₩ 승인','₩₩ 승인','일시불!','접대비 처리']),'cad',0.9)});
         forTreesNear(o.x,o.z,o.W*0.5,t=>{if(t.alive&&Math.hypot(t.x-o.x,t.z-o.z)<o.W*0.5)killTree(t)});if(CLIENT)clientHitAt(o.x,g+2,o.z,o.W*0.5,4)}
       if(o.left<=0){o.end=0.001;const g=groundAt(o.x,o.z);floatText(o.x,g+16,o.z,o.n?'💳 결제 완료 — '+o.n+'건':'💳 결제 완료','boom',1.4);kaiPapers(o.x,g+3,o.z,10,14);sfx(6,0.3)}}}
-  else if(o.k==='cup'){const g=groundAt(o.x,o.z),big=o.big;                                                               // 커피: 컵이 떨어짐 → 넘쳐흐름 → 잦아듦
-    if(o.st===0){const u=Math.min(1,o.t/o.T);o.y=o.y0+(g-o.y0)*u*u;
-      if(u>=1){o.st=1;o.y=g;const R0=o.s*1.5;forBuildingsNear(o.x,o.z,R0+20,b=>{if(!b.alive||b.lifted||distToBuilding(b,o.x,o.z)>R0)return;o.hits.add(b);if(eSmall(b)||b.h0<(big?70:26)){killBuilding(b);return}kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.75+8,big?15:9,big?7:4)});
-        carve(o.x,o.z,o.s*0.9,big?3:1.2);boom3(o.x,g+3,o.z,o.s*2);ring(o.x,g+1,o.z,o.R,[0.78,0.52,0.28]);cam.shake=Math.max(cam.shake,big?9:5);hitStop(0.04);sfxBoom(big?0.9:0.55);sfx(22,1.6);
-        for(let q=0;q<fxN(big?40:22,8);q++){const a=Math.random()*6.283,v=eRnd(10,big?60:38);spawn(o.x,g+o.s*2,o.z,Math.cos(a)*v,eRnd(14,big?70:44),Math.sin(a)*v,eRnd(1.2,big?4:2.6),Math.random()<0.25?[0.93,0.86,0.72]:[0.45,0.27,0.12],eRnd(0.9,1.6),0)}
-        floatText(o.x,g+o.s*3.4,o.z,'☕ 믹스커피 홍수!','boom',1.5);o.r=o.s}}
-    else if(o.st===1){o.r=Math.min(o.R,o.r+o.v*dt);o.acc+=dt;
-      if(o.acc>0.06){o.acc=0;forBuildingsNear(o.x,o.z,o.r+20,b=>{if(!b.alive||b.lifted||o.hits.has(b)||distToBuilding(b,o.x,o.z)>o.r)return;o.hits.add(b);
-          const k=1-0.5*Math.hypot(b.cx-o.x,b.cz-o.z)/o.R;kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.7+6,(big?11:6)*k,big?5:3);
-          if(fxOK(3))for(let q=0;q<3;q++)spawn(b.cx+eRnd(-4,4),b.base+2,b.cz+eRnd(-4,4),eRnd(-2,2),eRnd(8,16),eRnd(-2,2),eRnd(1.5,3),[0.95,0.93,0.9],eRnd(0.8,1.3),2)});
-        forTreesNear(o.x,o.z,o.r,t=>{if(t.alive&&Math.hypot(t.x-o.x,t.z-o.z)<o.r)killTree(t)});if(CLIENT)clientHitAt(o.x,g+2,o.z,o.r,3);
-        if(fxOK(2)){const a=Math.random()*6.283,rr=o.r*Math.sqrt(Math.random());spawn(o.x+Math.cos(a)*rr,g+1,o.z+Math.sin(a)*rr,eRnd(-1,1),eRnd(6,12),eRnd(-1,1),eRnd(1.5,3.2),[0.95,0.93,0.9],eRnd(0.9,1.5),2)}}   // 김
-      if(o.r>=o.R)o.st=2}
-    else{o.hold+=dt;if(o.hold>1.5)rm=true}}
+  else if(o.k==='staff'){const sp=o.v*dt;o.x+=o.dx*sp;o.z+=o.dz*sp;o.left-=sp;o.acc+=dt;                                  // 전 직원 집합: 우르르 몰려감
+    if(o.acc>0.05){o.acc=0;const big=o.big,W=o.W,g=groundAt(o.x,o.z);
+      forBuildingsNear(o.x,o.z,W*0.5+16,b=>{if(!b.alive||b.lifted||o.hits.has(b)||distToBuilding(b,o.x,o.z)>W*0.5)return;o.hits.add(b);
+        facadeStrip(b,o.x,o.z,big?1.5:1.1);kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.7+6,big?13:8.5,big?6:4);boom3(b.cx,b.base+3,b.cz,big?14:8);sfxBoom(0.25);cam.shake=Math.max(cam.shake,big?4:2.2);
+        if(o.hits.size%2===1)floatText(b.cx,b.base+Math.min(b.h0,30)+8,b.cz,pickL(['넵!','충성!','알겠습니다!','바로 하겠습니다!','넵넵!']),'cad',0.9)});
+      forTreesNear(o.x,o.z,W*0.5,t=>{if(t.alive&&Math.hypot(t.x-o.x,t.z-o.z)<W*0.5)killTree(t)});if(CLIENT)clientHitAt(o.x,g+2,o.z,W*0.5,4);kaiDust(o.x-o.dx*W*0.3,o.z-o.dz*W*0.3,big?6:3,14)}
+    if(o.left<=0){rm=true;floatText(o.x,groundAt(o.x,o.z)+14,o.z,'칼퇴!','boom',1.1);kaiDust(o.x,o.z,o.big?20:10,20)}}
+  else if(o.k==='fire'){if(!o.hit&&o.t>=0.22){o.hit=true;kaiFireHit(o)}if(o.t>0.8)rm=true}                                 // 해고 통보: 가리킴 → 꽂힘
   else if(o.k==='limo'){const sp=o.v*dt;o.x+=o.dx*sp;o.z+=o.dz*sp;o.left-=sp;o.acc+=dt;                                    // 리무진: 들이받으며 달림
     if(o.acc>0.035){o.acc=0;const s=o.s,big=o.big,fx=o.x+o.dx*17*s,fz=o.z+o.dz*17*s,g=groundAt(fx,fz),w=7*s;
       forBuildingsNear(fx,fz,w+16,b=>{if(!b.alive||b.lifted||o.hits.has(b)||distToBuilding(b,fx,fz)>w)return;o.hits.add(b);
@@ -1993,18 +1990,14 @@ function drawKaiObj(m,mg){const now=performance.now()/1000;
       pushShape(mg,CUBE,o.x+o.dx*W*0.33,y,o.z+o.dz*W*0.33,W*0.04,W*0.05,W*1.02,r,[1,0.95,0.6],1);                                                        // 빛나는 앞날
       for(let k=0;k<3;k++)pushShape(mg,CUBE,o.x-o.dx*W*(0.5+k*0.3)+px*W*(k-1)*0.3,y,o.z-o.dz*W*(0.5+k*0.3)+pz*W*(k-1)*0.3,W*0.34,W*0.012,W*0.03,r,[1,0.88,0.45],1)   // 속도 줄
       continue}
-    if(o.k==='cup'){const s=o.s,g=groundAt(o.x,o.z),WH=[0.96,0.95,0.9],CF=[0.42,0.25,0.11],FM=[0.72,0.52,0.3];
-      if(o.st>0){const k=o.st===2?Math.max(0,1-o.hold/1.5):1,rr=o.r;                                                     // 커피 웅덩이 + 물결
-        for(let q=0;q<4;q++)pushShape(m,CUBE,o.x,g+0.6+q*0.03,o.z,rr*k*1.74,1.2+q*0.06,rr*k*1.74,q*0.3927,CF,0);
-        if(o.st===1){const N=Math.min(28,Math.max(10,Math.round(rr/5)));for(let i=0;i<N;i++){const a=i/N*6.283+o.t*0.4,x=o.x+Math.cos(a)*rr,z=o.z+Math.sin(a)*rr,hh=(2+s*0.22)*(1+0.3*Math.sin(now*9+i*2));
-          pushShape(m,CUBE,x,groundAt(x,z)+hh*0.5,z,rr*6.283/N*0.95,hh,2.5+s*0.2,a+1.5708,FM,0);pushShape(m,CUBE,x,groundAt(x,z)+hh+0.4,z,rr*6.283/N*0.7,0.8,1.6+s*0.1,a+1.5708,[0.94,0.87,0.72],0)}}
-        else for(let i=0;i<5;i++){const a=i*1.2566+0.4,rr2=rr*k*(0.35+0.1*i);pushShape(m,SPHERE,o.x+Math.cos(a)*rr2,g+0.5,o.z+Math.sin(a)*rr2,s*0.5*k,0.6,s*0.35*k,a,FM,0)}}
-      const y=o.y-(o.st>0?s*0.25:0);                                                                                     // 종이컵 (아래가 좁음) + 빨간 띠 + 커피
-      for(let q=0;q<2;q++){const r=q*0.7854;pushShape(m,CUBE,o.x,y+s*0.55,o.z,s*1.15,s*1.1,s*1.15,r,WH,0);pushShape(m,CUBE,o.x,y+s*1.6,o.z,s*1.4,s*1.1,s*1.4,r,WH,0);
-        pushShape(m,CUBE,o.x,y+s*1.25,o.z,s*1.36,s*0.42,s*1.36,r,[0.86,0.2,0.14],0);pushShape(m,CUBE,o.x,y+s*2.18,o.z,s*1.56,s*0.12,s*1.56,r,[0.99,0.98,0.95],0)}
-      pushShape(m,SPHERE,o.x,y+s*2.2,o.z,s*0.72,s*0.1,s*0.72,0,CF,0);
-      if(o.st===0)for(let k=0;k<3;k++)pushShape(mg,CUBE,o.x+(k-1)*s*0.6,y+s*(3.6+k*0.5),o.z,s*0.07,s*(2.2+k*0.5),s*0.07,0,[1,0.95,0.85],1);
-      else if(o.st===1)for(let k=0;k<3;k++){const a=now*3+k*2.09;pushShape(m,SPHERE,o.x+Math.cos(a)*s*0.5,y+s*(2.5+0.5*Math.abs(Math.sin(now*6+k))),o.z+Math.sin(a)*s*0.5,s*0.3,s*0.4,s*0.3,0,CF,0)}   // 솟는 커피
+    if(o.k==='staff'){const s=o.s,r=Math.atan2(o.dz,o.dx),px=-o.dz,pz=o.dx,SH=[[0.95,0.95,0.97],[0.62,0.78,0.95],[0.14,0.17,0.3],[0.9,0.9,0.86]];                // 직원들: 다리·셔츠·넥타이·머리
+      for(const q of o.m){const x=o.x+o.dx*q.f+px*q.p,z=o.z+o.dz*q.f+pz*q.p,y=groundAt(x,z)+Math.abs(Math.sin(o.t*13+q.ph))*0.7*s;
+        pushShape(m,CUBE,x,y+0.6*s,z,0.6*s,1.2*s,1*s,r,[0.12,0.13,0.18],0);pushShape(m,CUBE,x,y+1.95*s,z,0.7*s,1.5*s,1.25*s,r,SH[q.c],0);
+        pushShape(m,CUBE,x+o.dx*0.37*s,y+2*s,z+o.dz*0.37*s,0.06*s,1*s,0.24*s,r,[0.8,0.15,0.15],0);pushShape(m,CUBE,x,y+3.15*s,z,0.85*s,0.9*s,0.9*s,r,[0.95,0.78,0.62],0);pushShape(m,CUBE,x-o.dx*0.05*s,y+3.7*s,z-o.dz*0.05*s,0.9*s,0.3*s,0.94*s,r,[0.1,0.08,0.07],0)}
+      continue}
+    if(o.k==='fire'){const S=BOSS.S,x0=BOSS.x-Math.sin(BOSS.yaw)*S*0.7,z0=BOSS.z+Math.cos(BOSS.yaw)*S*0.7,y0=BOSS.y+1.7*S,N=18,on=o.t>=0.22,k=on?Math.max(0,1-(o.t-0.22)/0.58):0.25,w=(o.big?4.2:2.4)*k;     // 해고 통보: 붉은 빛줄기
+      for(let i=1;i<=N;i++){const u=i/N,j=on?Math.sin(now*50+i*2.1)*w*0.25:0;pushShape(mg,i%2?SPHERE:ICO,x0+(o.tx-x0)*u+j,y0+(o.ty-y0)*u,z0+(o.tz-z0)*u-j,w,w,w,i,i%3===0?[1,0.8,0.6]:[1,0.14,0.1],1)}
+      if(on){const r2=(o.big?13:7.5)*k*(1+0.2*Math.sin(now*40));pushShape(mg,ICO,o.tx,o.ty,o.tz,r2,r2,r2,now*6,[1,0.2,0.12],1);pushShape(mg,CUBE,o.tx,o.ty+r2*3,o.tz,w*0.5,r2*6,w*0.5,0,[1,0.5,0.35],1)}
       continue}
     if(o.k==='limo'){const s=o.s,r=Math.atan2(o.dz,o.dx),px=-o.dz,pz=o.dx,gy=groundAt(o.x,o.z)+Math.abs(Math.sin(o.t*26))*0.25*s,BK=[0.05,0.05,0.07],CH=[0.78,0.8,0.84];
       const Q=(sh,f,p,y,sx,sy,sz,c,gl)=>pushShape(gl?mg:m,sh,o.x+o.dx*f*s+px*p*s,gy+y*s,o.z+o.dz*f*s+pz*p*s,sx*s,sy*s,sz*s,r,c,gl?1:0);
@@ -2015,13 +2008,18 @@ function drawKaiObj(m,mg){const now=performance.now()/1000;
       for(const f of [-13,13])for(const p of [-4.4,4.4]){Q(SPHERE,f,p,1.6,1.7,1.7,0.8,[0.08,0.08,0.09]);Q(SPHERE,f,p*1.06,1.6,0.9,0.9,0.5,CH)}        // 바퀴
       Q(CUBE,18,3.6,4.6,0.15,2.2,0.15,CH);Q(CUBE,17.2,3.6,5.3,1.5,0.9,0.12,[0.9,0.2,0.15]);                                                             // 깃발
       continue}}}
-// 10. 건물 던지기: 가까운 건물을 뽑아 던짐 (없으면 땅덩이)
-function kaiHurl(h){if(!kaiOK()||BOSS.state==='jump'||!kaiCool('cHurl',800))return false;const S=BOSS.S,big=BOSS.big>0;let best=null,bd=1e9;
-  forBuildingsNear(BOSS.x,BOSS.z,S*5+30,b=>{if(!b.alive||b.lifted||b.custom)return;if(big?b.h0>150:(b.h0>42||b.area>900))return;const d=distToBuilding(b,BOSS.x,BOSS.z);if(d<bd&&d<S*5){bd=d;best=b}});
-  let size,col;if(best){size=clamp(Math.sqrt(best.area)*0.34,3.2,big?17:7.5);col=best.col.slice();boom3(best.cx,best.base+3,best.cz,12);killBuilding(best);floatText(BOSS.x,BOSS.y+2.6*S,BOSS.z,'뽑았다!','boom',0.9)}
-  else{size=big?8:3.4;col=[0.46,0.42,0.36];carve(BOSS.x,BOSS.z,S*0.8,S*0.2)}
-  const d=Math.hypot(h.x-BOSS.x,h.z-BOSS.z),ty=h.b&&h.b.alive?Math.min(Math.max(h.y,h.b.base+2),h.b.base+Math.max(2,h.b.h)):groundAt(h.x,h.z);kaiFace(h.x,h.z);BOSS.flinch=0.4;
-  KPROJ.push({x0:BOSS.x,y0:BOSS.y+2.2*S,z0:BOSS.z,tx:h.x,ty,tz:h.z,t:0,T:clamp(d/200,0.4,1.4),size,kind:'bld',col,x:BOSS.x,y:BOSS.y+2.2*S,z:BOSS.z});sfx(9,0.4);bossSay(pickL(['이건 재건축이다!','용적률 초과다!','이전 설치해 주마!']),0);return true}
+// 10. 해고 통보: 손가락으로 가리킨 건물에 붉은 빛이 꽂힘 (변신 중엔 옆 건물 2채도)
+function kaiFire(h){if(!kaiOK()||!kaiCool('cHurl',900))return false;const big=BOSS.big>0,S=BOSS.S,T=[{x:h.x,z:h.z,b:h.b&&h.b.alive?h.b:null}];kaiFace(h.x,h.z);BOSS.flinch=0.5;
+  if(big){const c=[];forBuildingsNear(h.x,h.z,170,b=>{if(b.alive&&!b.lifted&&b!==T[0].b&&!eSmall(b))c.push([Math.hypot(b.cx-h.x,b.cz-h.z),b])});c.sort((a,b)=>a[0]-b[0]);for(const q of c.slice(0,2))T.push({x:q[1].cx,z:q[1].cz,b:q[1]})}
+  T.forEach((q,i)=>{const g=groundAt(q.x,q.z);KOBJ.push({k:'fire',tx:q.x,tz:q.z,ty:q.b?q.b.base+Math.min(q.b.h,Math.max(6,q.b.h*0.5)):g+2,b:q.b,t:-i*0.16,hit:false,big})});
+  sfx(4,0.3);const w=pickL(['넌 해고야!','내일부터 나오지 마!','짐 싸!','자네, 책상 빼!']);floatText(BOSS.x,BOSS.y+2.8*S,BOSS.z,w,'boom',1.3);bossSay(w,3);return true}
+function kaiFireHit(o){const big=o.big,R=big?46:26,x=o.tx,z=o.tz,g=groundAt(x,z);
+  forBuildingsNear(x,z,R+24,b=>{if(!b.alive||b.lifted)return;const d=distToBuilding(b,x,z);if(d>R)return;
+    if(b===o.b||d<R*0.35){if(eSmall(b)){killBuilding(b);return}if(b.h0<(big?120:50)){kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.8+8,30,99);if(b.alive)killBuilding(b);return}kaiLow(b,b.cx,b.cz,Math.sqrt(b.area)*0.8+8,big?19:13.5,big?9:6)}else kaiLow(b,x,z,R,big?9:5.5,3)});
+  forTreesNear(x,z,R,t=>{if(t.alive&&Math.hypot(t.x-x,t.z-z)<R)killTree(t)});if(CLIENT)clientHitAt(x,g+2,z,R,6);
+  boom3(x,o.ty,z,big?40:22);ring(x,g+1,z,R*1.5,[1,0.2,0.15]);later(0.12,()=>ring(x,groundAt(x,z)+1,z,R,[1,0.55,0.4]));kaiPapers(x,o.ty,z,big?18:10,big?22:14);kaiDust(x,z,big?24:12,big?36:22);
+  for(let k=0;k<fxN(big?24:12,5);k++){const a=Math.random()*6.283,v=eRnd(8,big?46:28);spawn(x,o.ty,z,Math.cos(a)*v,eRnd(6,big?44:28),Math.sin(a)*v,eRnd(0.6,1.6),[1,0.3,0.15],eRnd(0.4,0.9),1)}
+  flashScreen(big?0.3:0.18,'#ffb0a0');cam.shake=Math.max(cam.shake,big?10:6);hitStop(big?0.08:0.05);sfxBoom(big?1:0.7);sfx(big?24:12,0.7);floatText(x,o.ty+(big?34:18),z,'해 고 !','boom',1.4)}
 function kaiSkillsUpdate(K,dt,big,S,g,now){kaiObjUpdate(dt,now);
   if(K.state==='spin'){K.spin-=dt;K.yaw+=dt*24;K.y=g;const dx=K.tx-K.x,dz=K.tz-K.z,d=Math.hypot(dx,dz);if(d>2){const mv=Math.min((big?74:56)*dt,d);K.x+=dx/d*mv;K.z+=dz/d*mv}
     K.acc+=dt;if(K.acc>0.1){K.acc=0;const R=S*(big?2.3:3.1);

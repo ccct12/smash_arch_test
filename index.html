@@ -637,6 +637,8 @@ body.ui-mob.earth #modeTabs #mobSec,body.ui-mob.kai #modeTabs #mobSec{display:no
 body.ui-mob #sysMenu{left:calc(142px + env(safe-area-inset-left))}
 body.ui-mob #secPanel{left:calc(142px + env(safe-area-inset-left))!important;max-width:calc(100vw - 306px)!important}
 body.ui-mob #mission,body.ui-mob #combo{left:calc(142px + env(safe-area-inset-left))!important}
+/* ===== 11차 ===== */
+body.mini.kai #bossBox{display:block!important}
 /* ===== 8차 — 모드 고르기 · 메뉴 통합 (화면 정돈) ===== */
 /* 모드: PC는 도구막대 맨 왼쪽 세로 3칸, 모바일은 도구 레일 맨 위 가로 3칸. 예전 순환 버튼(#btnGM)은 숨김 */
 #btnGM{display:none!important}
@@ -854,6 +856,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <div class="sep"></div>
   <div class="grp"><span class="glbl">설계팀</span><button class="tool" data-w="6"><span class="num">7</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/></svg>MOVE</button><button class="tool" data-w="7"><span class="num">8</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="13" width="10" height="8"/><path d="M7 13V5h10v8" stroke-dasharray="2 2"/><path d="M12 11V2M9 5l3-3 3 3"/></svg>EXTRUDE</button><button class="tool" data-w="8"><span class="num">9</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17"/><path d="M2 15L22 7" stroke-dasharray="3 2"/><path d="M14 2l3 3-3 3"/></svg>TRIM</button><button class="tool" data-w="9"><span class="num">0</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 14h5M17 14h5"/><ellipse cx="12" cy="15" rx="5" ry="2.2"/><path d="M12 4v7M9 8l3 3 3-3"/><path d="M7 15l2 5h6l2-5"/></svg>싱크홀</button></div>
   <div class="sep"></div>
+  <button id="mobSec"><span class="ms-in">▦ 단면 보기</span><span class="ms-out">✕ 동네로</span></button>
   <button class="tool sm" id="btnGM" title="모드 바꾸기 (지금: 건축 모드)"><i class="emo">🌍</i>재난으로</button>
   <button class="tool sm" id="btnSection"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V8l8-5 8 5v13"/><path d="M4 12h16M4 16h16M9 21v-5"/><path d="M14 3v18" stroke-dasharray="2 2"/></svg>단면</button>
   <div class="sep"></div>
@@ -869,7 +872,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   <button class="tool sm" id="mnMini" title="간단 화면 — 필요한 버튼만 작게 (H)"><i class="emo">🧹</i>간단 화면</button>
   <button class="tool sm" id="mnFS" title="전체 화면"><i class="emo">⛶</i>전체 화면</button>
 </div>
-<div id="modeTabs"><button data-gm="build" class="on"><i>🏗</i><span>건축</span></button><button data-gm="earth"><i>🌍</i><span>재난</span></button><button data-gm="boss"><i>👔</i><span>사장님</span></button><button id="mobSec"><span class="ms-in">단면</span><span class="ms-out">동네로</span></button></div>
+<div id="modeTabs"><button data-gm="build" class="on"><i>🏗</i><span>건축</span></button><button data-gm="earth"><i>🌍</i><span>재난</span></button><button data-gm="boss"><i>👔</i><span>사장님</span></button></div>
 <div id="sysMenu" class="panel"></div>
 <div id="credit">건물·도로 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap 기여자</a> · 건물 모양은 단순화된 일반 재질 · 사무소 목록 © 공공데이터포털 · 회사와 관계없는 비공식 팬 게임 · 원작 아이디어 SMASH HYU (@Hong_Iron_DEV)</div>
 
@@ -1206,7 +1209,7 @@ a.hub-a{flex:1;text-align:center;text-decoration:none;color:inherit;padding:7px 
   function getT(url,ms){var c=new AbortController(),t=setTimeout(function(){c.abort()},ms);return fetch(url,{signal:c.signal}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).finally(function(){clearTimeout(t)})}
   function ok(d){return d&&Array.isArray(d.rows)&&d.rows.length>0}
   function save(d){try{localStorage.setItem(CK,JSON.stringify({t:Date.now(),d:d}))}catch(e){}}
-  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261115a';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
+  function start(d,src){window.FIRMDATA_BOOT=ok(d)?d.rows:[];window.FIRMDATA_SRC=src;var s=document.createElement('script');s.src='game.js?v=20261115b';s.onload=function(){var b=document.getElementById('boot');if(b)b.remove()};
     s.onerror=function(){document.getElementById('bootMsg').textContent='game.js 를 불러오지 못했어요'};document.body.appendChild(s)}
   var u=api(),cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||'null')}catch(e){}
   var fromSheet=u?getT(u+(u.indexOf('?')>=0?'&':'?')+'action=firms',30000).then(function(d){if(!ok(d))throw new Error('empty');save(d);return d}):Promise.reject(new Error('no api'));
